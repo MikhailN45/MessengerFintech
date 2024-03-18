@@ -24,9 +24,9 @@ class FlexBoxLayout @JvmOverloads constructor(
             defStyleRes
         )
         paddingRows =
-            typedArray.getDimension(R.styleable.FlexBoxLayout_paddingRows, 20f).toInt()
+            typedArray.getDimension(R.styleable.FlexBoxLayout_paddingRows, DIMEN20).toInt()
         paddingColumns =
-            typedArray.getDimension(R.styleable.FlexBoxLayout_paddingColumns, 20f).toInt()
+            typedArray.getDimension(R.styleable.FlexBoxLayout_paddingColumns, DIMEN20).toInt()
         typedArray.recycle()
     }
 
@@ -42,19 +42,17 @@ class FlexBoxLayout @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val availableWidth =
-            MeasureSpec.getSize(widthMeasureSpec)
-
+        val availableWidth = MeasureSpec.getSize(widthMeasureSpec)
         var widthLine = paddingRight + paddingLeft
         var heightLine = 0
-
         var totalWidth = availableWidth
         var totalHeight = paddingTop + paddingBottom
-
         var sumHeight = 0
+
         for (i in 0 until childCount) {
             val child = getChildAt(i)
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, totalHeight)
+            /** handle line break */
             if (widthLine + child.measuredWidth >= availableWidth) {
                 totalHeight += heightLine + paddingRows
                 widthLine = paddingRight + paddingLeft
@@ -77,9 +75,10 @@ class FlexBoxLayout @JvmOverloads constructor(
             getChildAt(childCount - 1).layoutParams = this
         }
 
-        val resultWidth = resolveSize(totalWidth, widthMeasureSpec)
-        val resultHeight = resolveSize(totalHeight, heightMeasureSpec)
-        setMeasuredDimension(resultWidth, resultHeight)
+        setMeasuredDimension(
+            resolveSize(totalWidth, widthMeasureSpec),
+            resolveSize(totalHeight, heightMeasureSpec)
+        )
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -114,5 +113,9 @@ class FlexBoxLayout @JvmOverloads constructor(
 
     override fun generateLayoutParams(p: LayoutParams): LayoutParams {
         return MarginLayoutParams(p)
+    }
+
+    companion object Dimens {
+        private const val DIMEN20 = 20f
     }
 }

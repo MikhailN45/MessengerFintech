@@ -6,6 +6,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.study.messengerfintech.R
+import com.study.messengerfintech.utils.Utils.sp
 
 class Emoji @JvmOverloads constructor(
     context: Context,
@@ -16,20 +17,24 @@ class Emoji @JvmOverloads constructor(
 
     private var reactionsList: ReactionsList = ReactionsList.SMILING
         set(value) {
-            field = value
-            invalidate()
+            if (field != value)
+                field = value
+            requestLayout()
         }
 
     private var num = 0
         set(value) {
-            if (value < 0) return
-            field = value
+            if (field != value)
+                field = value
             requestLayout()
         }
 
+    private val textToDraw
+        get() = "$reactionsList $num"
+
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        textSize = 40f
+        textSize = 14f.sp(context)
         textAlign = Paint.Align.CENTER
     }
 
@@ -37,12 +42,10 @@ class Emoji @JvmOverloads constructor(
     private val textCoordinate = PointF()
     private val tempFontMetrics = Paint.FontMetrics()
 
+
     init {
         val typedArray: TypedArray = context.obtainStyledAttributes(
-            attrs,
-            R.styleable.Emoji,
-            defStyleAttr,
-            defStyleRes
+            attrs, R.styleable.Emoji, defStyleAttr, defStyleRes
         )
 
         reactionsList = when (typedArray.getInt(R.styleable.Emoji_smiles, 0)) {
@@ -57,33 +60,22 @@ class Emoji @JvmOverloads constructor(
             9 -> ReactionsList.CRY
             else -> ReactionsList.NOT_INTERESTED
         }
+
         num = typedArray.getInt(R.styleable.Emoji_customNum, num)
-
-        textPaint.color =
-            typedArray.getColor(R.styleable.Emoji_textColor, textPaint.color)
-        textPaint.textSize =
-            typedArray.getDimension(R.styleable.Emoji_textSize, textPaint.textSize)
-
-        setOnClickListener {
-            isSelected = !isSelected
-        }
-
+        textPaint.color = typedArray.getColor(R.styleable.Emoji_textColor, textPaint.color)
+        textPaint.textSize = typedArray.getDimension(R.styleable.Emoji_textSize, textPaint.textSize)
+        setOnClickListener { isSelected = !isSelected }
         typedArray.recycle()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        textPaint.getTextBounds("$reactionsList $num", 0, "$reactionsList $num".length, textBounds)
-
-        val textHeight = textBounds.height()
-        val textWidth = textBounds.width()
-
-        val totalWidth = textWidth + paddingRight + paddingLeft + 48
-        val totalHeight = textHeight + paddingTop + paddingBottom + 48
-
-        val resultWidth = resolveSize(totalWidth, widthMeasureSpec)
-        val resultHeight = resolveSize(totalHeight, heightMeasureSpec)
-
-        setMeasuredDimension(resultWidth, resultHeight)
+        textPaint.getTextBounds(textToDraw, 0, textToDraw.length, textBounds)
+        val actualWidth = textBounds.width() + paddingRight + paddingLeft + 48
+        val actualHeight = textBounds.height() + paddingTop + paddingBottom + 48
+        setMeasuredDimension(
+            resolveSize(actualWidth, widthMeasureSpec),
+            resolveSize(actualHeight, heightMeasureSpec)
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -95,14 +87,13 @@ class Emoji @JvmOverloads constructor(
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
         val drawableState =
             super.onCreateDrawableState(extraSpace + SUPPORTED_DRAWABLE_STATE.size)
-        if (isSelected) {
+        if (isSelected)
             mergeDrawableStates(drawableState, SUPPORTED_DRAWABLE_STATE)
-        }
         return drawableState
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawText("$reactionsList $num", textCoordinate.x, textCoordinate.y, textPaint)
+        canvas.drawText(textToDraw, textCoordinate.x, textCoordinate.y, textPaint)
     }
 
     companion object {
