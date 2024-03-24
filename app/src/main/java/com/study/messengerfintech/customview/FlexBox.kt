@@ -63,15 +63,13 @@ class FlexBoxLayout @JvmOverloads constructor(
             sumHeight += child.measuredHeight
         }
 
-        if (totalHeight == paddingTop + paddingBottom)
-            totalWidth = widthLine
-        totalHeight += heightLine + paddingRows * 2
+        if (totalHeight == paddingTop + paddingBottom) totalWidth = widthLine
+        totalHeight += heightLine * 2
 
         /** set Plus icon size as square**/
         getChildAt(childCount - 1).layoutParams.apply {
             height = sumHeight / childCount
             width = height
-            totalHeight += height
             getChildAt(childCount - 1).layoutParams = this
         }
 
