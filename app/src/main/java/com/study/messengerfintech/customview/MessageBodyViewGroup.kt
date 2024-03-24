@@ -20,9 +20,9 @@ class MessageBodyViewGroup @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         require(childCount == 3)
 
-        val imageView = getChildAt(0)
-        val textView = getChildAt(1)
-        val flexBoxView = getChildAt(2)
+        val imageView = getChildAt(INDEX_FIRST)
+        val textView = getChildAt(INDEX_SECOND)
+        val flexBoxView = getChildAt(INDEX_THIRD)
 
         var totalWidth = 0
         var totalHeight = 0
@@ -63,9 +63,9 @@ class MessageBodyViewGroup @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        val imageView = getChildAt(0)
-        val textView = getChildAt(1)
-        val flexBoxView = getChildAt(2)
+        val imageView = getChildAt(INDEX_FIRST)
+        val textView = getChildAt(INDEX_SECOND)
+        val flexBoxView = getChildAt(INDEX_THIRD)
 
         imageView.layout(
             paddingLeft,
@@ -101,5 +101,11 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
     override fun generateLayoutParams(p: LayoutParams): LayoutParams {
         return MarginLayoutParams(p)
+    }
+
+    companion object {
+        private const val INDEX_FIRST = 0
+        private const val INDEX_SECOND = 1
+        private const val INDEX_THIRD = 2
     }
 }

@@ -17,16 +17,18 @@ class Emoji @JvmOverloads constructor(
 
     private var reactionsList: ReactionsList = ReactionsList.SMILING
         set(value) {
-            if (field != value)
+            if (field != value) {
                 field = value
-            requestLayout()
+                requestLayout()
+            }
         }
 
     private var num = 0
         set(value) {
-            if (field != value)
+            if (field != value) {
                 field = value
-            requestLayout()
+                requestLayout()
+            }
         }
 
     private val textToDraw
@@ -70,8 +72,8 @@ class Emoji @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         textPaint.getTextBounds(textToDraw, 0, textToDraw.length, textBounds)
-        val actualWidth = textBounds.width() + paddingRight + paddingLeft + 48
-        val actualHeight = textBounds.height() + paddingTop + paddingBottom + 48
+        val actualWidth = textBounds.width() + paddingRight + paddingLeft + DEFAULT_SPACE
+        val actualHeight = textBounds.height() + paddingTop + paddingBottom + DEFAULT_SPACE
         setMeasuredDimension(
             resolveSize(actualWidth, widthMeasureSpec),
             resolveSize(actualHeight, heightMeasureSpec)
@@ -97,6 +99,7 @@ class Emoji @JvmOverloads constructor(
     }
 
     companion object {
+        private const val DEFAULT_SPACE = 48
         private val SUPPORTED_DRAWABLE_STATE = intArrayOf(android.R.attr.state_selected)
     }
 }
