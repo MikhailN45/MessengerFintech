@@ -13,4 +13,5 @@
     <color name="sender_nickname_text">#2A9D8F</color>
     <color name="message_background">#282828</color>
     <color name="message_field_hint">#50CCCCCC</color>
+    <color name="my_message_color">#006153</color>
 </resources>

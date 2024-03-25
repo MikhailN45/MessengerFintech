@@ -31,9 +31,6 @@ class FlexBox @JvmOverloads constructor(
         typedArray.recycle()
     }
 
-    var sumHeight = 0
-        private set
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val availableWidth = MeasureSpec.getSize(widthMeasureSpec)
         var widthLine = paddingRight + paddingLeft

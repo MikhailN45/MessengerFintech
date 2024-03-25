@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             Message(2, false, "Five, six, seven, eight", this),
             Message(3, true, "Hurry up and don't be late.", this, mutableListOf(Reaction(false, 1, 7, 0))),
             Message(4, false, "Nine, ten, eleven, twelve", this, mutableListOf(Reaction(true, 5, 1, 0))),
-            Message(5, false, "Into the garden, let's delve.", this, mutableListOf(Reaction(false, 7, 15, 0)))
+            Message(5, true, "Into the garden, let's delve.", this, mutableListOf(Reaction(false, 7, 15, 0)))
         )
     }
 

@@ -3,7 +3,7 @@
     android:color="?attr/colorControlHighlight">
     <item>
         <shape>
-            <solid android:color="@color/plus_background" />
+            <solid android:color="@color/my_message_color" />
             <corners android:radius="20dp" />
         </shape>
     </item>

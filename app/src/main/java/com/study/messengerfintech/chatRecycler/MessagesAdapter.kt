@@ -1,6 +1,5 @@
 package com.study.messengerfintech.chatRecycler
 
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,11 +20,6 @@ class MessagesAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         dataSet[position].let {
-            viewHolder.view.layoutMessage.gravity = if (it.isMine) {
-                Gravity.END
-            } else {
-                Gravity.START
-            }
             viewHolder.view.message.setMessage(it)
             viewHolder.view.message.setMessageOnLongClick {
                 longClickListener(position)

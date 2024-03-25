@@ -35,6 +35,17 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         this.message = message
         this.messageText.text = message.message
         this.nicknameText.text = message.senderNickname
+
+        if (message.isMine) {
+            nicknameText.visibility = GONE
+            getChildAt(AVATAR_POSITION).visibility = GONE
+            getChildAt(MESSAGE_BOX_POSITION).setBackgroundResource(R.drawable.my_message_background)
+        } else {
+            nicknameText.visibility = VISIBLE
+            getChildAt(AVATAR_POSITION).visibility = VISIBLE
+            getChildAt(MESSAGE_BOX_POSITION).setBackgroundResource(R.drawable.message_background)
+        }
+
         (getChildAt(FLEXBOX_POSITION) as FlexBox).apply {
             removeAllViews()
             if (message.reactions.isNotEmpty()) plus.visibility = VISIBLE
@@ -91,13 +102,6 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
         var totalWidth = 0
         var totalHeight = 0
-        //TODO(separate class to mine/other message)
-        setPadding(
-            paddingLeft,
-            paddingTop,
-            maxOf(paddingRight, MeasureSpec.getSize(widthMeasureSpec) / 6),
-            paddingBottom
-        )
 
         measureChildWithMargins(
             imageView, widthMeasureSpec, 0, heightMeasureSpec, 0
@@ -125,6 +129,8 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         totalHeight += flexBoxView.measuredHeight + topMargin
         totalWidth += maxOf(flexBoxView.measuredWidth, textWidth)
 
+        if (message.isMine) totalWidth = MeasureSpec.getSize(widthMeasureSpec)
+
         setMeasuredDimension(
             resolveSize(totalWidth + paddingRight + paddingLeft, widthMeasureSpec),
             resolveSize(totalHeight + paddingTop + paddingBottom, heightMeasureSpec)
@@ -142,22 +148,39 @@ class MessageBodyViewGroup @JvmOverloads constructor(
             paddingLeft + imageView.measuredWidth,
             paddingTop + imageView.measuredHeight
         )
-
-        val marginRight = (imageView.layoutParams as MarginLayoutParams).rightMargin
-        textView.layout(
-            imageView.right + marginRight,
-            paddingTop,
-            imageView.right + textView.measuredWidth,
-            paddingTop + textView.measuredHeight
-        )
-
         val topMargin = (flexBoxView.layoutParams as MarginLayoutParams).topMargin
-        flexBoxView.layout(
-            imageView.right + marginRight,
-            textView.bottom + topMargin,
-            imageView.right + flexBoxView.measuredWidth,
-            textView.bottom + flexBoxView.measuredHeight
-        )
+
+        if (message.isMine) {
+            textView.layout(
+                measuredWidth - textView.measuredWidth,
+                paddingTop,
+                measuredWidth,
+                paddingTop + textView.measuredHeight
+            )
+
+            flexBoxView.layout(
+                measuredWidth - paddingRight - flexBoxView.measuredWidth, //textView.measuredWidth,
+                textView.bottom + topMargin,
+                measuredWidth - paddingRight,
+                textView.bottom + flexBoxView.measuredHeight
+            )
+        } else {
+            val marginRight = (imageView.layoutParams as MarginLayoutParams).rightMargin
+
+            textView.layout(
+                imageView.right + marginRight,
+                paddingTop,
+                imageView.right + textView.measuredWidth,
+                paddingTop + textView.measuredHeight
+            )
+
+            flexBoxView.layout(
+                imageView.right + marginRight,
+                textView.bottom + topMargin,
+                imageView.right + flexBoxView.measuredWidth,
+                textView.bottom + flexBoxView.measuredHeight
+            )
+        }
     }
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
