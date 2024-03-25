@@ -13,40 +13,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2edc49c1-720f-43c4-84c5-fe1d7d0482d8" name="Changes" comment="task 2 add missing files delete hw_1 project and refactor issues">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/chatRecycler/DateItemDecorator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/chatRecycler/MessagesAdapter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/chatRecycler/SmileBottomSheet.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/data/Message.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/data/Reaction.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_add_file_to_message.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_bottom_sheet.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_send_message.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/message_background.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/plus_background.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/item_message.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/mine_message_body_view_group.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/smiles_bottom_sheet_content.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/Emoji.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/Emoji.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/FlexBox.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/FlexBox.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/MessageBodyViewGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/MessageBodyViewGroup.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/ReactionsList.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/Utils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/emoji_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/emoji_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_add.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_add_reaction.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/message_body_viewgroup.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/message_body_viewgroup.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/attrs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/attrs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/data_extraction_rules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/xml/data_extraction_rules.xml" afterDir="false" />
-    </list>
+    <list default="true" id="2edc49c1-720f-43c4-84c5-fe1d7d0482d8" name="Changes" comment="task 3 mvp" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -228,7 +195,15 @@
       <option name="project" value="LOCAL" />
       <updated>1711306229698</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="task 3 mvp">
+      <option name="closed" value="true" />
+      <created>1711391166081</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1711391166081</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -245,7 +220,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="task 2 add missing files" />
     <MESSAGE value="task 2 add missing files delete hw_1 project and refactor issues" />
-    <option name="LAST_COMMIT_MESSAGE" value="task 2 add missing files delete hw_1 project and refactor issues" />
+    <MESSAGE value="task 3 mvp" />
+    <option name="LAST_COMMIT_MESSAGE" value="task 3 mvp" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
