@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/sender_avatar"
+        android:id="@+id/mine_avatar"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginStart="12dp"
@@ -15,7 +15,6 @@
         app:shapeAppearanceOverlay="@style/roundedAvatar" />
 
     <LinearLayout
-        android:id="@+id/message_body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/emoji_background"
@@ -24,7 +23,7 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/message_sender_nickname"
+            android:id="@+id/my_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
@@ -34,7 +33,7 @@
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/message_text"
+            android:id="@+id/mine_message_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"

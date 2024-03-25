@@ -2,5 +2,58 @@
 <string name="app_name">MessengerFintech</string>
 <string name="user_avatar">user_avatar</string>
 <string name="darrell_steward">Darrell Steward</string>
-<string name="lorem_ipsum">Привет! lorem ipsum test message dalshe zabil</string>
+<string name="lorem_ipsum">Hello! lorem ipsum test message dalshe zabil</string>
+    <string name="write">Write something…</string>
+    <string name="send_message">Send message</string>
+    <string name="add_file">Attach the file</string>
+    <string-array name="emojis">
+        <item>😎</item>
+        <item>😌</item>
+        <item>😔</item>
+        <item>😋</item>
+        <item>😛</item>
+        <item>😍</item>
+        <item>😘</item>
+        <item>😊</item>
+        <item>😗</item>
+        <item>😜</item>
+        <item>😏</item>
+        <item>😜</item>
+        <item>😁</item>
+        <item>👍</item>
+        <item>🎃</item>
+        <item>😚</item>
+        <item>🙃</item>
+        <item>😅</item>
+        <item>😂</item>
+        <item>😇</item>
+        <item>😉</item>
+        <item>😏</item>
+        <item>😗</item>
+        <item>😎</item>
+        <item>😎</item>
+        <item>😌</item>
+        <item>😔</item>
+        <item>😋</item>
+        <item>😛</item>
+        <item>😍</item>
+        <item>😘</item>
+        <item>😊</item>
+        <item>😗</item>
+        <item>😜</item>
+        <item>😏</item>
+        <item>😜</item>
+        <item>😁</item>
+        <item>👍</item>
+        <item>🎃</item>
+        <item>😚</item>
+        <item>🙃</item>
+        <item>😅</item>
+        <item>😂</item>
+        <item>😇</item>
+        <item>😉</item>
+        <item>😏</item>
+        <item>😗</item>
+        <item>😎</item>
+    </string-array>
 </resources>
