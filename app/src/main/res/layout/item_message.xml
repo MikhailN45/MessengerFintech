@@ -3,13 +3,11 @@
     android:id="@+id/layoutMessage"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
-    <com.study.messengerfintech.customview.MessageBodyViewGroup
+    <com.study.messengerfintech.view.customview.MessageBodyViewGroup
         android:id="@+id/message"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content"/>
 
 </FrameLayout>

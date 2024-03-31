@@ -1,9 +1,9 @@
-package com.study.messengerfintech.chatRecycler
+package com.study.messengerfintech.viewmodel.chatRecycler
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.study.messengerfintech.data.Message
+import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.databinding.ItemMessageBinding
 
 class MessagesAdapter(

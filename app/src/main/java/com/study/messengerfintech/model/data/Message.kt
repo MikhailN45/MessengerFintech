@@ -1,9 +1,8 @@
-package com.study.messengerfintech.data
+package com.study.messengerfintech.model.data
 
 data class Message(
     val id: Int,
-    var isMine: Boolean,
+    var user: User,
     val message: String,
-    val senderNickname: String = "Darrell Steward",
     val reactions: MutableList<Reaction> = mutableListOf()
 )

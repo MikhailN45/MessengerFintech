@@ -11,4 +11,20 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="bigRoundedAvatar" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">15%</item>
+    </style>
+
+    <style name="tabLayoutText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textStyle">bold</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="buttonWhite" parent="ThemeOverlay.AppCompat">
+        <item name="colorContainer">@color/material_button_color</item>
+    </style>
 </resources>

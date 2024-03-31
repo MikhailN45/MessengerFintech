@@ -1,4 +1,4 @@
-package com.study.messengerfintech.customview
+package com.study.messengerfintech.view.customview
 
 import android.content.Context
 import android.content.res.TypedArray

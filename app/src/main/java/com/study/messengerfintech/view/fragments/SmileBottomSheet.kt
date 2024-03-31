@@ -1,4 +1,4 @@
-package com.study.messengerfintech.chatRecycler
+package com.study.messengerfintech.view.fragments
 
 import android.graphics.Color
 import android.os.Bundle

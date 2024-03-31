@@ -1,4 +1,4 @@
-package com.study.messengerfintech.chatRecycler
+package com.study.messengerfintech.viewmodel.chatRecycler
 
 import android.graphics.Canvas
 import android.graphics.Color.parseColor
@@ -61,10 +61,9 @@ class DateItemDecorator :
             }
         }
     }
-    companion object{
+
+    companion object {
         private const val DATE_TEXT_SIZE = 40f //14f
         private const val DATE_BOX_RADIUS = 50f
     }
-
-
 }

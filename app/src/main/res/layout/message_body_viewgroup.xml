@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="@string/darrell_steward"
-            android:textColor="@color/sender_nickname_text"
+            android:textColor="@color/cyan_color"
             android:textFontWeight="400"
             android:textSize="14sp" />
 
@@ -45,7 +45,7 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <com.study.messengerfintech.customview.FlexBox
+    <com.study.messengerfintech.view.customview.FlexBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
