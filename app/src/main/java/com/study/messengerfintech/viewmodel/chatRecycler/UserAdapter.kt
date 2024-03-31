@@ -9,7 +9,7 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.model.data.User
 
 class UserAdapter(
-    private val dataSet: MutableList<User>
+    private val dataSet: MutableList<User> //TODO(i will replace this in a short time)
 ) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {

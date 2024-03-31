@@ -7,7 +7,7 @@ import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.databinding.ItemMessageBinding
 
 class MessagesAdapter(
-    private val dataSet: MutableList<Message>,
+    private val dataSet: MutableList<Message>, //TODO(i will replace this in a short time)
     val longClickListener: (position: Int) -> Unit
 ) : RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
 

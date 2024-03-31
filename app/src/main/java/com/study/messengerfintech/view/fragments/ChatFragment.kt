@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,7 +20,6 @@ import com.study.messengerfintech.viewmodel.chatRecycler.MessagesAdapter
 class ChatFragment : Fragment() {
     private lateinit var binding: ChatFragmentBinding
     private val model: MainViewModel by activityViewModels()
-    private val modalBottomSheet = SmileBottomSheet()
     private lateinit var chat: Chat
     private lateinit var adapter: MessagesAdapter
 
@@ -46,8 +44,12 @@ class ChatFragment : Fragment() {
         binding.backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
 
         adapter = MessagesAdapter(chat.messages) { position ->
-            modalBottomSheet.show(childFragmentManager, SmileBottomSheet.TAG)
-            modalBottomSheet.arguments = bundleOf(SmileBottomSheet.MESSAGE_KEY to position)
+            SmileBottomSheet(
+                onItemClick = { smileKey ->
+                    chat.messages[position].reactions.add(Reaction(smile = smileKey, num = 1))
+                    adapter.notifyItemChanged(position)
+                }
+            ).show(childFragmentManager, SmileBottomSheet.TAG)
         }
 
         binding.chatRecycler.apply {
@@ -67,22 +69,13 @@ class ChatFragment : Fragment() {
         }
 
         binding.sendMessageDraftText.doAfterTextChanged {
-            if (it?.length == 0) {
+            if (it.isNullOrBlank()) {
                 binding.sendMessageButton.visibility = View.GONE
                 binding.addFileButton.visibility = View.VISIBLE
             } else {
                 binding.sendMessageButton.visibility = View.VISIBLE
                 binding.addFileButton.visibility = View.GONE
             }
-        }
-
-        childFragmentManager.setFragmentResultListener(
-            SmileBottomSheet.SMILE_RESULT, this
-        ) { _, bundle ->
-            val messagePosition = bundle.getInt(SmileBottomSheet.MESSAGE_KEY)
-            val smileNum = bundle.getInt(SmileBottomSheet.SMILE_KEY)
-            chat.messages[messagePosition].reactions.add(Reaction(smile = smileNum, num = 1))
-            adapter.notifyItemChanged(messagePosition)
         }
 
         return binding.root

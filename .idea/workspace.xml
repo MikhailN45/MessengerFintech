@@ -76,62 +76,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3c8e6b0a-4ddb-4050-a51c-04a1159ffc21" name="Changes" comment="remove unused layout">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/FakeDataSource.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Chat.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Stream.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/StreamAndChatItem.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/User.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/ChatFragment.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/MainFragment.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/PeopleFragment.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/ProfileFragment.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/StreamsFragment.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/StreamsRecyclerFragment.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/MainViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/PagerAdapter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/StreamsAndChatsAdapter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/UserAdapter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_back_button.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_channels.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_expand_stream.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_online_status.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_people.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_profile.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_search.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/nav_item_color_state.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/chat_fragment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/main_fragment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/people_fragment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/profile_fragment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/streams_and_chats_fragment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/streams_and_chats_item.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/streams_fragment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/user_item.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/menu/bottom_navigation_menu.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="3c8e6b0a-4ddb-4050-a51c-04a1159ffc21" name="Changes" comment="homework 4 (hw_3 review fixes)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/chatRecycler/DateItemDecorator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/DateItemDecorator.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/chatRecycler/MessagesAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/MessagesAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/chatRecycler/SmileBottomSheet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/SmileBottomSheet.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/Emoji.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/Emoji.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/FlexBox.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/FlexBox.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/customview/MessageBodyViewGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/MessageBodyViewGroup.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/data/Message.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Message.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/data/Reaction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Reaction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/utils/Utils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_send_message.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_send_message.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/item_message.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/item_message.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/message_body_viewgroup.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/message_body_viewgroup.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/smiles_bottom_sheet_content.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/smiles_bottom_sheet_content.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/MessageBodyViewGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/MessageBodyViewGroup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/DateItemDecorator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/DateItemDecorator.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/MessagesAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/MessagesAdapter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/StreamsAndChatsAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/StreamsAndChatsAdapter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/UserAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/UserAdapter.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -313,7 +264,47 @@
       <option name="project" value="LOCAL" />
       <updated>1711407098090</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="homework 4 done">
+      <option name="closed" value="true" />
+      <created>1711845988692</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1711845988692</updated>
+    </task>
+    <task id="LOCAL-00004" summary="homework 4 done">
+      <option name="closed" value="true" />
+      <created>1711846064559</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1711846064559</updated>
+    </task>
+    <task id="LOCAL-00005" summary="homework 4 done">
+      <option name="closed" value="true" />
+      <created>1711846172722</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711846172722</updated>
+    </task>
+    <task id="LOCAL-00006" summary="homework 4 done">
+      <option name="closed" value="true" />
+      <created>1711846242720</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1711846242720</updated>
+    </task>
+    <task id="LOCAL-00007" summary="homework 4 (hw_3 review fixes)">
+      <option name="closed" value="true" />
+      <created>1711926849287</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1711926849287</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -341,6 +332,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Implemented message behavior depending on the sender" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented message behavior depending on the sender" />
+    <MESSAGE value="homework 4 done" />
+    <MESSAGE value="homework 4 (hw_3 review fixes)" />
+    <option name="LAST_COMMIT_MESSAGE" value="homework 4 (hw_3 review fixes)" />
   </component>
 </project>

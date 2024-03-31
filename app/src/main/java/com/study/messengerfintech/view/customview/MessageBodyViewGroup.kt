@@ -58,6 +58,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
     private fun addEmoji(reaction: Reaction) {
         val flexBox = (getChildAt(FLEXBOX_POSITION) as FlexBox)
         val emoji = Emoji(context).apply {
+            //TODO(move performClickEmoji() here? Check it.)
             setReaction(reaction)
             clickCallback = {
                 if (reaction.num == 0) {
