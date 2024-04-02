@@ -14,7 +14,7 @@ import com.study.messengerfintech.model.data.StreamItem
 import com.study.messengerfintech.model.utils.Utils.colors
 
 class StreamsAndChatsAdapter(
-    private val dataSet: MutableList<StreamAndChatItem>, //TODO(i will replace this in a short time)
+    private val dataSet: MutableList<StreamAndChatItem>, //TODO(i will replace this to diffUtil in future)
     private val onClick: (position: Int) -> Unit
 ) : RecyclerView.Adapter<StreamsAndChatsAdapter.ViewHolder>() {
 
@@ -32,9 +32,11 @@ class StreamsAndChatsAdapter(
         val item = dataSet[position]
         when (item) {
             is StreamItem -> holder.apply {
-                binding.chatItem.visibility = GONE
-                binding.streamItem.visibility = VISIBLE
-                binding.streamName.text = item.title
+                with(binding) {
+                    chatItem.visibility = GONE
+                    streamItem.visibility = VISIBLE
+                    streamName.text = item.title
+                }
             }
 
             is ChatItem -> holder.apply {

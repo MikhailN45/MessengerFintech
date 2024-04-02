@@ -27,7 +27,7 @@ class MainFragment : Fragment() {
                     .commitAllowingStateLoss()
 
                 R.id.people_page -> childFragmentManager.commit {
-                    replace(R.id.fragment_container, PeopleFragment())
+                    replace(R.id.fragment_container, UsersFragment())
                     addToBackStack(null)
                 }
 

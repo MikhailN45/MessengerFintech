@@ -19,7 +19,7 @@ import com.study.messengerfintech.viewmodel.chatRecycler.MessagesAdapter
 
 class ChatFragment : Fragment() {
     private lateinit var binding: ChatFragmentBinding
-    private val model: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
     private lateinit var chat: Chat
     private lateinit var adapter: MessagesAdapter
 
@@ -30,7 +30,7 @@ class ChatFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            chat = model.getChat(it.getInt(STREAM_COUNT), it.getInt(CHAT_COUNT))
+            chat = viewModel.getChat(it.getInt(STREAM_COUNT), it.getInt(CHAT_COUNT))
         }
     }
 
@@ -59,12 +59,7 @@ class ChatFragment : Fragment() {
         }
 
         binding.sendMessageButton.setOnClickListener {
-            binding.sendMessageDraftText.apply {
-                if (this.length() == 0) return@apply
-                chat.messages.add(Message(chat.messages.size, User.INSTANCE, text.toString()))
-                setText("")
-                layoutManager.scrollToPosition(chat.messages.size - 1)
-            }
+            sendMessage()
             binding.chatRecycler.adapter?.notifyItemInserted(chat.messages.size)
         }
 
@@ -79,6 +74,15 @@ class ChatFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun sendMessage(){
+        binding.sendMessageDraftText.apply {
+            if (this.length() == 0) return@apply
+            chat.messages.add(Message(chat.messages.size, User.INSTANCE, text.toString()))
+            setText("")
+            layoutManager.scrollToPosition(chat.messages.size - 1)
+        }
     }
 
     companion object {

@@ -8,6 +8,20 @@ import com.study.messengerfintech.model.utils.Utils
 
 object FakeDataSource {
     private val streams: MutableList<Stream> = mutableListOf()
+    private val users: List<User> = listOf(
+        User(0, "Darell Steward"),
+        User(1, "Darell Steward"),
+        User(2, "Darell Steward"),
+        User(3, "Darell Steward"),
+        User(4, "Darell Steward"),
+        User(5, "Darell Steward"),
+        User(6, "Darell Steward"),
+        User(7, "Darell Steward"),
+        User(7, "Darell Steward"),
+        User(8, "Darell Steward"),
+        User(9, "Darell Steward"),
+        User(10, "Darell Steward")
+    )
 
     init {
         streams.addAll(
@@ -67,6 +81,8 @@ object FakeDataSource {
             )
         })
     }
+
+    fun getUsers(): List<User> = users
 
     fun getStream(num: Int) = streams[num]
 
