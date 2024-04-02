@@ -6,6 +6,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.study.messengerfintech.R
+import com.study.messengerfintech.data.Reaction
 import com.study.messengerfintech.utils.Utils.sp
 
 class Emoji @JvmOverloads constructor(
@@ -15,21 +16,44 @@ class Emoji @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
-    private var reactionsList: ReactionsList = ReactionsList.SMILING
-        set(value) {
-            if (field != value) {
-                field = value
-                requestLayout()
-            }
+    private var reactionsList: String = ""
+        private set(value) {
+            field = value
+            requestLayout()
         }
 
     private var num = 0
         set(value) {
-            if (field != value) {
-                field = value
-                requestLayout()
-            }
+            if (value < 0) return
+            field = value
+            reaction?.num = num
+            requestLayout()
         }
+
+    private var isMine = false
+        set(value) {
+            reaction?.isMine = value
+            isSelected = value == true
+            field = value
+        }
+
+    private fun setEmoji(num: Int) {
+        resources.getStringArray(R.array.emojis).apply {
+            if (num < size)
+                reactionsList = get(num)
+        }
+    }
+
+    fun setReaction(reaction: Reaction) {
+        this.reaction = reaction
+        setEmoji(reaction.smile)
+        num = reaction.num
+        isMine = reaction.isMine
+    }
+
+    private var reaction: Reaction? = null
+
+    var clickCallback = { }
 
     private val textToDraw
         get() = "$reactionsList $num"
@@ -44,30 +68,43 @@ class Emoji @JvmOverloads constructor(
     private val textCoordinate = PointF()
     private val tempFontMetrics = Paint.FontMetrics()
 
+    private val smiles: Array<String> = resources.getStringArray(R.array.emojis)
 
     init {
         val typedArray: TypedArray = context.obtainStyledAttributes(
             attrs, R.styleable.Emoji, defStyleAttr, defStyleRes
         )
 
-        reactionsList = when (typedArray.getInt(R.styleable.Emoji_smiles, 0)) {
-            1 -> ReactionsList.SMILING
-            2 -> ReactionsList.WINKING
-            3 -> ReactionsList.HEART
-            4 -> ReactionsList.SAD
-            5 -> ReactionsList.JOY
-            6 -> ReactionsList.NOT_INTERESTED
-            7 -> ReactionsList.HUG
-            8 -> ReactionsList.PARTY
-            9 -> ReactionsList.CRY
-            else -> ReactionsList.NOT_INTERESTED
-        }
-
+        reactionsList = smiles[typedArray.getInt(R.styleable.Emoji_smiles, 1)]
         num = typedArray.getInt(R.styleable.Emoji_customNum, num)
+
         textPaint.color = typedArray.getColor(R.styleable.Emoji_textColor, textPaint.color)
         textPaint.textSize = typedArray.getDimension(R.styleable.Emoji_textSize, textPaint.textSize)
-        setOnClickListener { isSelected = !isSelected }
+
+        setBackgroundResource(R.drawable.emoji_background)
+
+        setOnClickListener {
+            performClickEmoji()
+        }
         typedArray.recycle()
+    }
+
+    private fun performClickEmoji() {
+        isSelected = !isSelected
+        if (isMine) {
+            num -= 1
+            isMine = false
+        } else {
+            num += 1
+            isMine = true
+        }
+        clickCallback()
+    }
+
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+        performClickEmoji()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -89,8 +126,7 @@ class Emoji @JvmOverloads constructor(
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
         val drawableState =
             super.onCreateDrawableState(extraSpace + SUPPORTED_DRAWABLE_STATE.size)
-        if (isSelected)
-            mergeDrawableStates(drawableState, SUPPORTED_DRAWABLE_STATE)
+        if (isSelected) mergeDrawableStates(drawableState, SUPPORTED_DRAWABLE_STATE)
         return drawableState
     }
 

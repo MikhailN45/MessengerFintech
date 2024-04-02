@@ -15,9 +15,11 @@
         app:shapeAppearanceOverlay="@style/roundedAvatar" />
 
     <LinearLayout
+        android:id="@+id/message_body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/emoji_background"
+        android:minWidth="128dp"
         android:orientation="vertical"
         android:padding="10dp">
 
@@ -25,6 +27,7 @@
             android:id="@+id/message_sender_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:text="@string/darrell_steward"
             android:textColor="@color/sender_nickname_text"
             android:textFontWeight="400"
@@ -34,6 +37,7 @@
             android:id="@+id/message_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
             android:maxWidth="200dp"
             android:text="@string/lorem_ipsum"
             android:textColor="@color/white"
@@ -41,72 +45,9 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <com.study.messengerfintech.customview.FlexBoxLayout
+    <com.study.messengerfintech.customview.FlexBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp" />
 
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:smiles="smiling" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="5"
-            app:smiles="winking" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="15"
-            app:smiles="heart" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="3"
-            app:smiles="sad" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="8"
-            app:smiles="joy" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="1"
-            app:smiles="not_interested" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="11"
-            app:smiles="hug" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="7"
-            app:smiles="party" />
-
-        <com.study.messengerfintech.customview.Emoji
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/emoji_background"
-            app:customNum="3"
-            app:smiles="cry" />
-
-    </com.study.messengerfintech.customview.FlexBoxLayout>
 </merge>
