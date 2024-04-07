@@ -16,6 +16,7 @@ class CheckSubscribedUseCase : ICheckSubscribedUseCase {
         loop@ for (item in items)
             when (item) {
                 is StreamItem -> {
+                    item.isExpanded = false
                     if (item.isSubscribed) subscribedItems.add(item)
                     streamItem = item
                 }

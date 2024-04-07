@@ -2,9 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp">
+    android:layout_height="72dp"
+    android:layout_margin="16dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/profile_avatar_shimmer"
@@ -31,7 +30,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/contacts_chimmer"
+        android:id="@+id/contacts_shimmer"
         android:layout_width="170dp"
         android:layout_height="25dp"
         android:layout_marginStart="10dp"

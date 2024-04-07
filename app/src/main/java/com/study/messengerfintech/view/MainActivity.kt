@@ -27,25 +27,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.activity_fragment_container, MainFragment.newInstance())
                 .commitAllowingStateLoss()
 
-        viewModel.state.observe(this) {
-            when (it) {
-                is State.Result -> binding.progressBar.visibility = GONE
-                is State.Loading -> binding.progressBar.visibility = VISIBLE
-                is State.Error -> {
-                    binding.progressBar.visibility = GONE
-
-                    val snackBar = Snackbar.make(
-                        binding.root, it.error.message.toString(), Snackbar.LENGTH_SHORT
-                    )
-                    val params =
-                        snackBar.view.layoutParams as FrameLayout.LayoutParams
-                    params.setMargins(0, 0, 0, 190)
-                    snackBar.view.layoutParams = params
-                    snackBar.show()
-                }
-            }
-        }
-
         viewModel.chat.observe(this) { (streamCount, chatCount) ->
             supportFragmentManager.beginTransaction()
                 .replace(

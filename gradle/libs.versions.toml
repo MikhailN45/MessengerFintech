@@ -12,6 +12,7 @@ shimmer = "0.5.0"
 #Plugin versions
 agp = "8.3.1"
 kotlin = "1.9.23"
+parcelize = "2.0.0-Beta5"
 
 #Libraries versions
 coreKtx = "1.12.0"

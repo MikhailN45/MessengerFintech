@@ -1,10 +1,12 @@
 package com.study.messengerfintech.view.fragments
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,8 +16,9 @@ import com.study.messengerfintech.model.data.ChatItem
 import com.study.messengerfintech.model.data.StreamAndChatItem
 import com.study.messengerfintech.model.data.StreamItem
 import com.study.messengerfintech.domain.mapper.ChatMapper
+import com.study.messengerfintech.view.ChatsState
 import com.study.messengerfintech.viewmodel.MainViewModel
-import com.study.messengerfintech.viewmodel.Streams
+import com.study.messengerfintech.viewmodel.StreamType
 import com.study.messengerfintech.viewmodel.chatRecycler.StreamsAndChatsAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 
@@ -52,15 +55,25 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val streamType =
-            arguments?.getSerializable(TAG)?.let { it as Streams } ?: Streams.AllStreams
+        viewModel.chatsState.observe(viewLifecycleOwner) {
+            binding.streamsShimmer.isVisible = it is ChatsState.Loading
+            when (it) {
+                is ChatsState.Success -> {}
+                is ChatsState.Error -> {}
+                ChatsState.Loading -> {}
+            }
+        }
 
-        (if (streamType == Streams.SubscribedStreams) viewModel.subscribedStreams else viewModel.streams)
+        val streamType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable(TAG, StreamType::class.java)
+        } else {
+            arguments?.getParcelable(TAG)
+        } ?: StreamType.AllStreams
+
+        (if (streamType == StreamType.SubscribedStreams) viewModel.subscribedStreams else viewModel.streams)
             .observe(viewLifecycleOwner) {
                 items = it.toMutableList()
-                    .onEach { item ->
-                        if (item is StreamItem) item.isExpanded = false
-                    }
+
                 adapter.submitList(items) {
                     binding.streamsAndChatsRecycler.scrollToPosition(0)
                 }
@@ -93,7 +106,7 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
             },
                 { error ->
                     item.isLoading = false
-                    viewModel.error(error)
+                    viewModel.errorChats(error)
                 })
     }
 
@@ -110,10 +123,10 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
 
     companion object {
         private const val TAG = "SUBSCRIBED_KEY"
-        fun newInstance(streamType: Streams) =
+        fun newInstance(streamType: StreamType) =
             StreamsRecyclerFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(TAG, streamType)
+                    putParcelable(TAG, streamType)
                 }
             }
     }

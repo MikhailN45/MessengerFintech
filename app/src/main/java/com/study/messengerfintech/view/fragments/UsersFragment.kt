@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.databinding.UsersFragmentBinding
+import com.study.messengerfintech.view.UsersState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.chatRecycler.UsersAdapter
 
@@ -30,18 +32,24 @@ class UsersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.searchUsersEditText.doAfterTextChanged {
-            viewModel.searchUsers(it.toString())
+            viewModel.onUsersFragmentSearchUsersTextChanged(it.toString())
         }
 
-        //viewModel.state.observe(this)
+        viewModel.usersState.observe(viewLifecycleOwner) {
+            binding.usersShimmer.isVisible = it is UsersState.Loading
+            when (it) {
+                is UsersState.Loading -> {}
+                is UsersState.Success -> {
+                    adapter.submitList(it.users) {
+                        binding.usersRecycler.scrollToPosition(0)
+                    }
+                }
 
-        if (savedInstanceState == null)
-            viewModel.searchUsers("")
-        viewModel.users.observe(viewLifecycleOwner) {
-            adapter.submitList(it) {
-                binding.usersRecycler.scrollToPosition(0)
+                is UsersState.Error -> {}
             }
         }
+
+        if (savedInstanceState == null) viewModel.onUsersFragmentViewCreated()
 
         binding.usersRecycler.apply {
             adapter = this@UsersFragment.adapter

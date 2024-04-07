@@ -13,7 +13,6 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsFragmentBinding
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.PagerAdapter
-import com.study.messengerfintech.viewmodel.Streams
 
 class StreamsFragment : Fragment() {
     private lateinit var binding: StreamsFragmentBinding
@@ -28,35 +27,31 @@ class StreamsFragment : Fragment() {
     }.root
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState == null) viewModel.onStreamsFragmentViewCreated()
 
-        if (savedInstanceState == null)
-            viewModel.searchStreams("")
-
-        binding.searchUsersEditText.doAfterTextChanged {
-            viewModel.searchStreams(it.toString())
+        searchUsersEditText.doAfterTextChanged {
+            viewModel.onStreamsFragmentSearchUsersTextChanged(it.toString())
         }
 
-        val tabLayout = binding.streamsTabLayout
-        val streamsPager = binding.streamsPager
-        val viewPager = PagerAdapter(
-            pages = listOf(Streams.SubscribedStreams, Streams.AllStreams),
-            childFragmentManager, lifecycle
+        val pagerAdapter = PagerAdapter(
+            fragmentManager = childFragmentManager,
+            lifecycle = lifecycle
         )
-        streamsPager.adapter = viewPager
+        streamsPager.adapter = pagerAdapter
 
-        val tabs: List<String> =
+        val tabTitles: List<String> =
             listOf(getString(R.string.subscribed), getString(R.string.all_streams))
 
-        tabLayout.setTabTextColors(
+        streamsTabLayout.setTabTextColors(
             Color.parseColor("#70FAFAFA"),
             Color.parseColor("#FAFAFA")
         )
 
-        TabLayoutMediator(tabLayout, streamsPager)
+        TabLayoutMediator(streamsTabLayout, streamsPager)
         { tab, position ->
-            tab.text = tabs[position]
+            tab.text = tabTitles[position]
         }.attach()
 
     }
