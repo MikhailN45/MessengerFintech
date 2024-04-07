@@ -1,8 +1,12 @@
 package com.study.messengerfintech.view
 
 import android.os.Bundle
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ActivityMainBinding
 import com.study.messengerfintech.view.fragments.ChatFragment
@@ -23,11 +27,30 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.activity_fragment_container, MainFragment.newInstance())
                 .commitAllowingStateLoss()
 
-        viewModel.chat.observe(this) {
+        viewModel.state.observe(this) {
+            when (it) {
+                is State.Result -> binding.progressBar.visibility = GONE
+                is State.Loading -> binding.progressBar.visibility = VISIBLE
+                is State.Error -> {
+                    binding.progressBar.visibility = GONE
+
+                    val snackBar = Snackbar.make(
+                        binding.root, it.error.message.toString(), Snackbar.LENGTH_SHORT
+                    )
+                    val params =
+                        snackBar.view.layoutParams as FrameLayout.LayoutParams
+                    params.setMargins(0, 0, 0, 190)
+                    snackBar.view.layoutParams = params
+                    snackBar.show()
+                }
+            }
+        }
+
+        viewModel.chat.observe(this) { (streamCount, chatCount) ->
             supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.activity_fragment_container,
-                    ChatFragment.newInstance(it.first, it.second)
+                    ChatFragment.newInstance(streamCount, chatCount)
                 )
                 .addToBackStack(null)
                 .commitAllowingStateLoss()

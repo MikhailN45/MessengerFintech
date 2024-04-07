@@ -8,7 +8,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
-import com.study.messengerfintech.model.utils.Utils.sp
+import com.study.messengerfintech.utils.Utils.sp
 import kotlin.math.abs
 
 class DateItemDecorator :

@@ -13,9 +13,12 @@ import com.study.messengerfintech.model.data.Chat
 import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.model.data.Reaction
 import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.utils.MessageSendingError
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.chatRecycler.DateItemDecorator
 import com.study.messengerfintech.viewmodel.chatRecycler.MessagesAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlin.random.Random
 
 class ChatFragment : Fragment() {
     private lateinit var binding: ChatFragmentBinding
@@ -27,19 +30,34 @@ class ChatFragment : Fragment() {
         stackFromEnd = true
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            chat = viewModel.getChat(it.getInt(STREAM_COUNT), it.getInt(CHAT_COUNT))
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = ChatFragmentBinding.inflate(layoutInflater)
+    ): View = ChatFragmentBinding.inflate(inflater, container, false).also {
+        binding = it
+    }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        arguments?.let { bundle ->
+            viewModel.getChat(bundle.getInt(STREAM_COUNT), bundle.getInt(CHAT_COUNT))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        chat = it
+                        initScreen()
+                        viewModel.result()
+                    }, { error ->
+                        viewModel.error(error)
+                    }
+                )
+        }
+        viewModel.loading()
+    }
+
+    private fun initScreen() {
         binding.chatTitle.text = chat.title
         binding.backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
 
@@ -72,13 +90,15 @@ class ChatFragment : Fragment() {
                 binding.addFileButton.visibility = View.GONE
             }
         }
-
-        return binding.root
     }
 
-    private fun sendMessage(){
+    private fun sendMessage() {
         binding.sendMessageDraftText.apply {
-            if (this.length() == 0) return@apply
+            if (this.text.isNullOrBlank()) return@apply
+            if (Random.nextInt() % 5 == 0) {
+                viewModel.error(MessageSendingError())
+                return@apply
+            }
             chat.messages.add(Message(chat.messages.size, User.INSTANCE, text.toString()))
             setText("")
             layoutManager.scrollToPosition(chat.messages.size - 1)

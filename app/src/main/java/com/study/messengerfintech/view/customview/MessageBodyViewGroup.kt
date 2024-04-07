@@ -9,7 +9,7 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.model.data.Reaction
 import com.study.messengerfintech.model.data.User
-import com.study.messengerfintech.model.utils.Utils.toPx
+import com.study.messengerfintech.utils.Utils.toPx
 
 class MessageBodyViewGroup @JvmOverloads constructor(
     context: Context,
@@ -58,7 +58,6 @@ class MessageBodyViewGroup @JvmOverloads constructor(
     private fun addEmoji(reaction: Reaction) {
         val flexBox = (getChildAt(FLEXBOX_POSITION) as FlexBox)
         val emoji = Emoji(context).apply {
-            //TODO(move performClickEmoji() here? Check it.)
             setReaction(reaction)
             clickCallback = {
                 if (reaction.num == 0) {

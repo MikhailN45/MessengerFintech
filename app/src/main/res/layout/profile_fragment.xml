@@ -99,6 +99,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="50dp"
             android:text="@string/log_out"
+            android:textColor="@color/black"
             android:textFontWeight="400"
             android:textSize="20sp"
             android:theme="@style/buttonWhite"
