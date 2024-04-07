@@ -16,7 +16,7 @@ import com.study.messengerfintech.model.data.ChatItem
 import com.study.messengerfintech.model.data.StreamAndChatItem
 import com.study.messengerfintech.model.data.StreamItem
 import com.study.messengerfintech.domain.mapper.ChatMapper
-import com.study.messengerfintech.view.ChatsState
+import com.study.messengerfintech.view.states.StreamsAndChatsState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.StreamType
 import com.study.messengerfintech.viewmodel.chatRecycler.StreamsAndChatsAdapter
@@ -55,13 +55,8 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.chatsState.observe(viewLifecycleOwner) {
-            binding.streamsShimmer.isVisible = it is ChatsState.Loading
-            when (it) {
-                is ChatsState.Success -> {}
-                is ChatsState.Error -> {}
-                ChatsState.Loading -> {}
-            }
+        viewModel.streamsAndChatsState.observe(viewLifecycleOwner) {
+            binding.streamsShimmer.isVisible = it is StreamsAndChatsState.Loading
         }
 
         val streamType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -73,7 +68,6 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
         (if (streamType == StreamType.SubscribedStreams) viewModel.subscribedStreams else viewModel.streams)
             .observe(viewLifecycleOwner) {
                 items = it.toMutableList()
-
                 adapter.submitList(items) {
                     binding.streamsAndChatsRecycler.scrollToPosition(0)
                 }
@@ -106,7 +100,7 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
             },
                 { error ->
                     item.isLoading = false
-                    viewModel.errorChats(error)
+                    viewModel.messageSendingError(error)
                 })
     }
 

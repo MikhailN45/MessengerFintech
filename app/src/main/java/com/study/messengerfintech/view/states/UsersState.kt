@@ -1,4 +1,4 @@
-package com.study.messengerfintech.view
+package com.study.messengerfintech.view.states
 
 import com.study.messengerfintech.model.data.User
 
@@ -8,5 +8,5 @@ sealed class UsersState {
 
     data object Loading : UsersState()
 
-    class Error(val error: Throwable) : UsersState()
+    data object Error : UsersState()
 }

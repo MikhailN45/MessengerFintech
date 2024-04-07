@@ -16,7 +16,7 @@ import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.model.data.Reaction
 import com.study.messengerfintech.model.data.User
 import com.study.messengerfintech.utils.MessageSendingError
-import com.study.messengerfintech.view.ChatsState
+import com.study.messengerfintech.view.states.MessengerState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.chatRecycler.DateItemDecorator
 import com.study.messengerfintech.viewmodel.chatRecycler.MessagesAdapter
@@ -53,15 +53,15 @@ class ChatFragment : Fragment() {
                         initScreen()
                         viewModel.resultChats()
                     }, { error ->
-                        viewModel.errorChats(error)
+                        viewModel.messageSendingError(error)
                     }
                 )
         }
         viewModel.onChatViewCreated()
 
-        viewModel.chatsState.observe(viewLifecycleOwner) {
+        viewModel.messengerState.observe(viewLifecycleOwner) {
             when (it) {
-                is ChatsState.Error -> {
+                is MessengerState.Error -> {
                     val snackBar = Snackbar.make(
                         binding.root, it.error.message.toString(), Snackbar.LENGTH_SHORT
                     )
@@ -72,8 +72,8 @@ class ChatFragment : Fragment() {
                     snackBar.show()
                 }
 
-                is ChatsState.Loading -> {}
-                is ChatsState.Success -> {}
+                is MessengerState.Loading -> {}
+                is MessengerState.Success -> {}
             }
         }
     }
@@ -117,7 +117,7 @@ class ChatFragment : Fragment() {
         binding.sendMessageDraftText.apply {
             if (this.text.isNullOrBlank()) return@apply
             if (Random.nextInt() % 5 == 0) {
-                viewModel.errorChats(MessageSendingError())
+                viewModel.messageSendingError(MessageSendingError())
                 return@apply
             }
             chat.messages.add(Message(chat.messages.size, User.INSTANCE, text.toString()))

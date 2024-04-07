@@ -4,11 +4,11 @@ import com.study.messengerfintech.model.source.FakeDataSourceImpl
 import com.study.messengerfintech.model.data.User
 import io.reactivex.Observable
 
-interface ISearchUsersUseCase : (String) -> Observable<List<User>> {
+interface SearchUsersUseCase : (String) -> Observable<List<User>> {
     override fun invoke(request: String): Observable<List<User>>
 }
 
-class SearchUsersUseCase : ISearchUsersUseCase {
+class SearchUsersUseCaseImpl : SearchUsersUseCase {
     private val dataSource = FakeDataSourceImpl
 
     override fun invoke(request: String): Observable<List<User>> {

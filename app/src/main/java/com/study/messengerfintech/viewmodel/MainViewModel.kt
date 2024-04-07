@@ -6,14 +6,15 @@ import androidx.lifecycle.ViewModel
 import com.study.messengerfintech.model.source.FakeDataSourceImpl
 import com.study.messengerfintech.model.data.Chat
 import com.study.messengerfintech.model.data.StreamAndChatItem
+import com.study.messengerfintech.domain.usecase.CheckSubscribedUseCaseImpl
 import com.study.messengerfintech.domain.usecase.CheckSubscribedUseCase
-import com.study.messengerfintech.domain.usecase.ICheckSubscribedUseCase
-import com.study.messengerfintech.domain.usecase.ISearchStreamUseCase
-import com.study.messengerfintech.domain.usecase.ISearchUsersUseCase
-import com.study.messengerfintech.domain.usecase.SearchStreamChatsUseCase
+import com.study.messengerfintech.domain.usecase.SearchStreamUseCase
 import com.study.messengerfintech.domain.usecase.SearchUsersUseCase
-import com.study.messengerfintech.view.ChatsState
-import com.study.messengerfintech.view.UsersState
+import com.study.messengerfintech.domain.usecase.SearchStreamChatsUseCaseImpl
+import com.study.messengerfintech.domain.usecase.SearchUsersUseCaseImpl
+import com.study.messengerfintech.view.states.StreamsAndChatsState
+import com.study.messengerfintech.view.states.MessengerState
+import com.study.messengerfintech.view.states.UsersState
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -33,15 +34,18 @@ class MainViewModel : ViewModel() {
     private val searchStreamsSubject: BehaviorSubject<String> = BehaviorSubject.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    private val searchUsersUseCase: ISearchUsersUseCase = SearchUsersUseCase()
-    private val searchStreamChatsUseCase: ISearchStreamUseCase = SearchStreamChatsUseCase()
-    private val checkSubscribedUseCase: ICheckSubscribedUseCase = CheckSubscribedUseCase()
+    private val searchUsersUseCase: SearchUsersUseCase = SearchUsersUseCaseImpl()
+    private val searchStreamChatsUseCase: SearchStreamUseCase = SearchStreamChatsUseCaseImpl()
+    private val checkSubscribedUseCase: CheckSubscribedUseCase = CheckSubscribedUseCaseImpl()
 
     private val _usersState: MutableLiveData<UsersState> = MutableLiveData()
     val usersState: LiveData<UsersState> = _usersState
 
-    private val _chatsState: MutableLiveData<ChatsState> = MutableLiveData()
-    val chatsState: LiveData<ChatsState> = _chatsState
+    private val _streamsAndChatsState: MutableLiveData<StreamsAndChatsState> = MutableLiveData()
+    val streamsAndChatsState: LiveData<StreamsAndChatsState> = _streamsAndChatsState
+
+    private val _messengerState: MutableLiveData<MessengerState> = MutableLiveData()
+    val messengerState: LiveData<MessengerState> = _messengerState
 
     fun onStreamsFragmentViewCreated() {
         searchStreamsSubject.onNext("")
@@ -74,7 +78,7 @@ class MainViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { _usersState.value = UsersState.Success(it) },
-                onError = { _usersState.value = UsersState.Error(it) }
+                onError = { _usersState.value = UsersState.Error }
             )
             .addTo(compositeDisposable)
     }
@@ -84,7 +88,7 @@ class MainViewModel : ViewModel() {
         val flow = searchStreamsSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
-            .doOnNext { _chatsState.postValue(ChatsState.Loading) }
+            .doOnNext { _streamsAndChatsState.postValue(StreamsAndChatsState.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { searchRequest -> searchStreamChatsUseCase(searchRequest) }
             .share()
@@ -94,9 +98,9 @@ class MainViewModel : ViewModel() {
             .subscribeBy(
                 onNext = {
                     subscribedStreams.value = it
-                    _chatsState.value = ChatsState.Success
+                    _streamsAndChatsState.value = StreamsAndChatsState.Success
                 },
-                onError = { _chatsState.value = ChatsState.Error(it) }
+                onError = { _streamsAndChatsState.value = StreamsAndChatsState.Error }
             )
             .addTo(compositeDisposable)
 
@@ -104,9 +108,9 @@ class MainViewModel : ViewModel() {
             .subscribeBy(
                 onNext = {
                     streams.value = it
-                    _chatsState.value = ChatsState.Success
+                    _streamsAndChatsState.value = StreamsAndChatsState.Success
                 },
-                onError = { _chatsState.value = ChatsState.Error(it) }
+                onError = { _streamsAndChatsState.value = StreamsAndChatsState.Error }
             )
             .addTo(compositeDisposable)
     }
@@ -119,17 +123,11 @@ class MainViewModel : ViewModel() {
 
     fun openChat(streamId: Int, chatId: Int) = chat.postValue(streamId to chatId)
 
-    fun onChatViewCreated() = _chatsState.postValue(ChatsState.Loading)
+    fun onChatViewCreated() = _streamsAndChatsState.postValue(StreamsAndChatsState.Loading)
 
-    fun loadingUsers() = _usersState.postValue(UsersState.Loading)
+    fun resultChats() = _streamsAndChatsState.postValue(StreamsAndChatsState.Success)
 
-    fun resultChats() = _chatsState.postValue(ChatsState.Success)
-
-    fun errorChats(error: Throwable) {
-        _chatsState.value = ChatsState.Error(error)
-    }
-
-    fun errorUsers(error: Throwable) {
-        _usersState.value = UsersState.Error(error)
+    fun messageSendingError(error: Throwable) {
+        _messengerState.value = MessengerState.Error(error)
     }
 }

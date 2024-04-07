@@ -9,11 +9,11 @@ import com.study.messengerfintech.domain.mapper.ChatMapper
 import com.study.messengerfintech.domain.mapper.StreamMapper
 import io.reactivex.Observable
 
-interface ISearchStreamUseCase : (String) -> Observable<List<StreamAndChatItem>> {
+interface SearchStreamUseCase : (String) -> Observable<List<StreamAndChatItem>> {
     override fun invoke(searchRequest: String): Observable<List<StreamAndChatItem>>
 }
 
-class SearchStreamChatsUseCase : ISearchStreamUseCase {
+class SearchStreamChatsUseCaseImpl : SearchStreamUseCase {
     private val dataSource = FakeDataSourceImpl
     private val streamMapper: StreamMapper = StreamMapper()
     private val chatMapper: ChatMapper = ChatMapper()

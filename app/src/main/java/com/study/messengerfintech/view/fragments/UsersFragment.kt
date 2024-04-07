@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.databinding.UsersFragmentBinding
-import com.study.messengerfintech.view.UsersState
+import com.study.messengerfintech.view.states.UsersState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.chatRecycler.UsersAdapter
 
@@ -31,6 +31,8 @@ class UsersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (savedInstanceState == null) viewModel.onUsersFragmentViewCreated()
+
         binding.searchUsersEditText.doAfterTextChanged {
             viewModel.onUsersFragmentSearchUsersTextChanged(it.toString())
         }
@@ -38,18 +40,16 @@ class UsersFragment : Fragment() {
         viewModel.usersState.observe(viewLifecycleOwner) {
             binding.usersShimmer.isVisible = it is UsersState.Loading
             when (it) {
-                is UsersState.Loading -> {}
                 is UsersState.Success -> {
                     adapter.submitList(it.users) {
                         binding.usersRecycler.scrollToPosition(0)
                     }
                 }
 
+                is UsersState.Loading -> {}
                 is UsersState.Error -> {}
             }
         }
-
-        if (savedInstanceState == null) viewModel.onUsersFragmentViewCreated()
 
         binding.usersRecycler.apply {
             adapter = this@UsersFragment.adapter

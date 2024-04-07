@@ -1,12 +1,8 @@
 package com.study.messengerfintech.view
 
 import android.os.Bundle
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ActivityMainBinding
 import com.study.messengerfintech.view.fragments.ChatFragment

@@ -4,11 +4,11 @@ import com.study.messengerfintech.model.data.ChatItem
 import com.study.messengerfintech.model.data.StreamAndChatItem
 import com.study.messengerfintech.model.data.StreamItem
 
-interface ICheckSubscribedUseCase : (List<StreamAndChatItem>) -> List<StreamAndChatItem> {
+interface CheckSubscribedUseCase : (List<StreamAndChatItem>) -> List<StreamAndChatItem> {
     override fun invoke(items: List<StreamAndChatItem>): List<StreamAndChatItem>
 }
 
-class CheckSubscribedUseCase : ICheckSubscribedUseCase {
+class CheckSubscribedUseCaseImpl : CheckSubscribedUseCase {
     override fun invoke(items: List<StreamAndChatItem>): List<StreamAndChatItem> {
         val subscribedItems = mutableListOf<StreamAndChatItem>()
         var streamItem: StreamItem? = null
