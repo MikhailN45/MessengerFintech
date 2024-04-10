@@ -1,4 +1,4 @@
-package com.study.messengerfintech.customview
+package com.study.messengerfintech.view.customview
 
 import android.content.Context
 import android.content.res.TypedArray
@@ -6,8 +6,8 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.study.messengerfintech.R
-import com.study.messengerfintech.data.Reaction
-import com.study.messengerfintech.utils.Utils.sp
+import com.study.messengerfintech.model.data.Reaction
+import com.study.messengerfintech.model.utils.Utils.sp
 
 class Emoji @JvmOverloads constructor(
     context: Context,
@@ -16,7 +16,7 @@ class Emoji @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
-    private var reactionsList: String = ""
+    private var smileCode: String = ""
         private set(value) {
             field = value
             requestLayout()
@@ -30,17 +30,17 @@ class Emoji @JvmOverloads constructor(
             requestLayout()
         }
 
-    private var isMine = false
+    private var userId = ""
         set(value) {
-            reaction?.isMine = value
-            isSelected = value == true
+            reaction?.userId = value
+            isSelected = value == "me"
             field = value
         }
 
     private fun setEmoji(num: Int) {
         resources.getStringArray(R.array.emojis).apply {
             if (num < size)
-                reactionsList = get(num)
+                smileCode = get(num)
         }
     }
 
@@ -48,7 +48,7 @@ class Emoji @JvmOverloads constructor(
         this.reaction = reaction
         setEmoji(reaction.smile)
         num = reaction.num
-        isMine = reaction.isMine
+        userId = reaction.userId
     }
 
     private var reaction: Reaction? = null
@@ -56,7 +56,7 @@ class Emoji @JvmOverloads constructor(
     var clickCallback = { }
 
     private val textToDraw
-        get() = "$reactionsList $num"
+        get() = "$smileCode $num"
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
@@ -68,14 +68,14 @@ class Emoji @JvmOverloads constructor(
     private val textCoordinate = PointF()
     private val tempFontMetrics = Paint.FontMetrics()
 
-    private val smiles: Array<String> = resources.getStringArray(R.array.emojis)
+    private val smileArray: Array<String> = resources.getStringArray(R.array.emojis)
 
     init {
         val typedArray: TypedArray = context.obtainStyledAttributes(
             attrs, R.styleable.Emoji, defStyleAttr, defStyleRes
         )
 
-        reactionsList = smiles[typedArray.getInt(R.styleable.Emoji_smiles, 1)]
+        smileCode = smileArray[typedArray.getInt(R.styleable.Emoji_smiles, 1)]
         num = typedArray.getInt(R.styleable.Emoji_customNum, num)
 
         textPaint.color = typedArray.getColor(R.styleable.Emoji_textColor, textPaint.color)
@@ -91,20 +91,14 @@ class Emoji @JvmOverloads constructor(
 
     private fun performClickEmoji() {
         isSelected = !isSelected
-        if (isMine) {
+        if (userId == "me") {
             num -= 1
-            isMine = false
+            userId = "other"
         } else {
             num += 1
-            isMine = true
+            userId = "me"
         }
         clickCallback()
-    }
-
-
-    override fun setOnClickListener(l: OnClickListener?) {
-        super.setOnClickListener(l)
-        performClickEmoji()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

@@ -1,4 +1,4 @@
-package com.study.messengerfintech.chatRecycler
+package com.study.messengerfintech.viewmodel.chatRecycler
 
 import android.graphics.Canvas
 import android.graphics.Color.parseColor
@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
+import com.study.messengerfintech.model.utils.Utils.sp
 import kotlin.math.abs
 
 class DateItemDecorator :
@@ -17,7 +18,6 @@ class DateItemDecorator :
     private val textCoordinate = PointF()
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = parseColor("#999999")
-        textSize = DATE_TEXT_SIZE //.sp(need context) TODO()
         textAlign = Paint.Align.CENTER
     }
 
@@ -30,11 +30,14 @@ class DateItemDecorator :
         parent: RecyclerView,
         s: RecyclerView.State
     ) {
+        textPaint.apply {
+            textSize = DATE_TEXT_SIZE.sp(view.context)
+        }
         textPaint.getTextBounds(date, 0, date.length, textBounds)
         val position = parent.getChildAdapterPosition(view)
             .let { if (it == RecyclerView.NO_POSITION) return else it }
         rect.bottom =
-            if (position % 2 == 0) 2
+            if (position % 2 == 0) 2 //TODO(just for ex., i will add backend logic when it needed)
             else abs(textBounds.height()) * 3 + padding
     }
 
@@ -61,10 +64,9 @@ class DateItemDecorator :
             }
         }
     }
-    companion object{
-        private const val DATE_TEXT_SIZE = 40f //14f
+
+    companion object {
+        private const val DATE_TEXT_SIZE = 14f
         private const val DATE_BOX_RADIUS = 50f
     }
-
-
 }

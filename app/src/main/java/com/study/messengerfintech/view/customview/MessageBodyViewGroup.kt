@@ -1,4 +1,4 @@
-package com.study.messengerfintech.customview
+package com.study.messengerfintech.view.customview
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import com.study.messengerfintech.R
-import com.study.messengerfintech.data.Message
-import com.study.messengerfintech.data.Reaction
-import com.study.messengerfintech.utils.Utils.toPx
+import com.study.messengerfintech.model.data.Message
+import com.study.messengerfintech.model.data.Reaction
+import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.model.utils.Utils.toPx
 
 class MessageBodyViewGroup @JvmOverloads constructor(
     context: Context,
@@ -34,9 +35,9 @@ class MessageBodyViewGroup @JvmOverloads constructor(
     fun setMessage(message: Message) {
         this.message = message
         this.messageText.text = message.message
-        this.nicknameText.text = message.senderNickname
+        this.nicknameText.text = message.user.nickName
 
-        if (message.isMine) {
+        if (message.user === User.INSTANCE) {
             nicknameText.visibility = GONE
             getChildAt(AVATAR_POSITION).visibility = GONE
             getChildAt(MESSAGE_BOX_POSITION).setBackgroundResource(R.drawable.my_message_background)
@@ -57,6 +58,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
     private fun addEmoji(reaction: Reaction) {
         val flexBox = (getChildAt(FLEXBOX_POSITION) as FlexBox)
         val emoji = Emoji(context).apply {
+            //TODO(move performClickEmoji() here? Check it.)
             setReaction(reaction)
             clickCallback = {
                 if (reaction.num == 0) {
@@ -129,7 +131,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         totalHeight += flexBoxView.measuredHeight + topMargin
         totalWidth += maxOf(flexBoxView.measuredWidth, textWidth)
 
-        if (message.isMine) totalWidth = MeasureSpec.getSize(widthMeasureSpec)
+        if (message.user === User.INSTANCE) totalWidth = MeasureSpec.getSize(widthMeasureSpec)
 
         setMeasuredDimension(
             resolveSize(totalWidth + paddingRight + paddingLeft, widthMeasureSpec),
@@ -150,7 +152,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         )
         val topMargin = (flexBoxView.layoutParams as MarginLayoutParams).topMargin
 
-        if (message.isMine) {
+        if (message.user === User.INSTANCE) {
             textView.layout(
                 measuredWidth - textView.measuredWidth,
                 paddingTop,

@@ -1,4 +1,4 @@
-package com.study.messengerfintech.chatRecycler
+package com.study.messengerfintech.view.fragments
 
 import android.graphics.Color
 import android.os.Bundle
@@ -6,12 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.SmilesBottomSheetContentBinding
 
-class SmileBottomSheet : BottomSheetDialogFragment() {
+class SmileBottomSheet(val onItemClick: (smileKey: Int) -> Unit) : BottomSheetDialogFragment() {
     private lateinit var binding: SmilesBottomSheetContentBinding
 
     override fun onCreateView(
@@ -24,31 +23,27 @@ class SmileBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initButtons()
+    }
 
-        val bottomSheet = binding.smileChoiceBottomsheetPanel
+    private fun initButtons() {
         val emojis = resources.getStringArray(R.array.emojis)
-
-        for (i in emojis.indices)
-            Button(context).apply {
+        emojis.forEachIndexed { i, emoji ->
+            val buttonView = Button(context).apply {
                 setBackgroundColor(Color.TRANSPARENT)
-                text = emojis[i]
+                text = emoji
                 textSize = SMILE_SIZE
-                bottomSheet.addView(this)
                 setOnClickListener {
-                    parentFragmentManager.setFragmentResult(
-                        SMILE_RESULT,
-                        bundleOf(SMILE_KEY to i, MESSAGE_KEY to arguments?.getInt(MESSAGE_KEY))
-                    )
+                    onItemClick(i)
                     dismiss()
                 }
             }
+            binding.smileChoiceBottomsheetPanel.addView(buttonView)
+        }
     }
 
     companion object {
         const val SMILE_SIZE = 24f
         const val TAG = "TAG"
-        const val SMILE_RESULT = "RESULT"
-        const val SMILE_KEY = "SMILE"
-        const val MESSAGE_KEY = "MESSAGE"
     }
 }
