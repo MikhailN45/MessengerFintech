@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.study.messengerfintech.view.fragments.StreamsRecyclerFragment
+import com.study.messengerfintech.view.fragments.StreamsTopicsListFragment
 import kotlinx.parcelize.Parcelize
 
 class PagerAdapter(
@@ -13,7 +13,7 @@ class PagerAdapter(
     lifecycle: Lifecycle
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    override fun createFragment(position: Int): Fragment = StreamsRecyclerFragment.newInstance(
+    override fun createFragment(position: Int): Fragment = StreamsTopicsListFragment.newInstance(
         streamType = StreamType.entries[position]
     )
 

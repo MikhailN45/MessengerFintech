@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/emoji_background"
-        android:minWidth="128dp"
+        android:minWidth="148dp"
         android:orientation="vertical"
         android:padding="10dp">
 

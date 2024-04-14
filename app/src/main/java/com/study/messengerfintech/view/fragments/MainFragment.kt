@@ -10,15 +10,18 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.MainFragmentBinding
 
 class MainFragment : Fragment() {
-    private lateinit var binding: MainFragmentBinding
+    private var _binding: MainFragmentBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = MainFragmentBinding.inflate(inflater, container, false).also {
-        binding = it
-    }.root
+    ): View {
+        _binding = MainFragmentBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,6 +50,11 @@ class MainFragment : Fragment() {
             .replace(R.id.fragment_container, StreamsFragment())
             .addToBackStack(null)
             .commitAllowingStateLoss()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

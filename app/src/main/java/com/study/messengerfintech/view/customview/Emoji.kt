@@ -1,12 +1,12 @@
 package com.study.messengerfintech.view.customview
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.study.messengerfintech.R
-import com.study.messengerfintech.model.data.Reaction
+import com.study.messengerfintech.model.data.UnitedReaction
+import com.study.messengerfintech.model.data.User
 import com.study.messengerfintech.utils.Utils.sp
 
 class Emoji @JvmOverloads constructor(
@@ -26,32 +26,17 @@ class Emoji @JvmOverloads constructor(
         set(value) {
             if (value < 0) return
             field = value
-            reaction?.num = num
             requestLayout()
         }
 
-    private var userId = ""
+    var reaction: UnitedReaction? = null
         set(value) {
-            reaction?.userId = value
-            isSelected = value == "me"
             field = value
+            if (value == null) return
+            num = value.usersId.size
+            smileCode = value.getUnicode()
+            isSelected = value.usersId.contains(User.ME.id)
         }
-
-    private fun setEmoji(num: Int) {
-        resources.getStringArray(R.array.emojis).apply {
-            if (num < size)
-                smileCode = get(num)
-        }
-    }
-
-    fun setReaction(reaction: Reaction) {
-        this.reaction = reaction
-        setEmoji(reaction.smile)
-        num = reaction.num
-        userId = reaction.userId
-    }
-
-    private var reaction: Reaction? = null
 
     var clickCallback = { }
 
@@ -68,37 +53,26 @@ class Emoji @JvmOverloads constructor(
     private val textCoordinate = PointF()
     private val tempFontMetrics = Paint.FontMetrics()
 
-    private val smileArray: Array<String> = resources.getStringArray(R.array.emojis)
-
     init {
-        val typedArray: TypedArray = context.obtainStyledAttributes(
-            attrs, R.styleable.Emoji, defStyleAttr, defStyleRes
-        )
-
-        smileCode = smileArray[typedArray.getInt(R.styleable.Emoji_smiles, 1)]
-        num = typedArray.getInt(R.styleable.Emoji_customNum, num)
-
-        textPaint.color = typedArray.getColor(R.styleable.Emoji_textColor, textPaint.color)
-        textPaint.textSize = typedArray.getDimension(R.styleable.Emoji_textSize, textPaint.textSize)
-
         setBackgroundResource(R.drawable.emoji_background)
 
         setOnClickListener {
             performClickEmoji()
         }
-        typedArray.recycle()
     }
 
     private fun performClickEmoji() {
         isSelected = !isSelected
-        if (userId == "me") {
-            num -= 1
-            userId = "other"
-        } else {
-            num += 1
-            userId = "me"
+        reaction?.usersId?.let {
+            if (isSelected) {
+                it.add(User.ME.id)
+                num += 1
+            } else {
+                it.remove(User.ME.id)
+                num -= 1
+            }
+            clickCallback()
         }
-        clickCallback()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

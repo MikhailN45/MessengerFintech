@@ -11,34 +11,41 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsFragmentBinding
+import com.study.messengerfintech.model.data.User
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.PagerAdapter
 
 class StreamsFragment : Fragment() {
-    private lateinit var binding: StreamsFragmentBinding
     private val viewModel: MainViewModel by activityViewModels()
+    private var _binding: StreamsFragmentBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = StreamsFragmentBinding.inflate(inflater, container, false).also {
-        binding = it
-    }.root
-
+    ): View {
+        _binding = StreamsFragmentBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState == null) viewModel.onStreamsFragmentViewCreated()
+        if (savedInstanceState == null)
+            viewModel.searchStreams(BLANK_STRING)
 
         searchUsersEditText.doAfterTextChanged {
-            viewModel.onStreamsFragmentSearchUsersTextChanged(it.toString())
+            viewModel.searchStreams(it.toString())
         }
 
-        val pagerAdapter = PagerAdapter(
-            fragmentManager = childFragmentManager,
-            lifecycle = lifecycle
-        )
+        binding.searchUsersButton.setOnLongClickListener {
+            viewModel.openPrivateChat(User.ME)
+            false
+        }
+
+        val pagerAdapter =
+            PagerAdapter(fragmentManager = childFragmentManager, lifecycle = lifecycle)
+
         streamsPager.adapter = pagerAdapter
 
         val tabTitles: List<String> =
@@ -54,5 +61,14 @@ class StreamsFragment : Fragment() {
             tab.text = tabTitles[position]
         }.attach()
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object{
+        const val BLANK_STRING = ""
     }
 }

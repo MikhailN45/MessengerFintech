@@ -4,11 +4,18 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.study.messengerfintech.R
 import com.study.messengerfintech.model.data.Message
-import com.study.messengerfintech.model.data.Reaction
+import com.study.messengerfintech.model.data.UnitedReaction
 import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.utils.EmojiAdd
+import com.study.messengerfintech.utils.OnEmojiClick
+import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.Utils.toPx
 
 class MessageBodyViewGroup @JvmOverloads constructor(
@@ -22,6 +29,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         inflate(context, R.layout.message_body_viewgroup, this)
     }
 
+    private val senderAvatar: ImageView = findViewById(R.id.sender_avatar)
     private val messageText: TextView = findViewById(R.id.message_text)
     private val nicknameText: TextView = findViewById(R.id.message_sender_nickname)
     var plus = ImageButton(context).apply {
@@ -34,10 +42,16 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
     fun setMessage(message: Message) {
         this.message = message
-        this.messageText.text = message.message
-        this.nicknameText.text = message.user.nickName
+        this.messageText.text =
+            HtmlCompat.fromHtml(message.content, HtmlCompat.FROM_HTML_MODE_LEGACY).trim()
+        this.nicknameText.text = message.senderName
+        Glide.with(context)
+            .load(message.avatarUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.ic_avatar_placeholder)
+            .into(this.senderAvatar)
 
-        if (message.user === User.INSTANCE) {
+        if (message.isFromMe) {
             nicknameText.visibility = GONE
             getChildAt(AVATAR_POSITION).visibility = GONE
             getChildAt(MESSAGE_BOX_POSITION).setBackgroundResource(R.drawable.my_message_background)
@@ -49,29 +63,47 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
         (getChildAt(FLEXBOX_POSITION) as FlexBox).apply {
             removeAllViews()
-            if (message.reactions.isNotEmpty()) plus.visibility = VISIBLE
-            else plus.visibility = GONE
+            if (message.emojiCodeReactionMap.isNotEmpty())
+                plus.visibility = VISIBLE
+            else
+                plus.visibility = GONE
         }
-        for (reaction in message.reactions) addEmoji(reaction)
+        for (reaction in message.emojiCodeReactionMap)
+            addEmoji(reaction.value)
     }
 
-    private fun addEmoji(reaction: Reaction) {
+    private fun addEmoji(reaction: UnitedReaction) {
         val flexBox = (getChildAt(FLEXBOX_POSITION) as FlexBox)
         val emoji = Emoji(context).apply {
-            setReaction(reaction)
+            this.reaction = reaction
             clickCallback = {
-                if (reaction.num == 0) {
+                if (reaction.usersId.size == 0) {
                     flexBox.removeView(this)
-                    message.reactions.remove(reaction)
-                    if (message.reactions.size == 0) plus.visibility = GONE
+                    message.emojiCodeReactionMap.remove(reaction.getUnicode())
                 }
+
+                if (message.emojiCodeReactionMap.size == 0)
+                    plus.visibility = GONE
+
+                val emojiClick =
+                    if (reaction.usersId.contains(User.ME.id))
+                        EmojiAdd(message.id, reaction.name)
+                    else
+                        EmojiDelete(message.id, reaction.name)
+
+                emojiClickListener(emojiClick)
             }
         }
 
-        if (!message.reactions.contains(reaction)) message.reactions.add(reaction)
         plus.visibility = VISIBLE
         flexBox.addView(emoji, 0)
     }
+
+    private var emojiClickListener: (OnEmojiClick) -> Unit = { _ -> }
+    fun setOnEmojiClickListener(callback: (OnEmojiClick) -> Unit) {
+        emojiClickListener = callback
+    }
+
 
     fun setMessageOnLongClick(callback: () -> Unit) {
         getChildAt(MESSAGE_BOX_POSITION).setOnLongClickListener {
@@ -130,7 +162,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         totalHeight += flexBoxView.measuredHeight + topMargin
         totalWidth += maxOf(flexBoxView.measuredWidth, textWidth)
 
-        if (message.user === User.INSTANCE) totalWidth = MeasureSpec.getSize(widthMeasureSpec)
+        if (message.isFromMe) totalWidth = MeasureSpec.getSize(widthMeasureSpec)
 
         setMeasuredDimension(
             resolveSize(totalWidth + paddingRight + paddingLeft, widthMeasureSpec),
@@ -151,7 +183,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         )
         val topMargin = (flexBoxView.layoutParams as MarginLayoutParams).topMargin
 
-        if (message.user === User.INSTANCE) {
+        if (message.isFromMe) {
             textView.layout(
                 measuredWidth - textView.measuredWidth,
                 paddingTop,

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:layout_margin="16dp"
+    android:layout_margin="10dp"
     android:background="@color/black">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -30,30 +30,38 @@
 
     <TextView
         android:id="@+id/nickname"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
         android:maxLines="1"
         android:text="@string/darrell_steward"
         android:textColor="@color/white"
         android:textFontWeight="400"
         android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/avatar"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/contact_email"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="8dp"
-        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:text="@string/email"
         android:textColor="@color/contact_email_color"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/avatar"
         app:layout_constraintTop_toBottomOf="@id/nickname" />
 
