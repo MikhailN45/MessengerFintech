@@ -16,22 +16,26 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = MainFragmentBinding.inflate(layoutInflater)
+    ): View = MainFragmentBinding.inflate(inflater, container, false).also {
+        binding = it
+    }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.bottomNavigationBar.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.channels_page -> childFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, StreamsFragment())
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss()
+                R.id.channels_page -> childFragmentManager.commit(allowStateLoss = true) {
+                    replace(R.id.fragment_container, StreamsFragment())
+                    addToBackStack(null)
+                }
 
-                R.id.people_page -> childFragmentManager.commit {
+                R.id.people_page -> childFragmentManager.commit(allowStateLoss = true) {
                     replace(R.id.fragment_container, UsersFragment())
                     addToBackStack(null)
                 }
 
-                R.id.profile_page -> childFragmentManager.commit {
+                R.id.profile_page -> childFragmentManager.commit(allowStateLoss = true) {
                     replace(R.id.fragment_container, ProfileFragment())
                     addToBackStack(null)
                 }
@@ -43,8 +47,6 @@ class MainFragment : Fragment() {
             .replace(R.id.fragment_container, StreamsFragment())
             .addToBackStack(null)
             .commitAllowingStateLoss()
-
-        return binding.root
     }
 
     companion object {

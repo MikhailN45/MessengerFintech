@@ -1,33 +1,38 @@
-package com.study.messengerfintech.model
+package com.study.messengerfintech.model.source
 
 import com.study.messengerfintech.model.data.Chat
 import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.model.data.Stream
 import com.study.messengerfintech.model.data.User
-import com.study.messengerfintech.model.utils.Utils
+import com.study.messengerfintech.utils.Utils
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
-object FakeDataSource {
+object FakeDataSourceImpl : FakeDataSource {
+    private val users: MutableList<User> = mutableListOf()
     private val streams: MutableList<Stream> = mutableListOf()
-    private val users: List<User> = listOf(
-        User(0, "Darell Steward"),
-        User(1, "Darell Steward"),
-        User(2, "Darell Steward"),
-        User(3, "Darell Steward"),
-        User(4, "Darell Steward"),
-        User(5, "Darell Steward"),
-        User(6, "Darell Steward"),
-        User(7, "Darell Steward"),
-        User(7, "Darell Steward"),
-        User(8, "Darell Steward"),
-        User(9, "Darell Steward"),
-        User(10, "Darell Steward")
-    )
 
     init {
+        users.addAll(
+            mutableListOf(
+                User(0, "Darell Steward1"),
+                User(1, "Darell Steward2"),
+                User(2, "Darell Steward3"),
+                User(3, "Darell Steward4"),
+                User(4, "Darell Steward5"),
+                User(5, "Darell Steward6"),
+                User(6, "Darell Steward7"),
+                User(7, "Darell Steward8"),
+                User(8, "Darell Steward9"),
+                User(9, "Darell Steward0")
+            )
+        )
+
         streams.addAll(
             mutableListOf(
                 Stream(
-                    "#General", true,
+                    "#General", 0, true,
                     chats = mutableListOf(
                         Chat("Testing"),
                         Chat("Bruh"),
@@ -36,7 +41,7 @@ object FakeDataSource {
                     )
                 ),
                 Stream(
-                    "#Development", true,
+                    "#Development", 1, true,
                     chats = mutableListOf(
                         Chat("Android"),
                         Chat("KMP"),
@@ -45,14 +50,14 @@ object FakeDataSource {
                     )
                 ),
                 Stream(
-                    "#Design", true,
+                    "#Design", 2, true,
                     chats = mutableListOf(
                         Chat("UI/UX"),
                         Chat("Prototype")
                     )
                 ),
                 Stream(
-                    "#PR",
+                    "#PR", 3,
                     chats = mutableListOf(
                         Chat("SMM"),
                         Chat("Targeting"),
@@ -60,7 +65,7 @@ object FakeDataSource {
                     )
                 ),
                 Stream(
-                    "#Recruiting",
+                    "#Recruiting", 4,
                     chats = mutableListOf(
                         Chat("Review"),
                         Chat("Meetings")
@@ -82,9 +87,18 @@ object FakeDataSource {
         })
     }
 
-    fun getUsers(): List<User> = users
+    override fun loadStreams(): Observable<List<Stream>> =
+        Observable.fromArray(streams.toList())
+            .subscribeOn(Schedulers.io())
+            .delay(500, TimeUnit.MILLISECONDS)
 
-    fun getStream(num: Int) = streams[num]
+    override fun loadStream(id: Int): Observable<Stream> =
+        Observable.just(streams[id])
+            .subscribeOn(Schedulers.io())
+            .delay(500, TimeUnit.MILLISECONDS)
 
-    fun getStreamNames(): List<String> = streams.map { it.title }
+    override fun loadUsers(): Observable<List<User>> =
+        Observable.fromArray(users.toList())
+            .subscribeOn(Schedulers.io())
+            .delay(500, TimeUnit.MILLISECONDS)
 }

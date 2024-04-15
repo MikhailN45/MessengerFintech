@@ -1,4 +1,4 @@
-package com.study.messengerfintech.model.utils
+package com.study.messengerfintech.utils
 
 import android.content.Context
 import android.content.res.Resources

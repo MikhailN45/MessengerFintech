@@ -1,24 +1,34 @@
 package com.study.messengerfintech.view.fragments
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.study.messengerfintech.R
+import com.study.messengerfintech.databinding.StreamsAndChatsFragmentBinding
 import com.study.messengerfintech.model.data.ChatItem
 import com.study.messengerfintech.model.data.StreamAndChatItem
 import com.study.messengerfintech.model.data.StreamItem
+import com.study.messengerfintech.domain.mapper.ChatMapper
+import com.study.messengerfintech.view.states.StreamsAndChatsState
 import com.study.messengerfintech.viewmodel.MainViewModel
+import com.study.messengerfintech.viewmodel.StreamType
 import com.study.messengerfintech.viewmodel.chatRecycler.StreamsAndChatsAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
-
+    private lateinit var binding: StreamsAndChatsFragmentBinding
     private val viewModel: MainViewModel by activityViewModels()
-    private val items: MutableList<StreamAndChatItem> = mutableListOf()
+    private var items: MutableList<StreamAndChatItem> = mutableListOf()
+    private val chatMapper: ChatMapper = ChatMapper()
 
-    private val adapter = StreamsAndChatsAdapter(items) { position ->
+    private val adapter = StreamsAndChatsAdapter { position ->
         when (val item = items[position]) {
             is ChatItem -> item.also {
                 viewModel.openChat(item.streamId, item.chatId)
@@ -28,50 +38,89 @@ class StreamsRecyclerFragment : Fragment(R.layout.streams_and_chats_fragment) {
                 if (item.isExpanded)
                     deleteItems(position)
                 else
-                    addItems(item.id, position)
+                    addItems(item, position)
                 item.isExpanded = !item.isExpanded
             }
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = StreamsAndChatsFragmentBinding.inflate(inflater, container, false).also {
+        binding = it
+    }.root
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val recycler = view.findViewById<RecyclerView>(R.id.streams_and_chats_recycler)
-        val subscribed = arguments?.getBoolean(SUBSCRIBED) ?: false
-        items.addAll(viewModel.getStreams(subscribed).map {
-            StreamItem(id = it.first, title = it.second)
-        })
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(context)
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.streamsAndChatsState.observe(viewLifecycleOwner) {
+            binding.streamsShimmer.isVisible = it is StreamsAndChatsState.Loading
+        }
+
+        val streamType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable(TAG, StreamType::class.java)
+        } else {
+            arguments?.getParcelable(TAG)
+        } ?: StreamType.AllStreams
+
+        (if (streamType == StreamType.SubscribedStreams) viewModel.subscribedStreams else viewModel.streams)
+            .observe(viewLifecycleOwner) {
+                items = it.toMutableList()
+                adapter.submitList(items) {
+                    binding.streamsAndChatsRecycler.scrollToPosition(0)
+                }
+            }
+
+        binding.streamsAndChatsRecycler.apply {
+            adapter = this@StreamsRecyclerFragment.adapter
+            layoutManager = LinearLayoutManager(context)
+        }
     }
 
-    private fun addItems(streamCount: Int, listPosition: Int) {
-        val chats = viewModel.getChatsFromStream(streamCount)
-        if (chats.isEmpty()) return
+    @SuppressLint("CheckResult")
+    private fun addItems(item: StreamItem, position: Int) {
+        item.isLoading = true
+        adapter.notifyItemChanged(position)
 
-        items.addAll(listPosition + 1, chats)
-        adapter.notifyItemRangeInserted(listPosition + 1, chats.size)
-        adapter.notifyItemRangeChanged(listPosition + 1 + chats.size, adapter.itemCount)
-
+        viewModel.getChats(item.id)
+            .map { chatMapper(it, item.id) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ chats ->
+                item.isLoading = false
+                items.addAll(position + 1, chats)
+                activity?.runOnUiThread {
+                    with(adapter) {
+                        notifyItemChanged(position)
+                        notifyItemRangeInserted(position + 1, chats.size)
+                        notifyItemRangeChanged(position + chats.size + 1, adapter.itemCount)
+                    }
+                }
+            },
+                { error ->
+                    item.isLoading = false
+                    viewModel.messageSendingError(error)
+                })
     }
 
-    private fun deleteItems(listPosition: Int) {
+    private fun deleteItems(position: Int) {
         var counter = 0
-        while (items[listPosition + 1] is ChatItem && items.size > listPosition + 1) {
-            items.removeAt(listPosition + 1)
+        while (position + 1 < items.size && items[position + 1] is ChatItem) {
+            items.removeAt(position + 1)
             counter += 1
         }
-        adapter.notifyItemRangeRemoved(listPosition + 1, counter)
-        adapter.notifyItemRangeChanged(listPosition + 1, adapter.itemCount)
+        adapter.notifyItemRangeRemoved(position + 1, counter)
+        adapter.notifyItemRangeChanged(position + 1, adapter.itemCount)
 
     }
 
     companion object {
-        private const val SUBSCRIBED = "SUBSCRIBED"
-        fun newInstance(subscribed: Boolean) =
+        private const val TAG = "SUBSCRIBED_KEY"
+        fun newInstance(streamType: StreamType) =
             StreamsRecyclerFragment().apply {
                 arguments = Bundle().apply {
-                    putBoolean(SUBSCRIBED, subscribed)
+                    putParcelable(TAG, streamType)
                 }
             }
     }

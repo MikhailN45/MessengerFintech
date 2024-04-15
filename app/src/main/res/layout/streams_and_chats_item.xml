@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:id="@+id/stream_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,24 +19,28 @@
             android:textColor="@color/item_text_color"
             android:textFontWeight="400"
             android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/stream_expand_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center"
             android:contentDescription="@string/expand_stream"
             android:scaleType="center"
             android:src="@drawable/ic_expand_stream"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/expand_button_color" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end|center"
+            android:indeterminateTint="@color/white"
+            android:scaleType="center"
+            android:visibility="visible" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/chat_item"
@@ -53,7 +57,7 @@
             android:layout_gravity="center"
             android:layout_marginEnd="24dp"
             android:gravity="center|start"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/messages_count"
@@ -61,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center|start"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
     </LinearLayout>
 

@@ -4,18 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.study.messengerfintech.databinding.ChatFragmentBinding
 import com.study.messengerfintech.model.data.Chat
 import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.model.data.Reaction
 import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.utils.MessageSendingError
+import com.study.messengerfintech.view.states.MessengerState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.chatRecycler.DateItemDecorator
 import com.study.messengerfintech.viewmodel.chatRecycler.MessagesAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlin.random.Random
 
 class ChatFragment : Fragment() {
     private lateinit var binding: ChatFragmentBinding
@@ -27,19 +33,52 @@ class ChatFragment : Fragment() {
         stackFromEnd = true
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            chat = viewModel.getChat(it.getInt(STREAM_COUNT), it.getInt(CHAT_COUNT))
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = ChatFragmentBinding.inflate(layoutInflater)
+    ): View = ChatFragmentBinding.inflate(inflater, container, false).also {
+        binding = it
+    }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        arguments?.let { bundle ->
+            viewModel.getChat(bundle.getInt(STREAM_COUNT), bundle.getInt(CHAT_COUNT))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        chat = it
+                        initScreen()
+                        viewModel.resultChats()
+                    }, { error ->
+                        viewModel.messageSendingError(error)
+                    }
+                )
+        }
+        viewModel.onChatViewCreated()
+
+        viewModel.messengerState.observe(viewLifecycleOwner) {
+            when (it) {
+                is MessengerState.Error -> {
+                    val snackBar = Snackbar.make(
+                        binding.root, it.error.message.toString(), Snackbar.LENGTH_SHORT
+                    )
+                    val params =
+                        snackBar.view.layoutParams as FrameLayout.LayoutParams
+                    params.setMargins(0, 0, 0, 190)
+                    snackBar.view.layoutParams = params
+                    snackBar.show()
+                }
+
+                is MessengerState.Loading -> {}
+                is MessengerState.Success -> {}
+            }
+        }
+    }
+
+    private fun initScreen() {
         binding.chatTitle.text = chat.title
         binding.backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
 
@@ -72,13 +111,15 @@ class ChatFragment : Fragment() {
                 binding.addFileButton.visibility = View.GONE
             }
         }
-
-        return binding.root
     }
 
-    private fun sendMessage(){
+    private fun sendMessage() {
         binding.sendMessageDraftText.apply {
-            if (this.length() == 0) return@apply
+            if (this.text.isNullOrBlank()) return@apply
+            if (Random.nextInt() % 5 == 0) {
+                viewModel.messageSendingError(MessageSendingError())
+                return@apply
+            }
             chat.messages.add(Message(chat.messages.size, User.INSTANCE, text.toString()))
             setText("")
             layoutManager.scrollToPosition(chat.messages.size - 1)

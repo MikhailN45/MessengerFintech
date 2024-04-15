@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.study.messengerfintech.R
 import com.study.messengerfintech.model.data.Reaction
-import com.study.messengerfintech.model.utils.Utils.sp
+import com.study.messengerfintech.utils.Utils.sp
 
 class Emoji @JvmOverloads constructor(
     context: Context,

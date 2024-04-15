@@ -17,8 +17,12 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = ProfileFragmentBinding.inflate(layoutInflater)
+    ): View = ProfileFragmentBinding.inflate(inflater, container, false).also {
+        binding = it
+    }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.logOutButton.setOnClickListener {
             binding.profileAppbar.visibility = View.VISIBLE
@@ -33,7 +37,5 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
 
         binding.backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
-
-        return binding.root
     }
 }

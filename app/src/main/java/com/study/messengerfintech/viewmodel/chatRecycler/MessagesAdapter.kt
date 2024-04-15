@@ -7,21 +7,20 @@ import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.databinding.ItemMessageBinding
 
 class MessagesAdapter(
-    private val dataSet: MutableList<Message>, //TODO(i will replace this to diffUtil in future)
+    private val dataSet: MutableList<Message>,
     val longClickListener: (position: Int) -> Unit
 ) : RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
 
-    inner class ViewHolder(val view: ItemMessageBinding) : RecyclerView.ViewHolder(view.root)
+    inner class ViewHolder(val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val itemBinding = ItemMessageBinding.inflate(LayoutInflater.from(viewGroup.context))
-        return ViewHolder(itemBinding)
+        return ViewHolder(ItemMessageBinding.inflate(LayoutInflater.from(viewGroup.context)))
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         dataSet[position].let {
-            viewHolder.view.message.setMessage(it)
-            viewHolder.view.message.setMessageOnLongClick {
+            viewHolder.binding.message.setMessage(it)
+            viewHolder.binding.message.setMessageOnLongClick {
                 longClickListener(position)
             }
         }

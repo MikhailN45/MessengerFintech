@@ -23,11 +23,11 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.activity_fragment_container, MainFragment.newInstance())
                 .commitAllowingStateLoss()
 
-        viewModel.chat.observe(this) {
+        viewModel.chat.observe(this) { (streamCount, chatCount) ->
             supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.activity_fragment_container,
-                    ChatFragment.newInstance(it.first, it.second)
+                    ChatFragment.newInstance(streamCount, chatCount)
                 )
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
