@@ -5,8 +5,8 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.study.messengerfintech.R
-import com.study.messengerfintech.model.data.UnitedReaction
-import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.domain.data.UnitedReaction
+import com.study.messengerfintech.domain.data.User
 import com.study.messengerfintech.utils.Utils.sp
 
 class Emoji @JvmOverloads constructor(

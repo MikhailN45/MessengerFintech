@@ -6,11 +6,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.study.messengerfintech.databinding.UserItemBinding
-import com.study.messengerfintech.model.data.User
-import com.study.messengerfintech.model.data.UserStatus
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.study.messengerfintech.R
+import com.study.messengerfintech.domain.data.User
+import com.study.messengerfintech.domain.data.UserStatus
 
 class UsersAdapter(val onClick: (User) -> Unit) :
     ListAdapter<User, UsersAdapter.ViewHolder>(UsersDiffUtil()) {

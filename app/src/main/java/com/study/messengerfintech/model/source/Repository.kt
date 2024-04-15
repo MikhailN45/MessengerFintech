@@ -1,9 +1,10 @@
 package com.study.messengerfintech.model.source
 
-import com.study.messengerfintech.domain.model.Stream
-import com.study.messengerfintech.domain.model.Topic
-import com.study.messengerfintech.model.data.Message
-import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.domain.data.Message
+import com.study.messengerfintech.domain.data.Stream
+import com.study.messengerfintech.domain.data.Topic
+import com.study.messengerfintech.domain.data.User
+import com.study.messengerfintech.domain.data.UserStatus
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -26,6 +27,8 @@ interface Repository {
     ): Single<Int>
 
     fun loadOwnUser(): Single<User>
+
+    fun loadStatus(user: User): Single<UserStatus>
 
     fun loadUsers(): Single<List<User>>
 

@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.study.messengerfintech.utils.OnEmojiClick
-import com.study.messengerfintech.model.data.Message
 import com.study.messengerfintech.databinding.ItemMessageBinding
+import com.study.messengerfintech.domain.data.Message
+import com.study.messengerfintech.utils.Utils.getDate
 
 class MessagesAdapter(
     private val dataSet: MutableList<Message>, //todo remove and use diffUtils
@@ -30,7 +31,7 @@ class MessagesAdapter(
         dataSet[position].apply {
             viewHolder.binding.message.setMessage(this)
             viewHolder.binding.message.setOnEmojiClickListener(emojiClickListener)            
-            viewHolder.binding.date.text = dataSet[position].getDate()
+            viewHolder.binding.date.text = getDate(dataSet[position].timestamp)
             viewHolder.binding.date.isVisible = isDateNeeded(position)
             viewHolder.binding.message.setMessageOnLongClick {
                 longClickListener(position)

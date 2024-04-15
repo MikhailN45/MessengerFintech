@@ -1,7 +1,6 @@
 package com.study.messengerfintech.model.network
 
 import io.reactivex.Single
-import kotlinx.serialization.Serializable
 import okhttp3.ResponseBody
 import retrofit2.http.DELETE
 import retrofit2.http.Field
@@ -59,13 +58,4 @@ interface ZulipApi {
         @Path("message_id") messageId: Int,
         @Query("emoji_name") name: String,
     ): Single<ResponseBody>
-
-    @Serializable
-    sealed class Narrow
-
-    @Serializable
-    data class NarrowStr(val operator: String, val operand: String) : Narrow()
-
-    @Serializable
-    data class NarrowInt(val operator: String, val operand: Int) : Narrow()
 }

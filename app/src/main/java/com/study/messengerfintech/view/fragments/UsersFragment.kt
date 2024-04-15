@@ -10,8 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.databinding.UsersFragmentBinding
-import com.study.messengerfintech.model.data.User
-import com.study.messengerfintech.model.source.RepositoryImpl
+import com.study.messengerfintech.domain.data.User
 import com.study.messengerfintech.view.state.UsersState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.chatRecycler.UsersAdapter
@@ -22,6 +21,7 @@ import io.reactivex.rxkotlin.subscribeBy
 
 class UsersFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
+    private val compositeDisposable = CompositeDisposable()
     private var _binding: UsersFragmentBinding? = null
     private val binding get() = _binding!!
     private val adapter = UsersAdapter {
@@ -64,8 +64,7 @@ class UsersFragment : Fragment() {
             viewModel.searchUsers(it.toString())
         }
 
-        if (savedInstanceState == null)
-            viewModel.searchUsers(BLANK_STRING)
+        if (savedInstanceState == null) viewModel.searchUsers(BLANK_STRING)
 
         viewModel.users.observe(viewLifecycleOwner) { users ->
             updateUsersStatus(users)
@@ -80,11 +79,9 @@ class UsersFragment : Fragment() {
         }
     }
 
-    //todo extract logic to vm
-    private val compositeDisposable = CompositeDisposable()
     private fun updateUsersStatus(users: List<User>) {
         users.forEachIndexed { index, user ->
-            RepositoryImpl.loadStatus(user)
+            viewModel.loadStatus(user)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = {

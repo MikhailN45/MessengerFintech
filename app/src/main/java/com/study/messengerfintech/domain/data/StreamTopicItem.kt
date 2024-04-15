@@ -1,7 +1,6 @@
-package com.study.messengerfintech.model.data
-
+package com.study.messengerfintech.domain.data
+//todo change variables to values
 sealed interface StreamTopicItem
-//todo remove variables
 data class StreamItem(
     val streamId: Int,
     val title: String,

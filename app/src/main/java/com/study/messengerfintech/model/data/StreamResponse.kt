@@ -1,7 +1,7 @@
 package com.study.messengerfintech.model.data
 
-import com.study.messengerfintech.domain.model.Stream
-import com.study.messengerfintech.domain.model.Topic
+import com.study.messengerfintech.domain.data.Stream
+import com.study.messengerfintech.domain.data.Topic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

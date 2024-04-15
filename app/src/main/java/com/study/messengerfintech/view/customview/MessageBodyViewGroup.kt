@@ -10,12 +10,12 @@ import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.study.messengerfintech.R
-import com.study.messengerfintech.model.data.Message
-import com.study.messengerfintech.model.data.UnitedReaction
-import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.domain.data.Message
+import com.study.messengerfintech.domain.data.UnitedReaction
+import com.study.messengerfintech.domain.data.User
 import com.study.messengerfintech.utils.EmojiAdd
-import com.study.messengerfintech.utils.OnEmojiClick
 import com.study.messengerfintech.utils.EmojiDelete
+import com.study.messengerfintech.utils.OnEmojiClick
 import com.study.messengerfintech.utils.Utils.toPx
 
 class MessageBodyViewGroup @JvmOverloads constructor(
@@ -63,10 +63,8 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
         (getChildAt(FLEXBOX_POSITION) as FlexBox).apply {
             removeAllViews()
-            if (message.emojiCodeReactionMap.isNotEmpty())
-                plus.visibility = VISIBLE
-            else
-                plus.visibility = GONE
+            if (message.emojiCodeReactionMap.isNotEmpty()) plus.visibility = VISIBLE
+            else plus.visibility = GONE
         }
         for (reaction in message.emojiCodeReactionMap)
             addEmoji(reaction.value)
@@ -82,14 +80,11 @@ class MessageBodyViewGroup @JvmOverloads constructor(
                     message.emojiCodeReactionMap.remove(reaction.getUnicode())
                 }
 
-                if (message.emojiCodeReactionMap.size == 0)
-                    plus.visibility = GONE
+                if (message.emojiCodeReactionMap.size == 0) plus.visibility = GONE
 
                 val emojiClick =
-                    if (reaction.usersId.contains(User.ME.id))
-                        EmojiAdd(message.id, reaction.name)
-                    else
-                        EmojiDelete(message.id, reaction.name)
+                    if (reaction.usersId.contains(User.ME.id)) EmojiAdd(message.id, reaction.name)
+                    else EmojiDelete(message.id, reaction.name)
 
                 emojiClickListener(emojiClick)
             }

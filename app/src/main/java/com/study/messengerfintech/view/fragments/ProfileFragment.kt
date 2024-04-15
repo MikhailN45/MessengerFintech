@@ -7,13 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ProfileFragmentBinding
-import com.study.messengerfintech.model.data.User
-import com.study.messengerfintech.model.data.UserStatus
-import com.study.messengerfintech.model.source.RepositoryImpl
+import com.study.messengerfintech.domain.data.User
+import com.study.messengerfintech.domain.data.UserStatus
+import com.study.messengerfintech.viewmodel.MainViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -23,6 +24,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private var _binding: ProfileFragmentBinding? = null
     private val binding get() = _binding!!
     private val compositeDisposable = CompositeDisposable()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +40,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         binding.userName.text = User.ME.name
         updateStatus(User.ME)
 
-        RepositoryImpl.loadStatus(User.ME)
+
+        viewModel.loadStatus(User.ME)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { updateStatus(User.ME) },

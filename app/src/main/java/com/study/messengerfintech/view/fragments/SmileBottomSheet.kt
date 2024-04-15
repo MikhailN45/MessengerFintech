@@ -9,7 +9,7 @@ import android.widget.Button
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.study.messengerfintech.databinding.SmilesBottomSheetContentBinding
-import com.study.messengerfintech.model.data.emojiNameUnicodeHashMap
+import com.study.messengerfintech.utils.Utils.emojiNameUnicodeHashMap
 
 class SmileBottomSheet : BottomSheetDialogFragment() {
     private var _binding: SmilesBottomSheetContentBinding? = null

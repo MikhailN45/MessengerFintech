@@ -19,10 +19,11 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.activity_fragment_container, MainFragment.newInstance())
                 .commit()
+        }
 
         viewModel.chat.observe(this) { bundle ->
             supportFragmentManager.beginTransaction()

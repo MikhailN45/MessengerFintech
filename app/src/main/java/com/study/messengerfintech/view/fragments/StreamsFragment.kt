@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsFragmentBinding
-import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.domain.data.User
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.PagerAdapter
 
@@ -31,8 +31,7 @@ class StreamsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState == null)
-            viewModel.searchStreams(BLANK_STRING)
+        if (savedInstanceState == null) viewModel.searchStreams(BLANK_STRING)
 
         searchUsersEditText.doAfterTextChanged {
             viewModel.searchStreams(it.toString())

@@ -1,6 +1,5 @@
 package com.study.messengerfintech.view.fragments
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,36 +11,34 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsAndChatsFragmentBinding
-import com.study.messengerfintech.domain.mapper.TopicToItemMapper
-import com.study.messengerfintech.model.data.StreamItem
-import com.study.messengerfintech.model.data.StreamTopicItem
-import com.study.messengerfintech.model.data.TopicItem
+import com.study.messengerfintech.domain.data.StreamItem
+import com.study.messengerfintech.domain.data.StreamTopicItem
+import com.study.messengerfintech.domain.data.TopicItem
 import com.study.messengerfintech.view.state.StreamsTopicsState
 import com.study.messengerfintech.viewmodel.MainViewModel
 import com.study.messengerfintech.viewmodel.StreamType
 import com.study.messengerfintech.viewmodel.chatRecycler.StreamsTopicsAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 
 class StreamsTopicsListFragment : Fragment(R.layout.streams_and_chats_fragment) {
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
-    private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
+    private val compositeDisposable = CompositeDisposable()
     private var items: MutableList<StreamTopicItem> = mutableListOf()
     private val viewModel: MainViewModel by activityViewModels()
 
-    private val adapter = StreamsTopicsAdapter { position ->
-        when (val item = items[position]) { //todo remove this (position)
-            is TopicItem -> item.also {
+    private val adapter = StreamsTopicsAdapter { item ->
+        when (item) {
+            is TopicItem -> {
                 viewModel.openTopicChat(item.streamId, item.title)
                 closeStreams()
             }
 
             is StreamItem -> {
-                if (item.isExpanded)
-                    deleteItems(position)
-                else
-                    addItems(item, position)
+                if (item.isExpanded) deleteItemsFromAdapter(item)
+                else addItemsToAdapter(item)
                 item.isExpanded = !item.isExpanded
             }
         }
@@ -105,48 +102,37 @@ class StreamsTopicsListFragment : Fragment(R.layout.streams_and_chats_fragment) 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        compositeDisposable.clear()
     }
 
     private fun closeStreams() {
         for (item in items)
-            if (item is StreamItem)
-                item.isExpanded = false
+            if (item is StreamItem) item.isExpanded = false
     }
 
-    @SuppressLint("CheckResult")
-    private fun addItems(stream: StreamItem, position: Int) { //todo extract logic to viewmodel
+    private fun addItemsToAdapter(stream: StreamItem) {
         stream.isLoading = true
+        val position = items.indexOf(stream)
         adapter.notifyItemChanged(position)
 
-        viewModel.getTopics(stream.streamId)
-            .map { topicToItemMapper(it, stream.streamId) }
-            .doOnSuccess { topics ->
-                stream.topics = topics
-                topics.onEachIndexed { index, topic ->
-                    viewModel.getMessagesCount(stream.streamId, topic.title)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ messageNum ->
-                            topic.messageCount = messageNum
-                            adapter.notifyItemChanged(position + index + 1)
-                        }, { error -> viewModel.streamTopicScreenError(error) }
-                        )
-                }
-            }
-            .observeOn(AndroidSchedulers.mainThread()).subscribeBy(
-                onSuccess = { chats ->
-                    stream.isLoading = false
-                    items.addAll(position + 1, chats)
+        val disposable =
+            viewModel.parseTopicsAndMessageCountFromStream(stream, position)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { (topics, position) ->
+                    items.addAll(position + 1, topics)
                     adapter.notifyItemChanged(position)
-                    adapter.notifyItemRangeInserted(position + 1, chats.size)
-                    adapter.notifyItemRangeChanged(position + chats.size + 1, adapter.itemCount)
+                    adapter.notifyItemRangeInserted(position + 1, topics.size)
+                    adapter.notifyItemRangeChanged(position + topics.size + 1, adapter.itemCount)
                 },
                 onError = { error ->
-                    stream.isLoading = false
                     viewModel.streamTopicScreenError(error)
                 })
+        compositeDisposable.add(disposable)
     }
 
-    private fun deleteItems(position: Int) {
+    private fun deleteItemsFromAdapter(item: StreamItem) {
+        val position = items.indexOf(item)
         var counter = 0
         while (position + 1 < items.size && items[position + 1] is TopicItem) {
             items.removeAt(position + 1)

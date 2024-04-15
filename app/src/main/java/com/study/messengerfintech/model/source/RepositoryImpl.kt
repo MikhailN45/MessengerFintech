@@ -2,16 +2,22 @@ package com.study.messengerfintech.model.source
 
 import android.util.Log
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.study.messengerfintech.domain.model.Stream
-import com.study.messengerfintech.domain.model.Topic
-import com.study.messengerfintech.model.data.Message
+import com.study.messengerfintech.domain.data.Message
+import com.study.messengerfintech.domain.data.Stream
+import com.study.messengerfintech.domain.data.Topic
+import com.study.messengerfintech.domain.data.User
+import com.study.messengerfintech.domain.data.UserStatus
+import com.study.messengerfintech.model.data.MessageResponse
 import com.study.messengerfintech.model.data.StreamResponse
 import com.study.messengerfintech.model.data.TopicResponse
-import com.study.messengerfintech.model.data.User
-import com.study.messengerfintech.model.data.UserStatus
+import com.study.messengerfintech.model.data.UserResponse
+import com.study.messengerfintech.model.data.toMessage
 import com.study.messengerfintech.model.data.toStream
 import com.study.messengerfintech.model.data.toTopics
+import com.study.messengerfintech.model.data.toUser
 import com.study.messengerfintech.model.network.AuthInterceptor
+import com.study.messengerfintech.model.network.NarrowInt
+import com.study.messengerfintech.model.network.NarrowStr
 import com.study.messengerfintech.model.network.ZulipApi
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -74,7 +80,6 @@ object RepositoryImpl : Repository {
                 format.decodeFromString<List<StreamResponse>>(answer.toString())
             }.flatMap { topicsPreload(it) }
 
-
     private fun topicsPreload(streamResponses: List<StreamResponse>): Single<List<Stream>> =
         Single.create { emitter ->
             val streams = mutableListOf<Stream>()
@@ -101,7 +106,8 @@ object RepositoryImpl : Repository {
             .map { body ->
                 val answer =
                     format.decodeFromString<JsonObject>(body.string())["topics"]
-                val topicResponse = format.decodeFromString<List<TopicResponse>>(answer.toString())
+                val topicResponse =
+                    format.decodeFromString<List<TopicResponse>>(answer.toString())
                 topicResponse.toTopics()
             }
 
@@ -112,11 +118,14 @@ object RepositoryImpl : Repository {
             .map { body ->
                 val answer =
                     format.decodeFromString<JsonObject>(body.string())["members"]
-                format.decodeFromString<List<User>>(answer.toString())
+                val userResponseList =
+                    format.decodeFromString<List<UserResponse>>(answer.toString())
+                userResponseList.map { userResponse ->
+                    userResponse.toUser()
+                }
             }
 
-
-    fun loadStatus(user: User) =
+    override fun loadStatus(user: User): Single<UserStatus> =
         service.getPresence(user.id)
             .subscribeOn(Schedulers.io())
             .map { body ->
@@ -136,13 +145,15 @@ object RepositoryImpl : Repository {
     override fun loadOwnUser(): Single<User> =
         service.getOwnUser()
             .subscribeOn(Schedulers.io())
-            .map { body -> format.decodeFromString<User>(body.string()) }
-
+            .map { body ->
+                val userResponse = format.decodeFromString<UserResponse>(body.string())
+                userResponse.toUser()
+            }
 
     override fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>> {
         val narrow = listOf(
-            ZulipApi.NarrowInt("stream", stream),
-            ZulipApi.NarrowStr("topic", topic)
+            NarrowInt("stream", stream),
+            NarrowStr("topic", topic)
         ).map {
             Json.encodeToJsonElement(it)
         }.let {
@@ -153,13 +164,18 @@ object RepositoryImpl : Repository {
             .subscribeOn(Schedulers.io())
             .map { body ->
                 val answer = Json.decodeFromString<JsonObject>(body.string())["messages"]
-                format.decodeFromString<List<Message>>(answer.toString())
+                val messageResponses =
+                    format.decodeFromString<List<MessageResponse>>(answer.toString())
+
+                messageResponses.map { messageResponse ->
+                    messageResponse.toMessage()
+                }
             }
     }
 
     override fun loadPrivateMessages(userEmail: String): Single<List<Message>> {
         val narrow = listOf(
-            ZulipApi.NarrowStr("pm-with", userEmail)
+            NarrowStr("pm-with", userEmail)
         ).map {
             Json.encodeToJsonElement(it)
         }.let {
@@ -170,9 +186,14 @@ object RepositoryImpl : Repository {
             .subscribeOn(Schedulers.io())
             .map { body ->
                 val answer = Json.decodeFromString<JsonObject>(body.string())["messages"]
-                format.decodeFromString<List<Message>>(answer.toString())
+                val messageResponses =
+                    format.decodeFromString<List<MessageResponse>>(answer.toString())
+                messageResponses.map { messageResponse ->
+                    messageResponse.toMessage()
+                }
             }
     }
+
 
     override fun sendMessage(
         type: SendType,

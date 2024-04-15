@@ -12,10 +12,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ChatFragmentBinding
-import com.study.messengerfintech.model.data.Message
-import com.study.messengerfintech.model.data.Reaction
-import com.study.messengerfintech.model.data.UnitedReaction
-import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.domain.data.Message
+import com.study.messengerfintech.domain.data.Reaction
+import com.study.messengerfintech.domain.data.UnitedReaction
+import com.study.messengerfintech.domain.data.User
 import com.study.messengerfintech.utils.EmojiAdd
 import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.OnEmojiClick
@@ -52,23 +52,9 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //todo extract business logic to viewmodel
         arguments?.let { bundle ->
-            val flow: Single<List<Message>> =
-                if (bundle.containsKey(USER))
-                    viewModel.getPrivateMessages(bundle.getString(USER)!!)
-                else if (bundle.containsKey(STREAM) && bundle.containsKey(TOPIC))
-                    viewModel.getTopicMessages(
-                        bundle.getInt(STREAM),
-                        bundle.getString(TOPIC)!!
-                    )
-                else {
-                    viewModel.chatScreenError(IllegalArgumentException("incorrect arguments"))
-                    parentFragmentManager.popBackStack()
-                    return@let
-                }
-
-            flow.observeOn(AndroidSchedulers.mainThread())
+            viewModel.getMessagesForPrivateOrTopic(bundle)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     messages = it.toMutableList()
                     viewModel.chatScreenSuccessful()
@@ -106,7 +92,7 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
                         progressBar.visibility = View.GONE
                         addFileButton.visibility = View.VISIBLE
                     }
-                    //todo put UI initialization here
+                    //todo put UI initialization in state
                 }
             }
         }
