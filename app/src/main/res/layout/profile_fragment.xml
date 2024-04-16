@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".view.fragments.ProfileFragment">
+    tools:context=".presentation.fragments.ProfileFragment">
 
     <LinearLayout
         android:id="@+id/profile_appbar"

@@ -19,7 +19,7 @@
         tools:targetApi="s">
 
         <activity
-            android:name=".view.MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true">
 
             <intent-filter>

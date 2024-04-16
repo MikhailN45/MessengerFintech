@@ -1,8 +1,8 @@
 package com.study.messengerfintech.domain.usecase
 
-import com.study.messengerfintech.domain.data.User
-import com.study.messengerfintech.model.source.Repository
-import com.study.messengerfintech.model.source.RepositoryImpl
+import com.study.messengerfintech.domain.model.User
+import com.study.messengerfintech.data.repository.Repository
+import com.study.messengerfintech.data.repository.RepositoryImpl
 import io.reactivex.Observable
 
 interface SearchUsersUseCase : (String) -> Observable<List<User>> {

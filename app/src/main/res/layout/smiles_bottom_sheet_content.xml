@@ -19,7 +19,7 @@
         android:src="@drawable/ic_bottom_sheet"
         tools:ignore="ContentDescription" />
 
-    <com.study.messengerfintech.view.customview.FlexBox
+    <com.study.messengerfintech.presentation.customview.FlexBox
         android:id="@+id/smile_choice_bottomsheet_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

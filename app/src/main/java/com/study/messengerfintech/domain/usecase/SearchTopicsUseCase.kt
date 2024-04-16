@@ -1,10 +1,10 @@
 package com.study.messengerfintech.domain.usecase
 
-import com.study.messengerfintech.domain.data.Stream
-import com.study.messengerfintech.domain.data.StreamTopicItem
-import com.study.messengerfintech.domain.data.TopicItem
-import com.study.messengerfintech.domain.data.toStreamItem
-import com.study.messengerfintech.domain.data.toTopicItem
+import com.study.messengerfintech.domain.model.Stream
+import com.study.messengerfintech.domain.model.StreamTopicItem
+import com.study.messengerfintech.domain.model.TopicItem
+import com.study.messengerfintech.domain.model.toStreamItem
+import com.study.messengerfintech.domain.model.toTopicItem
 import io.reactivex.Observable
 import io.reactivex.Single
 
