@@ -42,7 +42,9 @@ class MessagesAdapter(
 
     private fun isDateNeeded(position: Int): Boolean {
         if (position == 0) return true
-        return getDayCount(dataSet[position].timestamp) < getDayCount(dataSet[position - 1].timestamp)
+        val yesterday = dataSet[position - 1].timestamp
+        val today = dataSet[position].timestamp
+        return getDayCount(yesterday) < getDayCount(today)
     }
 
     override fun getItemCount() = dataSet.size

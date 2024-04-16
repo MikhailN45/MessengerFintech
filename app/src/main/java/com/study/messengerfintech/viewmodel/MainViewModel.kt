@@ -46,7 +46,7 @@ class MainViewModel : ViewModel() {
     val subscribedStreams = MutableLiveData<List<StreamTopicItem>>()
 
     private val searchUsersSubject: BehaviorSubject<String> = BehaviorSubject.create()
-    private val searchStreamSubject: BehaviorSubject<String> = BehaviorSubject.create()
+    private val searchStreamsSubject: BehaviorSubject<String> = BehaviorSubject.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     private val searchTopicsUseCase: SearchTopicsUseCase = SearchTopicsUseCaseImpl()
@@ -65,7 +65,7 @@ class MainViewModel : ViewModel() {
         get() = _chatState
 
     fun searchStreams(query: String) {
-        searchStreamSubject.onNext(query)
+        searchStreamsSubject.onNext(query)
     }
 
     fun searchUsers(query: String) {
@@ -105,7 +105,7 @@ class MainViewModel : ViewModel() {
 
 
     private fun subscribeToSearchStreams() {
-        val flow = searchStreamSubject
+        val flow = searchStreamsSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
             .doOnNext { _streamTopicsState.postValue(StreamsTopicsState.Loading) }
@@ -193,7 +193,7 @@ class MainViewModel : ViewModel() {
     private fun getTopics(streamId: Int): Single<List<Topic>> = repository.loadTopics(streamId)
 
     private fun getMessagesCount(stream: Int, topic: String): Single<Int> =
-        RepositoryImpl.loadTopicMessages(stream, topic).map { it.size }
+        repository.loadTopicMessages(stream, topic).map { it.size }
 
     fun openPrivateChat(user: User) {
         Bundle().apply {
