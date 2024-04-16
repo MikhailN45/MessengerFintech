@@ -12,6 +12,7 @@ import com.study.messengerfintech.model.data.StreamResponse
 import com.study.messengerfintech.model.data.TopicResponse
 import com.study.messengerfintech.model.data.UserResponse
 import com.study.messengerfintech.model.data.toMessage
+import com.study.messengerfintech.model.data.toReaction
 import com.study.messengerfintech.model.data.toStream
 import com.study.messengerfintech.model.data.toTopics
 import com.study.messengerfintech.model.data.toUser
@@ -168,7 +169,9 @@ object RepositoryImpl : Repository {
                     format.decodeFromString<List<MessageResponse>>(answer.toString())
 
                 messageResponses.map { messageResponse ->
-                    messageResponse.toMessage()
+                    messageResponse.toMessage(
+                        reactions = messageResponse.reactions.map { it.toReaction() }
+                    )
                 }
             }
     }

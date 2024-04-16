@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_INJECTED_CODE" value="false" />
+  </component>
   <component name="AndroidLayouts">
     <shared>
       <config />
@@ -76,80 +79,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3c8e6b0a-4ddb-4050-a51c-04a1159ffc21" name="Changes" comment="hw5 code clean">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/App.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/model/Stream.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/model/Topic.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/usecase/SearchTopicsUseCaseImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/usecase/SearchUsersUseCaseImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/StreamResponse.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/TopicResponse.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/network/AuthInterceptor.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/network/ZulipApi.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/source/Repository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/source/RepositoryImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/OnEmojiClick.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/state/ChatState.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/state/StreamsTopicsState.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/state/UsersState.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_avatar_placeholder.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_date_holder.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_idle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_offline.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_online.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/topic_item.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="3c8e6b0a-4ddb-4050-a51c-04a1159ffc21" name="Changes" comment="hw6 refactor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/mapper/ChatMapper.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/mapper/TopicToItemMapper.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/mapper/StreamMapper.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/mapper/StreamToItemMapper.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/usecase/CheckSubscribedUseCase.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/usecase/SearchStreamChatsUseCase.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/domain/usecase/SearchUsersUseCase.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Chat.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Message.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Message.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Reaction.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Reaction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/Stream.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/StreamAndChatItem.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/StreamTopicItem.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/data/User.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/source/FakeDataSource.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/source/FakeDataSourceImpl.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/MessageSendingError.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/utils/Utils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/Emoji.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/Emoji.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/MessageBodyViewGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/customview/MessageBodyViewGroup.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/ChatFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/ChatFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/MainFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/MainFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/ProfileFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/ProfileFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/SmileBottomSheet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/SmileBottomSheet.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/StreamsFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/StreamsFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/StreamsRecyclerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/StreamsTopicsListFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/UsersFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/fragments/UsersFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/states/MessengerState.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/states/StreamsAndChatsState.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/view/states/UsersState.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/source/RepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/model/source/RepositoryImpl.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/MainViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/MainViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/PagerAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/PagerAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/DateItemDecorator.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/MessagesAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/MessagesAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/StreamsAndChatsAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/StreamsTopicsAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/UsersAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/study/messengerfintech/viewmodel/chatRecycler/UsersAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/chat_fragment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/chat_fragment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/item_message.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/item_message.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/message_body_viewgroup.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/message_body_viewgroup.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/profile_fragment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/profile_fragment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/streams_and_chats_fragment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/streams_and_chats_fragment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/streams_and_chats_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/stream_item.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/user_item.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/user_item.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/users_fragment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/users_fragment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/users_shimmer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/users_shimmer.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/attrs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/attrs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,39 +103,40 @@
       <list>
         <option value="Kotlin Interface" />
         <option value="layoutResourceFile" />
-        <option value="Kotlin Class" />
         <option value="resourceFile" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="hw_5" />
+        <entry key="$PROJECT_DIR$" value="3bfbb077a7c2fb66754048c7fb92a4ec8f26f105" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
-  <component name="GitLabMergeRequestFiltersHistory"><![CDATA[{
-  "history": [
+  <component name="GitLabMergeRequestFiltersHistory">{
+  &quot;history&quot;: [
     {
-      "state": "MERGED",
-      "assignee": {
-        "type": "org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue",
-        "username": "shelove6391",
-        "fullname": "Mike Naumov"
+      &quot;state&quot;: &quot;MERGED&quot;,
+      &quot;assignee&quot;: {
+        &quot;type&quot;: &quot;org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue&quot;,
+        &quot;username&quot;: &quot;shelove6391&quot;,
+        &quot;fullname&quot;: &quot;Mike Naumov&quot;
       }
     }
   ],
-  "lastFilter": {
-    "state": "MERGED",
-    "assignee": {
-      "type": "org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue",
-      "username": "shelove6391",
-      "fullname": "Mike Naumov"
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;MERGED&quot;,
+    &quot;assignee&quot;: {
+      &quot;type&quot;: &quot;org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue&quot;,
+      &quot;username&quot;: &quot;shelove6391&quot;,
+      &quot;fullname&quot;: &quot;Mike Naumov&quot;
     }
   }
-}]]></component>
+}</component>
   <component name="GitLabMergeRequestsSettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;first&quot;: &quot;https://gitlab.com/study8162809/tfs_spring_2024.git&quot;,
@@ -242,6 +176,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Dependencies&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
@@ -249,7 +184,11 @@
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\shelo\AndroidStudioProjects\tfs_spring_2024\app\src\main\java\com\study\messengerfintech\domain\data" />
+    </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.study.messengerfintech.domain.data" />
       <recent name="com.study.messengerfintech.view.states" />
       <recent name="com.study.messengerfintech.model.source" />
       <recent name="com.study.messengerfintech.model.mappers" />
@@ -385,7 +324,127 @@
       <option name="project" value="LOCAL" />
       <updated>1712495323503</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713162150473</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1713162150473</updated>
+    </task>
+    <task id="LOCAL-00008" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713181307478</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1713181307478</updated>
+    </task>
+    <task id="LOCAL-00009" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713181340993</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1713181340993</updated>
+    </task>
+    <task id="LOCAL-00010" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713183980641</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1713183980641</updated>
+    </task>
+    <task id="LOCAL-00011" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713184022361</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1713184022361</updated>
+    </task>
+    <task id="LOCAL-00012" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713186409113</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1713186409113</updated>
+    </task>
+    <task id="LOCAL-00013" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713186447187</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1713186447187</updated>
+    </task>
+    <task id="LOCAL-00014" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713195070401</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1713195070401</updated>
+    </task>
+    <task id="LOCAL-00015" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713196651114</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1713196651114</updated>
+    </task>
+    <task id="LOCAL-00016" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713197078528</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1713197078528</updated>
+    </task>
+    <task id="LOCAL-00017" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713197120268</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1713197120268</updated>
+    </task>
+    <task id="LOCAL-00018" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713201445853</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1713201445853</updated>
+    </task>
+    <task id="LOCAL-00019" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713201547559</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1713201547559</updated>
+    </task>
+    <task id="LOCAL-00020" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713202533192</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1713202533192</updated>
+    </task>
+    <task id="LOCAL-00021" summary="hw6 refactor">
+      <option name="closed" value="true" />
+      <created>1713205474383</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1713205474383</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -404,6 +463,7 @@
     <MESSAGE value="hw5" />
     <MESSAGE value="hw5 implement shimmers" />
     <MESSAGE value="hw5 code clean" />
-    <option name="LAST_COMMIT_MESSAGE" value="hw5 code clean" />
+    <MESSAGE value="hw6 refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="hw6 refactor" />
   </component>
 </project>
