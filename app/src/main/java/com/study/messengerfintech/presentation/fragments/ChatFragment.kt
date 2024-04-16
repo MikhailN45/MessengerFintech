@@ -16,16 +16,17 @@ import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.UnitedReaction
 import com.study.messengerfintech.domain.model.User
+import com.study.messengerfintech.presentation.adapters.MessagesAdapter
+import com.study.messengerfintech.presentation.state.ChatState
+import com.study.messengerfintech.presentation.viewmodel.MainViewModel
 import com.study.messengerfintech.utils.EmojiAdd
 import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.OnEmojiClick
-import com.study.messengerfintech.presentation.state.ChatState
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
-import com.study.messengerfintech.presentation.adapters.MessagesAdapter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 
 class ChatFragment : Fragment(R.layout.chat_fragment) {
     private val viewModel: MainViewModel by activityViewModels()
@@ -54,6 +55,7 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
         super.onCreate(savedInstanceState)
         arguments?.let { bundle ->
             viewModel.getMessagesForPrivateOrTopic(bundle)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     messages = it.toMutableList()
@@ -177,10 +179,12 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
         val singleId: Single<Int> = if (bundle.containsKey(USER)) {
             val userEmail = bundle.getString(USER)!!
             viewModel.sendMessageToUser(userEmail, content)
+                .subscribeOn(Schedulers.io())
         } else {
             val streamId = bundle.getInt(STREAM)
             val chatName = bundle.getString(TOPIC)!!
             viewModel.sendMessageToTopic(streamId, chatName, content)
+                .subscribeOn(Schedulers.io())
         }
         singleId
             .observeOn(AndroidSchedulers.mainThread())

@@ -92,6 +92,7 @@ class MainViewModel : ViewModel() {
             .doOnNext { _userState.postValue(UsersState.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { searchQuery -> searchUserUseCase(searchQuery) }
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = {
@@ -144,6 +145,7 @@ class MainViewModel : ViewModel() {
         position: Int
     ): Single<Pair<List<TopicItem>, Int>> {
         return getTopics(stream.streamId)
+            .subscribeOn(Schedulers.io())
             .map { topics -> toTopicItem(topics, stream.streamId) }
             .flatMap { topics ->
                 Observable.fromIterable(topics)

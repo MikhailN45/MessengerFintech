@@ -18,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 
 class UsersFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
@@ -82,6 +83,7 @@ class UsersFragment : Fragment() {
     private fun updateUsersStatus(users: List<User>) {
         users.forEachIndexed { index, user ->
             viewModel.loadStatus(user)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = {
