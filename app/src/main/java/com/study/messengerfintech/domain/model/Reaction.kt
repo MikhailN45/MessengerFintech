@@ -1,7 +1,7 @@
 package com.study.messengerfintech.domain.model
 
 data class Reaction(
-    var userId: Int,
+    val userId: Int,
     val code: String,
     val name: String,
 ) {
