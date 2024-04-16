@@ -10,9 +10,9 @@ interface SearchUsersUseCase : (String) -> Observable<List<User>> {
 }
 
 class SearchUsersUseCaseImpl : SearchUsersUseCase {
-    private val dataProvider: Repository = RepositoryImpl
+    private val repository: Repository = RepositoryImpl
     override fun invoke(searchQuery: String): Observable<List<User>> {
-        return dataProvider.loadUsers().toObservable()
+        return repository.loadUsers().toObservable()
             .map { users ->
                 if (searchQuery.isNotEmpty())
                     users.filter { user ->

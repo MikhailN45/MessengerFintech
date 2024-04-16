@@ -8,6 +8,7 @@ import com.study.messengerfintech.utils.OnEmojiClick
 import com.study.messengerfintech.databinding.ItemMessageBinding
 import com.study.messengerfintech.domain.data.Message
 import com.study.messengerfintech.utils.Utils.getDate
+import com.study.messengerfintech.utils.Utils.getDayCount
 
 class MessagesAdapter(
     private val dataSet: MutableList<Message>, //todo remove and use diffUtils
@@ -41,14 +42,8 @@ class MessagesAdapter(
 
     private fun isDateNeeded(position: Int): Boolean {
         if (position == 0) return true
-        val today = dataSet[position].timestamp / SECONDS_IN_DAY
-        val yesterday = dataSet[position - 1].timestamp / SECONDS_IN_DAY
-        return yesterday < today
+        return getDayCount(dataSet[position].timestamp) < getDayCount(dataSet[position - 1].timestamp)
     }
 
     override fun getItemCount() = dataSet.size
-
-    companion object {
-        const val SECONDS_IN_DAY = 86400
-    }
 }

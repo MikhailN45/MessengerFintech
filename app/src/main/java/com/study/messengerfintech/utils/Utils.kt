@@ -20,6 +20,11 @@ object Utils {
         return SimpleDateFormat("d MMM", Locale("ru", "RU")).format(date)
     }
 
+    fun getDayCount(timestamp: Int): Int {
+        val secondsInDay = 86400
+        return timestamp / secondsInDay
+    }
+
     val colors = arrayOf(
         Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA, Color.WHITE
     )
