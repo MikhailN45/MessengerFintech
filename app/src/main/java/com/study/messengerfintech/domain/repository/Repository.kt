@@ -1,5 +1,6 @@
-package com.study.messengerfintech.data.repository
+package com.study.messengerfintech.domain.repository
 
+import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Stream
 import com.study.messengerfintech.domain.model.Topic

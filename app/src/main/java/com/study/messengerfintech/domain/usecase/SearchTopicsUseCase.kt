@@ -5,30 +5,30 @@ import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.toStreamItem
 import com.study.messengerfintech.domain.model.toTopicItem
-import io.reactivex.Observable
 import io.reactivex.Single
 
-interface SearchTopicsUseCase :
-        (String, Single<List<Stream>>) -> Observable<List<StreamTopicItem>> {
-    override fun invoke(
+interface SearchTopicsUseCase {
+    operator fun invoke(
         searchQuery: String,
         streams: Single<List<Stream>>
-    ): Observable<List<StreamTopicItem>>
+    ): Single<List<StreamTopicItem>>
 }
 
 class SearchTopicsUseCaseImpl : SearchTopicsUseCase {
     override fun invoke(
         searchQuery: String,
         streams: Single<List<Stream>>
-    ): Observable<List<StreamTopicItem>> {
+    ): Single<List<StreamTopicItem>> {
+        //Если есть запрос, выполняем поиск, если нет просто возврашаем streamItem
         return streams.map { streamList ->
             if (searchQuery.isNotEmpty()) streamList.searchQueryInStreams(searchQuery)
             else streamList.map { stream ->
                 stream.toStreamItem()
             }
-        }.toObservable()
+        }
     }
 
+    //для каждого стрима ищем топики, если они есть раскрываем стрим, конвертируя его в streamItem
     private fun List<Stream>.searchQueryInStreams(query: String): List<StreamTopicItem> {
         val items = mutableListOf<StreamTopicItem>()
         forEach { stream ->
@@ -47,6 +47,7 @@ class SearchTopicsUseCaseImpl : SearchTopicsUseCase {
         return items
     }
 
+    //Возвращаем по стриму топики которые содержат запрос в названии и конвертируем их в topicItem
     private fun Stream.searchQueryInTopics(query: String): List<TopicItem> {
         val correctChats =
             topics.filter { topic -> topic.title.contains(query, ignoreCase = true) }

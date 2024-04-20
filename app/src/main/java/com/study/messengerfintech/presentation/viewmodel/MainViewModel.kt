@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.StreamTopicItem
@@ -12,12 +13,11 @@ import com.study.messengerfintech.domain.model.Topic
 import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.model.toTopicItem
+import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCase
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCaseImpl
 import com.study.messengerfintech.domain.usecase.SearchUsersUseCase
 import com.study.messengerfintech.domain.usecase.SearchUsersUseCaseImpl
-import com.study.messengerfintech.data.repository.Repository
-import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.STREAM
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.TOPIC
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.USER
@@ -25,7 +25,6 @@ import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.
 import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.presentation.state.StreamsTopicsState
 import com.study.messengerfintech.presentation.state.UsersState
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -113,7 +112,7 @@ class MainViewModel : ViewModel() {
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .share()
 
-        flow.switchMap { searchQuery ->
+        flow.switchMapSingle { searchQuery ->
             searchTopicsUseCase(searchQuery, repository.loadSubscribedStreams())
         }
             .observeOn(AndroidSchedulers.mainThread())
@@ -126,7 +125,7 @@ class MainViewModel : ViewModel() {
             )
             .addTo(compositeDisposable)
 
-        flow.switchMap { searchQuery ->
+        flow.switchMapSingle { searchQuery ->
             searchTopicsUseCase(searchQuery, repository.loadStreams())
         }
             .observeOn(AndroidSchedulers.mainThread())
@@ -145,31 +144,27 @@ class MainViewModel : ViewModel() {
         position: Int
     ): Single<Pair<List<TopicItem>, Int>> {
         return getTopics(stream.streamId)
-            .subscribeOn(Schedulers.io())
             .map { topics -> toTopicItem(topics, stream.streamId) }
             .flatMap { topics ->
-                Observable.fromIterable(topics)
-                    .flatMapSingle { topic ->
-                        getMessagesCount(stream.streamId, topic.title)
-                            .map { messageNum ->
-                                topic.messageCount = messageNum
-                                topic
-                            }
-                    }
-                    .toList()
-                    .doOnSuccess { topicItems ->
-                        topicItems.sortByDescending { it.messageCount }
-                        stream.topics = topicItems
-                    }
+                Single.zip(topics.map { topic ->
+                    getMessagesCount(stream.streamId, topic.title)
+                        .map { messageNum ->
+                            topic.messageCount = messageNum
+                            topic
+                        }
+                })
+                { updatedTopics -> updatedTopics.map { it as TopicItem } }
             }
-            .map { chats ->
+            .map { topicItems ->
+                stream.topics = topicItems.sortedByDescending { it.messageCount }
                 stream.isLoading = false
-                Pair(chats, position)
+                Pair(stream.topics, position)
             }
             .doOnError { error ->
                 stream.isLoading = false
                 streamTopicScreenError(error)
             }
+            .subscribeOn(Schedulers.io())
     }
 
     fun getMessagesForPrivateOrTopic(bundle: Bundle): Single<List<Message>> {

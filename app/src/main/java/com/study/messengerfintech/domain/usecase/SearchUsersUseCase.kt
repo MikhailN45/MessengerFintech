@@ -1,12 +1,12 @@
 package com.study.messengerfintech.domain.usecase
 
-import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.data.repository.Repository
+import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.data.repository.RepositoryImpl
+import com.study.messengerfintech.domain.model.User
 import io.reactivex.Observable
 
-interface SearchUsersUseCase : (String) -> Observable<List<User>> {
-    override fun invoke(searchQuery: String): Observable<List<User>>
+interface SearchUsersUseCase {
+    operator fun invoke(searchQuery: String): Observable<List<User>>
 }
 
 class SearchUsersUseCaseImpl : SearchUsersUseCase {
@@ -16,7 +16,8 @@ class SearchUsersUseCaseImpl : SearchUsersUseCase {
             .map { users ->
                 if (searchQuery.isNotEmpty())
                     users.filter { user ->
-                        user.name.contains(searchQuery, ignoreCase = true) }
+                        user.name.contains(searchQuery, ignoreCase = true)
+                    }
                 else
                     users
             }

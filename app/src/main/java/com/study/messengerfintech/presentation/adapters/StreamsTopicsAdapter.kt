@@ -17,9 +17,6 @@ import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.utils.Utils.colors
 
-const val VIEW_TYPE_STREAM = 0
-const val VIEW_TYPE_TOPIC = 1
-
 class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit) :
     ListAdapter<StreamTopicItem, RecyclerView.ViewHolder>(StreamTopicDiffUtilCallback()) {
 
@@ -118,6 +115,11 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
         fun setOnClickListener(i: View.OnClickListener) {
             binding.root.setOnClickListener(i)
         }
+    }
+
+    companion object {
+        const val VIEW_TYPE_STREAM = 0
+        const val VIEW_TYPE_TOPIC = 1
     }
 }
 
