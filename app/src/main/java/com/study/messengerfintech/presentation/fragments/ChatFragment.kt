@@ -32,13 +32,12 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
     private val viewModel: MainViewModel by activityViewModels()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    //todo extract messages to viewmodel
-    private lateinit var messages: MutableList<Message>
+    private var messages: MutableList<Message> = mutableListOf()
     private var _binding: ChatFragmentBinding? = null
     private val binding get() = _binding!!
 
     private val adapter: MessagesAdapter by lazy {
-        MessagesAdapter(messages,
+        MessagesAdapter(
             emojiClickListener = { parcel: OnEmojiClick ->
                 processEmojiClick(parcel)
             },
@@ -59,7 +58,7 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     messages = it.toMutableList()
-                    viewModel.chatScreenSuccessful()
+                    viewModel.chatScreenSuccessful(messages)
                     initScreen()
                 }, { error ->
                     viewModel.chatScreenError(error)
@@ -93,6 +92,7 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
                     is ChatState.Success -> {
                         progressBar.visibility = View.GONE
                         addFileButton.visibility = View.VISIBLE
+                        adapter.submitList(messages)
                     }
                     //todo put UI initialization in state
                 }
@@ -178,12 +178,12 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
         viewModel.chatScreenLoading()
         val singleId: Single<Int> = if (bundle.containsKey(USER)) {
             val userEmail = bundle.getString(USER)!!
-            viewModel.sendMessageToUser(userEmail, content)
+            viewModel.sendPrivateMessage(userEmail, content)
                 .subscribeOn(Schedulers.io())
         } else {
             val streamId = bundle.getInt(STREAM)
             val chatName = bundle.getString(TOPIC)!!
-            viewModel.sendMessageToTopic(streamId, chatName, content)
+            viewModel.sendPublicMessage(streamId, chatName, content)
                 .subscribeOn(Schedulers.io())
         }
         singleId
@@ -194,7 +194,7 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
                     messages.add(Message(id, content, User.ME.id))
                     adapter.notifyItemInserted(messages.size - 1)
                     layoutManager.scrollToPosition(messages.size - 1)
-                    viewModel.chatScreenSuccessful()
+                    viewModel.chatScreenSuccessful(messages)
                 }, { viewModel.chatScreenError(it) }
             ).addTo(compositeDisposable)
     }

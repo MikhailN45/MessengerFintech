@@ -32,7 +32,7 @@ class StreamsTopicsListFragment : Fragment(R.layout.streams_and_chats_fragment) 
     private val adapter = StreamsTopicsAdapter { item ->
         when (item) {
             is TopicItem -> {
-                viewModel.openTopicChat(item.streamId, item.title)
+                viewModel.openPublicChat(item.streamId, item.title)
                 closeStreams()
             }
 

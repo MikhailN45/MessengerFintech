@@ -200,7 +200,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun openTopicChat(streamId: Int, topic: String) {
+    fun openPublicChat(streamId: Int, topic: String) {
         Bundle().apply {
             putInt(STREAM, streamId)
             putString(TOPIC, topic)
@@ -217,10 +217,10 @@ class MainViewModel : ViewModel() {
         repository.sendMessage(type, to, content, topic)
 
 
-    fun sendMessageToUser(userEmail: String, content: String) =
+    fun sendPrivateMessage(userEmail: String, content: String) =
         sendMessage(RepositoryImpl.SendType.PRIVATE, userEmail, content)
 
-    fun sendMessageToTopic(stream: Int, topic: String, content: String) =
+    fun sendPublicMessage(stream: Int, topic: String, content: String) =
         sendMessage(RepositoryImpl.SendType.STREAM, "[$stream]", content, topic)
 
     fun loadStatus(user: User) = repository.loadStatus(user)
@@ -245,8 +245,8 @@ class MainViewModel : ViewModel() {
         _chatState.postValue(ChatState.Loading)
     }
 
-    fun chatScreenSuccessful() {
-        _chatState.postValue(ChatState.Success)
+    fun chatScreenSuccessful(messages: List<Message>) {
+        _chatState.postValue(ChatState.Success(messages))
     }
 
     fun streamTopicScreenError(error: Throwable) {

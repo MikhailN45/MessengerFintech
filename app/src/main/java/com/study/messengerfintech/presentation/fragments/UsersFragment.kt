@@ -52,6 +52,12 @@ class UsersFragment : Fragment() {
                 is UsersState.Success -> {
                     binding.usersShimmer.visibility = View.GONE
                     binding.usersRecycler.visibility = View.VISIBLE
+                    viewModel.users.observe(viewLifecycleOwner) { users ->
+                        updateUsersStatus(users)
+                        adapter.submitList(users) {
+                            binding.usersRecycler.scrollToPosition(0)
+                        }
+                    }
                 }
             }
         }
@@ -66,13 +72,6 @@ class UsersFragment : Fragment() {
         }
 
         if (savedInstanceState == null) viewModel.searchUsers(BLANK_STRING)
-
-        viewModel.users.observe(viewLifecycleOwner) { users ->
-            updateUsersStatus(users)
-            adapter.submitList(users) {
-                binding.usersRecycler.scrollToPosition(0)
-            }
-        }
 
         binding.usersRecycler.apply {
             adapter = this@UsersFragment.adapter
