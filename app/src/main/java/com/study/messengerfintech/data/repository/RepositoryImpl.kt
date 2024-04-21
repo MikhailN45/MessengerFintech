@@ -2,17 +2,17 @@ package com.study.messengerfintech.data.repository
 
 import android.util.Log
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.study.messengerfintech.data.model.MessageResponse
+import com.study.messengerfintech.data.model.ReactionResponse
 import com.study.messengerfintech.data.model.StreamResponse
-import com.study.messengerfintech.data.model.toMessage
-import com.study.messengerfintech.data.model.toReaction
-import com.study.messengerfintech.data.model.toStream
-import com.study.messengerfintech.data.model.toTopics
-import com.study.messengerfintech.data.model.toUser
+import com.study.messengerfintech.data.model.TopicResponse
+import com.study.messengerfintech.data.model.UserResponse
 import com.study.messengerfintech.data.network.AuthInterceptor
 import com.study.messengerfintech.data.network.NarrowInt
 import com.study.messengerfintech.data.network.NarrowStr
 import com.study.messengerfintech.data.network.ZulipApi
 import com.study.messengerfintech.domain.model.Message
+import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.Stream
 import com.study.messengerfintech.domain.model.Topic
 import com.study.messengerfintech.domain.model.User
@@ -180,7 +180,44 @@ object RepositoryImpl : Repository {
     override fun deleteEmoji(messageId: Int, emojiName: String): Completable =
         service.deleteEmojiReaction(messageId, name = emojiName).ignoreElement()
 
+    private fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message = Message(
+        id = id,
+        content = content,
+        userId = userId,
+        isMine = isMine,
+        senderName = senderName,
+        timestamp = timestamp,
+        avatarUrl = avatarUrl,
+        reactions = reactions
+    )
 
+    private fun ReactionResponse.toReaction(): Reaction = Reaction(
+        userId = userId,
+        code = code,
+        name = name
+    )
+
+    private fun StreamResponse.toStream(topics: List<Topic>): Stream = Stream(
+        id = id,
+        title = title,
+        topics = topics
+    )
+
+    private fun TopicResponse.toTopic(): Topic = Topic(
+        title = title,
+        lastMessageID = lastMessageID
+    )
+
+    private fun List<TopicResponse>.toTopics(): List<Topic> = map { it.toTopic() }
+
+
+    private fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User = User(
+        id = id,
+        name = name,
+        email = email,
+        avatarUrl = avatarUrl,
+        status = status
+    )
 
     enum class SendType(val type: String) {
         PRIVATE("private"),

@@ -1,7 +1,5 @@
 package com.study.messengerfintech.data.model
 
-import com.study.messengerfintech.domain.model.Stream
-import com.study.messengerfintech.domain.model.Topic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,8 +9,16 @@ data class StreamResponse(
     @SerialName("stream_id") val id: Int,
 )
 
-fun StreamResponse.toStream(topics: List<Topic>): Stream = Stream(
-    id = id,
-    title = title,
-    topics = topics
+@Serializable
+data class AllStreamRootResponse(
+    val result: String,
+    val msg: String,
+    val streams: List<StreamResponse>
+)
+
+@Serializable
+data class SubscribedStreamsRootResponse (
+    val result: String,
+    val msg: String,
+    val subscriptions: List<StreamResponse>
 )

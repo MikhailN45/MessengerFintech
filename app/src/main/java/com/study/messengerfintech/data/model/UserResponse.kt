@@ -1,7 +1,5 @@
 package com.study.messengerfintech.data.model
 
-import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.model.UserStatus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,10 +12,22 @@ data class UserResponse(
     val status: String = ""
 )
 
-fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User = User(
-    id = id,
-    name = name,
-    email = email,
-    avatarUrl = avatarUrl,
-    status = status
+@Serializable
+data class UsersRootResponse(
+    val result: String,
+    val msg: String,
+    val members: List<UserResponse>
+)
+
+@Serializable
+data class PresenceStatus(
+    val status: String,
+    val timestamp: Long
+)
+
+@Serializable
+data class PresenceResponse(
+    val result: String,
+    val msg: String,
+    val presence: Map<String, PresenceStatus>
 )

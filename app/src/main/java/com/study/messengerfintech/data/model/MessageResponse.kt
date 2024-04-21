@@ -1,7 +1,5 @@
 package com.study.messengerfintech.data.model
 
-import com.study.messengerfintech.domain.model.Message
-import com.study.messengerfintech.domain.model.Reaction
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Date
@@ -18,13 +16,14 @@ data class MessageResponse(
     @SerialName("reactions") val reactions: List<ReactionResponse> = listOf()
 )
 
-fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message = Message(
-    id = id,
-    content = content,
-    userId = userId,
-    isMine = isMine,
-    senderName = senderName,
-    timestamp = timestamp,
-    avatarUrl = avatarUrl,
-    reactions = reactions
+@Serializable
+data class MessageSendResponse(
+    val id: Int
+)
+
+@Serializable
+data class MessagesReceiveResponse(
+    val result: String,
+    val msg: String,
+    val messages: List<MessageResponse>
 )
