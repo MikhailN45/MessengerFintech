@@ -17,6 +17,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--<ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:indeterminateTint="@color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -94,6 +105,16 @@
             android:contentDescription="@string/add_file"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_add_file_to_message" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="10dp"
+            android:indeterminateTint="@color/white"
+            android:visibility="gone"
+            />
 
     </LinearLayout>
 

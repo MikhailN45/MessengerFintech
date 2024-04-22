@@ -3,7 +3,6 @@
     <item
         android:id="@+id/channels_page"
         android:icon="@drawable/ic_channels"
-
         android:title="@string/channels"/>
     <item
         android:id="@+id/people_page"

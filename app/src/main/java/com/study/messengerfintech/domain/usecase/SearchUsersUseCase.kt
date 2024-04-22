@@ -1,23 +1,22 @@
 package com.study.messengerfintech.domain.usecase
 
-import com.study.messengerfintech.model.source.FakeDataSourceImpl
-import com.study.messengerfintech.model.data.User
+import com.study.messengerfintech.domain.model.User
+import com.study.messengerfintech.data.repository.Repository
+import com.study.messengerfintech.data.repository.RepositoryImpl
 import io.reactivex.Observable
 
 interface SearchUsersUseCase : (String) -> Observable<List<User>> {
-    override fun invoke(request: String): Observable<List<User>>
+    override fun invoke(searchQuery: String): Observable<List<User>>
 }
 
 class SearchUsersUseCaseImpl : SearchUsersUseCase {
-    private val dataSource = FakeDataSourceImpl
-
-    override fun invoke(request: String): Observable<List<User>> {
-        return dataSource.loadUsers()
+    private val repository: Repository = RepositoryImpl
+    override fun invoke(searchQuery: String): Observable<List<User>> {
+        return repository.loadUsers().toObservable()
             .map { users ->
-                if (request.isNotEmpty())
+                if (searchQuery.isNotEmpty())
                     users.filter { user ->
-                        user.nickName.contains(request, ignoreCase = true)
-                    }
+                        user.name.contains(searchQuery, ignoreCase = true) }
                 else
                     users
             }

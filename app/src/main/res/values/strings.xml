@@ -9,7 +9,6 @@
     <string name="search_users_button">Search users button</string>
     <string name="users">Users…</string>
     <string name="send_button">Send button</string>
-    <string name="chat_title">Chat Title</string>
     <string name="log_out">Log out</string>
     <string name="status">online</string>
     <string name="in_a_meeting">In a meeting</string>
@@ -22,54 +21,4 @@
     <string name="subscribed">"Subscribed"</string>
     <string name="all_streams">"All streams"</string>
     <string name="streams">Streams…</string>
-    <string-array name="emojis">
-        <item>😎</item>
-        <item>😌</item>
-        <item>😔</item>
-        <item>😋</item>
-        <item>😛</item>
-        <item>😍</item>
-        <item>😘</item>
-        <item>😊</item>
-        <item>😗</item>
-        <item>😜</item>
-        <item>😏</item>
-        <item>😜</item>
-        <item>😁</item>
-        <item>👍</item>
-        <item>🎃</item>
-        <item>😚</item>
-        <item>🙃</item>
-        <item>😅</item>
-        <item>😂</item>
-        <item>😇</item>
-        <item>😉</item>
-        <item>😏</item>
-        <item>😗</item>
-        <item>😎</item>
-        <item>😎</item>
-        <item>😌</item>
-        <item>😔</item>
-        <item>😋</item>
-        <item>😛</item>
-        <item>😍</item>
-        <item>😘</item>
-        <item>😊</item>
-        <item>😗</item>
-        <item>😜</item>
-        <item>😏</item>
-        <item>😜</item>
-        <item>😁</item>
-        <item>👍</item>
-        <item>🎃</item>
-        <item>😚</item>
-        <item>🙃</item>
-        <item>😅</item>
-        <item>😂</item>
-        <item>😇</item>
-        <item>😉</item>
-        <item>😏</item>
-        <item>😗</item>
-        <item>😎</item>
-    </string-array>
 </resources>

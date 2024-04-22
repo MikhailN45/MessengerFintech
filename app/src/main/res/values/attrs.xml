@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="Emoji">
-        <attr name="customNum" format="integer" />
-        <attr name="textColor" format="color" />
-        <attr name="textSize" format="dimension" />
-        <attr name="smiles" format="enum"/>
-    </declare-styleable>
-
     <declare-styleable name="FlexBox">
-        <attr name="paddingColumns" format="dimension"/>
-        <attr name="paddingRows" format="dimension"/>
+        <attr name="paddingColumns" format="dimension" />
+        <attr name="paddingRows" format="dimension" />
     </declare-styleable>
 </resources>

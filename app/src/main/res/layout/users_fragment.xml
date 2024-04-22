@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".view.fragments.UsersFragment">
+    tools:context=".presentation.fragments.UsersFragment">
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/users_shimmer"
@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:paddingTop="98dp"
         android:paddingBottom="70dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -25,10 +25,17 @@
             android:orientation="vertical">
 
             <include layout="@layout/users_shimmer" />
+
             <include layout="@layout/users_shimmer" />
+
             <include layout="@layout/users_shimmer" />
+
             <include layout="@layout/users_shimmer" />
+
             <include layout="@layout/users_shimmer" />
+
+            <include layout="@layout/users_shimmer" />
+
             <include layout="@layout/users_shimmer" />
 
         </LinearLayout>
@@ -39,8 +46,7 @@
         android:id="@+id/users_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="98dp"
-        android:paddingBottom="70dp" />
+        android:paddingTop="98dp" />
 
     <LinearLayout
         android:id="@+id/search_panel"
