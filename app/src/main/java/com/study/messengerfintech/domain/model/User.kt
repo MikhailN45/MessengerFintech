@@ -26,7 +26,7 @@ enum class UserStatus {
     Idle;
 
     companion object {
-        fun decodeFromStringToStatus(string: String): UserStatus =
+        fun stringToStatus(string: String): UserStatus =
             when (string) {
                 "active" -> Online
                 "idle" -> Idle

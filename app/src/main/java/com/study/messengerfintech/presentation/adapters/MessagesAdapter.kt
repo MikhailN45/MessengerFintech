@@ -13,8 +13,8 @@ import com.study.messengerfintech.utils.Utils.getDate
 import com.study.messengerfintech.utils.Utils.getDayCount
 
 class MessagesAdapter(
-    val emojiClickListener: (OnEmojiClick) -> Unit,
-    val longClickListener: (position: Int) -> Unit
+    val onEmojiClick: (OnEmojiClick) -> Unit,
+    val onLongClick: (position: Int) -> Unit
 ) : ListAdapter<Message, MessagesAdapter.ViewHolder>(MessageDiffUtilCallback()) {
 
     inner class ViewHolder(val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root)
@@ -32,16 +32,16 @@ class MessagesAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         getItem(position).apply {
             viewHolder.binding.message.setMessage(this)
-            viewHolder.binding.message.setOnEmojiClickListener(emojiClickListener)
-            viewHolder.binding.message.setMessageOnLongClick { longClickListener(position) }
+            viewHolder.binding.message.setOnEmojiClickListener(onEmojiClick)
+            viewHolder.binding.message.setMessageOnLongClick { onLongClick(position) }
             viewHolder.binding.date.text = getDate(getItem(position).timestamp)
             viewHolder.binding.date.isVisible = isDateNeeded(position)
         }
     }
 
     private fun isDateNeeded(position: Int): Boolean {
-        if (position == 0) return true
-        val yesterday = getItem(position - 1).timestamp
+        if (position + 1 == itemCount) return true
+        val yesterday = getItem(position + 1).timestamp
         val today = getItem(position).timestamp
         return getDayCount(yesterday) < getDayCount(today)
     }

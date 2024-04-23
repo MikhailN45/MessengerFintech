@@ -18,6 +18,7 @@ import com.study.messengerfintech.domain.model.Topic
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.model.UserStatus
 import com.study.messengerfintech.domain.repository.Repository
+import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -58,30 +59,46 @@ object RepositoryImpl : Repository {
 
     private var service = retrofit.create(ZulipApi::class.java)
 
-
     override fun loadStreams(): Single<List<Stream>> =
         service.getStreams()
             .subscribeOn(Schedulers.io())
             .map { it.streams }
-            .flatMap { topicsPreload(it) }
+            .flatMap { updateStreamsTopicsWithMessageCount(it) }
 
 
     override fun loadSubscribedStreams(): Single<List<Stream>> =
         service.getSubscribedStreams()
             .subscribeOn(Schedulers.io())
             .map { it.subscriptions }
-            .flatMap { topicsPreload(it) }
+            .flatMap { updateStreamsTopicsWithMessageCount(it) }
 
-    private fun topicsPreload(streamResponses: List<StreamResponse>): Single<List<Stream>> =
+    // По листу всех стримов c бэка получаем для каждого список топиков.
+    // Для каждого топика получаем количество сообщений в нем.
+    // Стримы мапятся к домен сущности Stream.
+    // Когда все стримы обновлены они эмитятся.
+    private fun updateStreamsTopicsWithMessageCount(streamResponses: List<StreamResponse>)
+            : Single<List<Stream>> =
         Single.create { emitter ->
             val streams = mutableListOf<Stream>()
             var count = 0
             streamResponses.onEach { streamResponse ->
                 loadTopics(streamResponse.id)
+                    .flatMap { topics ->
+                        Single.zip(topics.map { topic ->
+                            getMessagesCountForTopic(streamResponse.id, topic.title)
+                                .map { messageCount ->
+                                    topic.messageCount = messageCount
+                                    topic
+                                }
+                        })
+                        { updatedTopics -> updatedTopics.map { it as Topic } }
+                    }
                     .map { topics ->
-                        val stream: Stream = streamResponse.toStream(topics)
+                        val stream: Stream =
+                            streamResponse.toStream(topics.sortedByDescending { it.messageCount })
                         streams.add(stream)
-                    }.subscribeBy(
+                    }
+                    .subscribeBy(
                         onSuccess = {
                             count += 1
                             if (count == streamResponses.size) emitter.onSuccess(streams)
@@ -94,6 +111,9 @@ object RepositoryImpl : Repository {
             }
         }
 
+    private fun getMessagesCountForTopic(stream: Int, topic: String): Single<Int> =
+        loadTopicMessages(stream, topic).map { it.size }
+
     override fun loadTopics(id: Int): Single<List<Topic>> =
         service.getTopicsInStream(id)
             .subscribeOn(Schedulers.io())
@@ -105,17 +125,25 @@ object RepositoryImpl : Repository {
             .subscribeOn(Schedulers.io())
             .map {
                 it.members.map { userResponse -> userResponse.toUser() }
-            }
+            }.flatMap { usersStatusPreload(it) }
 
-    override fun loadStatus(user: User): Single<UserStatus> =
+    private fun usersStatusPreload(users: List<User>): Single<List<User>> {
+        val statusLoaders = users.map { user ->
+            loadStatus(user)
+        }
+        return Single.concatEager(statusLoaders).toList()
+    }
+
+    override fun loadStatus(user: User): Single<User> =
         service.getPresence(user.id)
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.presence["aggregated"]?.status?.let { status ->
-                    user.status = UserStatus.decodeFromStringToStatus(status)
-                    user.status
+                    user.status = UserStatus.stringToStatus(status)
+                    user
                 }
-            }.doOnError {
+            }.onErrorReturn { user }
+            .doOnError {
                 Log.e("LoadUserStatus", it.message.toString())
             }
 
@@ -142,7 +170,7 @@ object RepositoryImpl : Repository {
                         reactions = messageResponse.reactions.map { it.toReaction() }
                     )
                 }
-            }
+            }.map { it.reversed() }
     }
 
     override fun loadPrivateMessages(userEmail: String): Single<List<Message>> {
@@ -160,7 +188,7 @@ object RepositoryImpl : Repository {
                 response.messages.map { messageResponse ->
                     messageResponse.toMessage()
                 }
-            }
+            }.map { it.reversed() }
     }
 
     override fun sendMessage(
@@ -180,16 +208,17 @@ object RepositoryImpl : Repository {
     override fun deleteEmoji(messageId: Int, emojiName: String): Completable =
         service.deleteEmojiReaction(messageId, name = emojiName).ignoreElement()
 
-    private fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message = Message(
-        id = id,
-        content = content,
-        userId = userId,
-        isMine = isMine,
-        senderName = senderName,
-        timestamp = timestamp,
-        avatarUrl = avatarUrl,
-        reactions = reactions
-    )
+    private fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message =
+        Message(
+            id = id,
+            content = content,
+            userId = userId,
+            isMine = isMine,
+            senderName = senderName,
+            timestamp = timestamp,
+            avatarUrl = avatarUrl,
+            reactions = reactions
+        )
 
     private fun ReactionResponse.toReaction(): Reaction = Reaction(
         userId = userId,
@@ -205,7 +234,7 @@ object RepositoryImpl : Repository {
 
     private fun TopicResponse.toTopic(): Topic = Topic(
         title = title,
-        lastMessageID = lastMessageID
+        messageCount = messageCount
     )
 
     private fun List<TopicResponse>.toTopics(): List<Topic> = map { it.toTopic() }
@@ -218,9 +247,4 @@ object RepositoryImpl : Repository {
         avatarUrl = avatarUrl,
         status = status
     )
-
-    enum class SendType(val type: String) {
-        PRIVATE("private"),
-        STREAM("stream")
-    }
 }

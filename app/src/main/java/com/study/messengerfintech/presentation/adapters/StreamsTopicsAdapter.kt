@@ -6,7 +6,6 @@ import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.view.indices
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -85,8 +84,6 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
                 streamExpandButton.rotation =
                     if (item.isExpanded) 180f
                     else 0f
-                progressBar.isVisible = item.isLoading
-                streamExpandButton.isVisible = !item.isLoading
             }
         }
 

@@ -1,11 +1,10 @@
 package com.study.messengerfintech.domain.repository
 
-import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Stream
 import com.study.messengerfintech.domain.model.Topic
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.model.UserStatus
+import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -22,14 +21,14 @@ interface Repository {
     fun loadPrivateMessages(userEmail: String): Single<List<Message>>
 
     fun sendMessage(
-        type: RepositoryImpl.SendType,
+        type: SendType,
         to: String, content: String,
         topic: String = ""
     ): Single<Int>
 
     fun loadOwnUser(): Single<User>
 
-    fun loadStatus(user: User): Single<UserStatus>
+    fun loadStatus(user: User): Single<User>
 
     fun loadUsers(): Single<List<User>>
 

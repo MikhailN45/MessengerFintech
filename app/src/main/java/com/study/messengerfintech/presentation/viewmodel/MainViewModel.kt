@@ -7,24 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.Message
-import com.study.messengerfintech.domain.model.StreamItem
-import com.study.messengerfintech.domain.model.StreamTopicItem
-import com.study.messengerfintech.domain.model.Topic
-import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.model.toTopicItem
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCase
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCaseImpl
 import com.study.messengerfintech.domain.usecase.SearchUsersUseCase
 import com.study.messengerfintech.domain.usecase.SearchUsersUseCaseImpl
+import com.study.messengerfintech.presentation.events.Event
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.STREAM
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.TOPIC
-import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.USER
+import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.USER_MAIL
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.USER_NAME
-import com.study.messengerfintech.presentation.state.ChatState
-import com.study.messengerfintech.presentation.state.StreamsTopicsState
-import com.study.messengerfintech.presentation.state.UsersState
+import com.study.messengerfintech.presentation.state.State
+import com.study.messengerfintech.utils.SendType
+import com.study.messengerfintech.utils.SingleLiveEvent
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -34,47 +30,75 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
-//todo i will separate it class to different vm's later, and
 class MainViewModel : ViewModel() {
     private val repository: Repository = RepositoryImpl
-
-    //todo i will move this values to state parameter
-    val chat = MutableLiveData<Bundle>()
-    val users = MutableLiveData<List<User>>()
-    val streams = MutableLiveData<List<StreamTopicItem>>()
-    val subscribedStreams = MutableLiveData<List<StreamTopicItem>>()
-
-    private val searchUsersSubject: BehaviorSubject<String> = BehaviorSubject.create()
-    private val searchStreamsSubject: BehaviorSubject<String> = BehaviorSubject.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
+    //Event
+    val chatInstance = SingleLiveEvent<Bundle>()
+    val positionToScroll = SingleLiveEvent<Int>()
+
+    //Subject
+    private val searchUsersSubject: BehaviorSubject<String> = BehaviorSubject.create()
+    private val searchStreamsSubject: BehaviorSubject<String> = BehaviorSubject.create()
+
+    //Usecase
     private val searchTopicsUseCase: SearchTopicsUseCase = SearchTopicsUseCaseImpl()
     private val searchUserUseCase: SearchUsersUseCase = SearchUsersUseCaseImpl()
 
-    private val _userState: MutableLiveData<UsersState> = MutableLiveData()
-    val userScreenState: LiveData<UsersState>
-        get() = _userState
+    //State
+    val streamsAll = MutableLiveData(State.Streams(listOf()))
+    val streamsSubscribed = MutableLiveData(State.Streams(listOf()))
+    val chat = MutableLiveData<State.Chat>()
+    val users = MutableLiveData<State.Users>()
+    val userStatus = MutableLiveData<State.Profile>()
 
-    private val _streamTopicsState: MutableLiveData<StreamsTopicsState> = MutableLiveData()
-    val streamTopicsState: LiveData<StreamsTopicsState>
-        get() = _streamTopicsState
-
-    private val _chatState: MutableLiveData<ChatState> = MutableLiveData()
-    val chatState: LiveData<ChatState>
-        get() = _chatState
-
-    fun searchStreams(query: String) {
-        searchStreamsSubject.onNext(query)
-    }
-
-    fun searchUsers(query: String) {
-        searchUsersSubject.onNext(query)
-    }
+    //Screen state
+    private val _screenState: MutableLiveData<State> = MutableLiveData()
+    val screenState: LiveData<State>
+        get() = _screenState
 
     init {
         subscribeToSearchUsers()
         subscribeToSearchStreams()
         initUser()
+    }
+
+    fun processEvent(event: Event) {
+        when (event) {
+            is Event.SearchForUsers ->
+                searchUsersSubject.onNext(event.query)
+
+            is Event.SearchForStreams ->
+                searchStreamsSubject.onNext(event.query)
+
+            is Event.OpenChat.Private ->
+                openPrivateChat(event.user)
+
+            is Event.OpenChat.Topic ->
+                openPublicChat(event.streamId, event.topic)
+
+            is Event.SendMessage.Private ->
+                sendPrivateMessage(event.userEmail, event.content)
+
+            is Event.SendMessage.Topic ->
+                sendPublicMessage(event.streamId, event.topicName, event.content)
+
+            is Event.LoadMessages.Private ->
+                manageChatMessages(getPrivateMessages(event.userEmail))
+
+            is Event.LoadMessages.Topic ->
+                manageChatMessages(getTopicMessages(event.streamId, event.topicName))
+
+            is Event.Emoji.Add ->
+                addReaction(event.messageId, event.emojiName)
+
+            is Event.Emoji.Remove ->
+                deleteReaction(event.messageId, event.emojiName)
+
+            is Event.SetUserStatus ->
+                loadStatus(event.user)
+        }
     }
 
     private fun initUser() {
@@ -88,27 +112,26 @@ class MainViewModel : ViewModel() {
         searchUsersSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
-            .doOnNext { _userState.postValue(UsersState.Loading) }
+            .doOnNext { _screenState.postValue(State.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { searchQuery -> searchUserUseCase(searchQuery) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = {
-                    users.value = it
-                    _userState.value = UsersState.Success
+                    users.value = State.Users(it)
+                    _screenState.value = State.Success
                 },
-                onError = { _userState.value = UsersState.Error(it) }
+                onError = { _screenState.value = State.Error }
             )
             .addTo(compositeDisposable)
     }
-
 
     private fun subscribeToSearchStreams() {
         val flow = searchStreamsSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
-            .doOnNext { _streamTopicsState.postValue(StreamsTopicsState.Loading) }
+            .doOnNext { _screenState.postValue(State.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .share()
 
@@ -118,10 +141,10 @@ class MainViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = {
-                    subscribedStreams.value = it
-                    _streamTopicsState.value = StreamsTopicsState.Success
+                    streamsSubscribed.value = State.Streams(it)
+                    _screenState.value = State.Success
                 },
-                onError = { _streamTopicsState.value = StreamsTopicsState.Error(it) }
+                onError = { _screenState.value = State.Error }
             )
             .addTo(compositeDisposable)
 
@@ -131,54 +154,32 @@ class MainViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = {
-                    streams.value = it
-                    _streamTopicsState.value = StreamsTopicsState.Success
+                    streamsAll.value = State.Streams(it)
+                    _screenState.value = State.Success
                 },
-                onError = { _streamTopicsState.value = StreamsTopicsState.Error(it) }
+                onError = { _screenState.value = State.Error }
             )
             .addTo(compositeDisposable)
     }
 
-    fun parseTopicsAndMessageCountFromStream(
-        stream: StreamItem,
-        position: Int
-    ): Single<Pair<List<TopicItem>, Int>> {
-        return getTopics(stream.streamId)
-            .map { topics -> toTopicItem(topics, stream.streamId) }
-            .flatMap { topics ->
-                Single.zip(topics.map { topic ->
-                    getMessagesCount(stream.streamId, topic.title)
-                        .map { messageNum ->
-                            topic.messageCount = messageNum
-                            topic
-                        }
-                })
-                { updatedTopics -> updatedTopics.map { it as TopicItem } }
-            }
-            .map { topicItems ->
-                stream.topics = topicItems.sortedByDescending { it.messageCount }
-                stream.isLoading = false
-                Pair(stream.topics, position)
-            }
-            .doOnError { error ->
-                stream.isLoading = false
-                streamTopicScreenError(error)
-            }
-            .subscribeOn(Schedulers.io())
-    }
-
-    fun getMessagesForPrivateOrTopic(bundle: Bundle): Single<List<Message>> {
-        return if (bundle.containsKey(USER)) {
-            getPrivateMessages(bundle.getString(USER)!!)
-        } else if (bundle.containsKey(STREAM) && bundle.containsKey(TOPIC)) {
-            getTopicMessages(
-                bundle.getInt(STREAM),
-                bundle.getString(TOPIC)!!
+    private fun manageChatMessages(flow: Single<List<Message>>) {
+        loading()
+        val chat = chat.value!!.copy()
+        flow
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { messageList ->
+                    result()
+                    val isMessagesRemaining = messageList.isEmpty()
+                    val messages =
+                        chat.messages.toMutableList().apply { addAll(messageList) }
+                    this.chat.value = chat.copy(messages = messages, loaded = isMessagesRemaining)
+                    if (chat.messages.isEmpty())
+                        positionToScroll.value = 0
+                },
+                onError = { error(it) }
             )
-        } else {
-            chatScreenError(IllegalArgumentException("incorrect arguments"))
-            Single.error(IllegalArgumentException("incorrect arguments"))
-        }
+            .addTo(compositeDisposable)
     }
 
     private fun getTopicMessages(streamId: Int, topic: String): Single<List<Message>> =
@@ -187,78 +188,90 @@ class MainViewModel : ViewModel() {
     private fun getPrivateMessages(user: String): Single<List<Message>> =
         repository.loadPrivateMessages(user)
 
-    private fun getTopics(streamId: Int): Single<List<Topic>> = repository.loadTopics(streamId)
-
-    private fun getMessagesCount(stream: Int, topic: String): Single<Int> =
-        repository.loadTopicMessages(stream, topic).map { it.size }
-
-    fun openPrivateChat(user: User) {
+    private fun openPrivateChat(user: User) {
         Bundle().apply {
-            putString(USER, user.email)
+            putString(USER_MAIL, user.email)
             putString(USER_NAME, user.name)
-            chat.postValue(this)
+            chatInstance.postValue(this)
         }
+        chat.value = State.Chat(name = user.name, messages = listOf())
     }
 
-    fun openPublicChat(streamId: Int, topic: String) {
+    private fun openPublicChat(streamId: Int, topic: String) {
         Bundle().apply {
             putInt(STREAM, streamId)
             putString(TOPIC, topic)
-            chat.postValue(this)
+            chatInstance.postValue(this)
         }
+        chat.value = State.Chat(name = topic, messages = listOf())
     }
 
     private fun sendMessage(
-        type: RepositoryImpl.SendType,
+        type: SendType,
         to: String,
         content: String,
         topic: String = ""
-    ): Single<Int> =
+    ) {
+        loading()
         repository.sendMessage(type, to, content, topic)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { id ->
+                    val message = Message(id, content, User.ME.id, true)
+                    val state = chat.value!!
+                    val updatedList =
+                        state.messages.toMutableList().apply { add(0, message) }
+                    chat.value = state.copy(messages = updatedList)
+                    positionToScroll.value = 0
+                    result()
+                },
+                onError = { error(it) }
+            ).addTo(compositeDisposable)
+    }
 
+    private fun loadStatus(user: User) = repository.loadStatus(user)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeBy(
+            onSuccess = { userStatus.value = State.Profile(it) },
+            onError = { error ->
+                Log.e("loadStatus", error.toString())
+            }
+        ).addTo(compositeDisposable)
 
-    fun sendPrivateMessage(userEmail: String, content: String) =
-        sendMessage(RepositoryImpl.SendType.PRIVATE, userEmail, content)
+    private fun sendPrivateMessage(userEmail: String, content: String) =
+        sendMessage(SendType.PRIVATE, userEmail, content)
 
-    fun sendPublicMessage(stream: Int, topic: String, content: String) =
-        sendMessage(RepositoryImpl.SendType.STREAM, "[$stream]", content, topic)
+    private fun sendPublicMessage(stream: Int, topic: String, content: String) =
+        sendMessage(SendType.STREAM, "[$stream]", content, topic)
 
-    fun loadStatus(user: User) = repository.loadStatus(user)
-
-    fun addReaction(messageId: Int, emojiName: String) {
+    private fun addReaction(messageId: Int, emojiName: String) {
         repository.addEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
-                onError = { chatScreenError(it) }
+                onError = { error(it) }
             ).addTo(compositeDisposable)
     }
 
-    fun deleteReaction(messageId: Int, emojiName: String) {
+    private fun deleteReaction(messageId: Int, emojiName: String) {
         repository.deleteEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
-                onError = { chatScreenError(it) }
+                onError = { error(it) }
             ).addTo(compositeDisposable)
     }
 
-    fun chatScreenLoading() {
-        _chatState.postValue(ChatState.Loading)
+    private fun result() {
+        _screenState.postValue(State.Success)
     }
 
-    fun chatScreenSuccessful(messages: List<Message>) {
-        _chatState.postValue(ChatState.Success(messages))
+    fun error(error: Throwable) {
+        _screenState.postValue(State.Error)
     }
 
-    fun streamTopicScreenError(error: Throwable) {
-        _streamTopicsState.postValue(StreamsTopicsState.Error(error))
-    }
-
-    fun usersScreenError(error: Throwable) {
-        _userState.postValue(UsersState.Error(error))
-    }
-
-    fun chatScreenError(error: Throwable) {
-        _chatState.postValue(ChatState.Error(error))
+    private fun loading() {
+        _screenState.postValue(State.Loading)
     }
 
     override fun onCleared() {

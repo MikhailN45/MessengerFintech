@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TopicResponse(
     @SerialName("name") val title: String,
-    @SerialName("max_id") val lastMessageID: Int = 0,
+    val messageCount: Int = 0
 )
 
 @Serializable
