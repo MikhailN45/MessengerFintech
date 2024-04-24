@@ -113,11 +113,20 @@ object RepositoryImpl : Repository {
 
     private fun getMessagesCountForTopic(stream: Int, topic: String): Single<Int> =
         loadTopicMessages(stream, topic).map { it.size }
+            .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }
+            .onErrorResumeNext { throwable: Throwable ->
+        Log.e("loadTopics", throwable.message.toString())
+        Single.just(0)
+    }
 
     override fun loadTopics(id: Int): Single<List<Topic>> =
         service.getTopicsInStream(id)
             .subscribeOn(Schedulers.io())
             .map { it.topics.toTopics() }
+            .onErrorResumeNext { throwable: Throwable ->
+                Log.e("loadTopics", throwable.message.toString())
+                Single.just(emptyList())
+            }
 
 
     override fun loadUsers(): Single<List<User>> =

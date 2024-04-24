@@ -10,6 +10,7 @@ fun Stream.toStreamItem(): StreamItem = StreamItem(
     streamId = id,
     title = title,
     isExpanded = false,
-    topics = toTopicItem(topics, id)
+    topics = topics.toTopicItems(id)
 )
 
+fun List<Stream>.toStreamItems(): List<StreamItem> = map { it.toStreamItem() }

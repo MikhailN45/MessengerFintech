@@ -4,53 +4,40 @@ import com.study.messengerfintech.domain.model.Stream
 import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.toStreamItem
-import com.study.messengerfintech.domain.model.toTopicItem
-import io.reactivex.Single
+import com.study.messengerfintech.domain.model.toStreamItems
+import com.study.messengerfintech.domain.model.toTopicItems
 
 interface SearchTopicsUseCase {
     operator fun invoke(
         searchQuery: String,
-        streams: Single<List<Stream>>
-    ): Single<List<StreamTopicItem>>
+        streams: List<Stream>
+    ): List<StreamTopicItem>
 }
 
 class SearchTopicsUseCaseImpl : SearchTopicsUseCase {
     override fun invoke(
         searchQuery: String,
-        streams: Single<List<Stream>>
-    ): Single<List<StreamTopicItem>> {
-        //Если есть запрос, выполняем поиск, если нет просто возврашаем streamItem
-        return streams.map { streamList ->
-            if (searchQuery.isNotEmpty()) streamList.searchQueryInStreams(searchQuery)
-            else streamList.map { stream ->
-                stream.toStreamItem()
+        streams: List<Stream>
+    ): List<StreamTopicItem> = if (searchQuery.isEmpty()) streams.toStreamItems()
+    else streams.getStreamAndTopicItemsByQuery(searchQuery)
+
+    private fun List<Stream>.getStreamAndTopicItemsByQuery(query: String): List<StreamTopicItem> =
+        map { stream ->
+            val queryTopicItems = stream.getTopicItemsByQuery(query)
+            Pair(stream, queryTopicItems)
+        }.filter { (stream, queryTopicItems) ->
+            val isStreamTitleContainsQuery = stream.title.contains(query, ignoreCase = true)
+            queryTopicItems.isNotEmpty() || isStreamTitleContainsQuery
+        }.fold(mutableListOf()) { streamTopicItems, (stream, queryTopicItems) ->
+            val streamItem = stream.toStreamItem()
+            if (queryTopicItems.isNotEmpty()) streamItem.isExpanded = true
+            streamTopicItems.apply {
+                add(streamItem)
+                addAll(queryTopicItems)
             }
         }
-    }
 
-    //для каждого стрима ищем топики, если они есть раскрываем стрим, конвертируя его в streamItem
-    private fun List<Stream>.searchQueryInStreams(query: String): List<StreamTopicItem> {
-        val items = mutableListOf<StreamTopicItem>()
-        forEach { stream ->
-            val topicItemList = stream.searchQueryInTopics(query)
-
-            if (topicItemList.isNotEmpty() || stream.title.contains(query, ignoreCase = true)) {
-                items.add(stream.toStreamItem().apply {
-                    if (topicItemList.isNotEmpty()) {
-                        isExpanded = true
-                    }
-                })
-
-                items.addAll(topicItemList)
-            }
-        }
-        return items
-    }
-
-    //Возвращаем по стриму топики которые содержат запрос в названии и конвертируем их в topicItem
-    private fun Stream.searchQueryInTopics(query: String): List<TopicItem> {
-        val correctChats =
-            topics.filter { topic -> topic.title.contains(query, ignoreCase = true) }
-        return toTopicItem(correctChats, id)
-    }
+    private fun Stream.getTopicItemsByQuery(query: String): List<TopicItem> = topics
+        .filter { topic -> topic.title.contains(query, ignoreCase = true) }
+        .toTopicItems(id)
 }

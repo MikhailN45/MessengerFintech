@@ -21,9 +21,11 @@ import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.
 import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.utils.SendType
 import com.study.messengerfintech.utils.SingleLiveEvent
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -128,33 +130,35 @@ class MainViewModel : ViewModel() {
     }
 
     private fun subscribeToSearchStreams() {
-        val flow = searchStreamsSubject
+        val subject = searchStreamsSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
             .doOnNext { _screenState.postValue(State.Loading) }
+            .doOnError { error ->
+                Log.e("subscribeToSearchStreams", error.message.toString())
+                _screenState.postValue(State.Error)
+            }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .share()
 
-        flow.switchMapSingle { searchQuery ->
-            searchTopicsUseCase(searchQuery, repository.loadSubscribedStreams())
-        }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onNext = {
-                    streamsSubscribed.value = State.Streams(it)
-                    _screenState.value = State.Success
-                },
-                onError = { _screenState.value = State.Error }
+        subject.flatMap { searchQuery ->
+            Observables.zip(
+                Observable.just(searchQuery),
+                repository.loadStreams().toObservable(),
+                repository.loadSubscribedStreams().toObservable(),
             )
-            .addTo(compositeDisposable)
-
-        flow.switchMapSingle { searchQuery ->
-            searchTopicsUseCase(searchQuery, repository.loadStreams())
+        }.map {
+            val (searchQuery, allStreams, subscribedStreams) = it
+            val streamsAllTopics = searchTopicsUseCase(searchQuery, allStreams)
+            val streamsSubscribedTopics = searchTopicsUseCase(searchQuery, subscribedStreams)
+            Pair(streamsAllTopics, streamsSubscribedTopics)
         }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = {
-                    streamsAll.value = State.Streams(it)
+                    val (allStreams, subscribedStreams) = it
+                    streamsSubscribed.value = State.Streams(subscribedStreams)
+                    streamsAll.value = State.Streams(allStreams)
                     _screenState.value = State.Success
                 },
                 onError = { _screenState.value = State.Error }

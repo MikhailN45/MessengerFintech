@@ -117,6 +117,8 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
 
     override fun onDestroyView() {
         super.onDestroyView()
+        items = items.filterIsInstance<StreamItem>().toMutableList()
+        items.clear()
         _binding = null
     }
 
