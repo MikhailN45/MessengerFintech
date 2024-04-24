@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
+    id("kotlin-kapt")
 }
 
 android {
@@ -48,21 +49,28 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.viewpager2)
+
     //navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
     //rx
     implementation (libs.rxjava)
     implementation (libs.rxandroid)
     implementation (libs.rxkotlin)
     implementation (libs.adapter.rxjava2)
+
     //network
     implementation (libs.retrofit)
     implementation (libs.retrofit2.kotlinx.serialization.converter)
     implementation (libs.logging.interceptor)
     implementation (libs.kotlinx.serialization.json)
 
+    //UI
     implementation (libs.shimmer)
     implementation (libs.bumptechGlide)
-    //implementation(libs.androidx.lifecycle.common.java8)
+
+    //DI
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 }
