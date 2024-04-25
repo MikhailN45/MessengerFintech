@@ -43,6 +43,7 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
+                    viewModel.processEvent(Event.ExpandStream(onClickedItem))
                     addItemsToAdapter(onClickedItem)
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
@@ -64,6 +65,7 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         savedInstanceState: Bundle?
     ): View {
         _binding = StreamsAndChatsFragmentBinding.inflate(layoutInflater)
+
 
         viewModel.screenState.observe(viewLifecycleOwner) {
             when (it) {
@@ -147,7 +149,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         }
         adapter.notifyItemRangeRemoved(position + 1, counter)
         adapter.notifyItemRangeChanged(position + 1, adapter.itemCount)
-
     }
 
     companion object {

@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.Message
+import com.study.messengerfintech.domain.model.StreamItem
+import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCase
@@ -100,6 +102,9 @@ class MainViewModel : ViewModel() {
 
             is Event.SetUserStatus ->
                 loadStatus(event.user)
+
+            is Event.ExpandStream ->
+                updateTopicsMessagesCount(event.stream)
         }
     }
 
@@ -185,6 +190,35 @@ class MainViewModel : ViewModel() {
             )
             .addTo(compositeDisposable)
     }
+
+    private fun updateTopicsMessagesCount(stream: StreamItem) {
+        val topicList: MutableList<Single<TopicItem>> = mutableListOf()
+        stream.topics.forEach { topic ->
+            val topicListWithCount = repository.getMessageCountForTopic(
+                stream.streamId,
+                topic.title
+            )
+                .map { messageCount ->
+                    topic.messageCount = messageCount
+                    topic
+                }
+            topicList.add(topicListWithCount)
+        }
+
+        Single.zip(topicList) { topic -> topic.map { it as TopicItem } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { updatedTopics ->
+                    stream.topics = updatedTopics.sortedByDescending { it.messageCount }
+                },
+                { error ->
+                    Log.e("updateTopicsMessageCount", error.message.toString())
+                }
+            )
+            .addTo(compositeDisposable)
+    }
+
 
     private fun getTopicMessages(streamId: Int, topic: String): Single<List<Message>> =
         repository.loadTopicMessages(streamId, topic)

@@ -1,5 +1,6 @@
 package com.study.messengerfintech.presentation.events
 
+import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.User
 
 sealed class Event {
@@ -53,6 +54,10 @@ sealed class Event {
     data class SearchForStreams(
         val query: String = ""
     ) : Event()
+
+    data class ExpandStream(
+        val stream: StreamItem
+    ): Event()
 
     data class SearchForUsers(
         val query: String = ""

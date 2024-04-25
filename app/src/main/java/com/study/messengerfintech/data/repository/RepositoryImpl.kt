@@ -21,9 +21,6 @@ import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -37,7 +34,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 
 object RepositoryImpl : Repository {
     private const val BASE_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
-    private val compositeDisposable = CompositeDisposable()
 
     private val format = Json {
         ignoreUnknownKeys = true
@@ -62,71 +58,43 @@ object RepositoryImpl : Repository {
     override fun loadStreams(): Single<List<Stream>> =
         service.getStreams()
             .subscribeOn(Schedulers.io())
-            .map { it.streams }
-            .flatMap { updateStreamsTopicsWithMessageCount(it) }
-
+            .flatMap { streamResponses ->
+                val streams = streamResponses.streams
+                    .map { streamResponse ->
+                        loadTopics(streamResponse.id)
+                            .map { topics ->
+                                streamResponse.toStream(topics)
+                            }
+                    }
+                Single.zip(streams) { it.toList() as List<Stream> }
+            }
 
     override fun loadSubscribedStreams(): Single<List<Stream>> =
         service.getSubscribedStreams()
             .subscribeOn(Schedulers.io())
-            .map { it.subscriptions }
-            .flatMap { updateStreamsTopicsWithMessageCount(it) }
-
-    // По листу всех стримов c бэка получаем для каждого список топиков.
-    // Для каждого топика получаем количество сообщений в нем.
-    // Стримы мапятся к домен сущности Stream.
-    // Когда все стримы обновлены они эмитятся.
-    private fun updateStreamsTopicsWithMessageCount(streamResponses: List<StreamResponse>)
-            : Single<List<Stream>> =
-        Single.create { emitter ->
-            val streams = mutableListOf<Stream>()
-            var count = 0
-            streamResponses.onEach { streamResponse ->
-                loadTopics(streamResponse.id)
-                    .flatMap { topics ->
-                        Single.zip(topics.map { topic ->
-                            getMessagesCountForTopic(streamResponse.id, topic.title)
-                                .map { messageCount ->
-                                    topic.messageCount = messageCount
-                                    topic
-                                }
-                        })
-                        { updatedTopics -> updatedTopics.map { it as Topic } }
+            .flatMap { streamResponses ->
+                val streams = streamResponses.subscriptions
+                    .map { streamResponse ->
+                        loadTopics(streamResponse.id)
+                            .map { topics ->
+                                streamResponse.toStream(topics)
+                            }
                     }
-                    .map { topics ->
-                        val stream: Stream =
-                            streamResponse.toStream(topics.sortedByDescending { it.messageCount })
-                        streams.add(stream)
-                    }
-                    .subscribeBy(
-                        onSuccess = {
-                            count += 1
-                            if (count == streamResponses.size) emitter.onSuccess(streams)
-                        },
-                        onError = {
-                            emitter.onError(it)
-                            Log.e("TopicsPreload", it.message.toString())
-                        }
-                    ).addTo(compositeDisposable)
+                Single.zip(streams) { it.toList() as List<Stream> }
             }
-        }
 
-    private fun getMessagesCountForTopic(stream: Int, topic: String): Single<Int> =
+    override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =
         loadTopicMessages(stream, topic).map { it.size }
             .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }
             .onErrorResumeNext { throwable: Throwable ->
-        Log.e("loadTopics", throwable.message.toString())
-        Single.just(0)
-    }
+                Log.e("getMessagesCountForTopicResume", throwable.message.toString())
+                Single.just(0)
+            }
 
-    override fun loadTopics(id: Int): Single<List<Topic>> =
-        service.getTopicsInStream(id)
+    override fun loadTopics(streamId: Int): Single<List<Topic>> =
+        service.getTopicsInStream(streamId)
             .subscribeOn(Schedulers.io())
             .map { it.topics.toTopics() }
-            .onErrorResumeNext { throwable: Throwable ->
-                Log.e("loadTopics", throwable.message.toString())
-                Single.just(emptyList())
-            }
 
 
     override fun loadUsers(): Single<List<User>> =
