@@ -7,14 +7,18 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.UsersFragmentBinding
 import com.study.messengerfintech.presentation.adapters.UsersAdapter
 import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.UsersEvent
 import com.study.messengerfintech.presentation.state.State
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
+import com.study.messengerfintech.presentation.viewmodel.UsersViewModel
 
-class UsersFragment : FragmentMVI<State.Users>() {
-    private val viewModel: MainViewModel by activityViewModels()
+class UsersFragment : FragmentMVI<State.Users>(R.layout.streams_and_chats_fragment) {
+    private val viewModel: StreamsViewModel by activityViewModels()
+    private val usersViewModel: UsersViewModel by activityViewModels()
     private var _binding: UsersFragmentBinding? = null
     private val binding get() = _binding!!
     private val adapter = UsersAdapter(
@@ -36,7 +40,7 @@ class UsersFragment : FragmentMVI<State.Users>() {
     ): View {
         _binding = UsersFragmentBinding.inflate(layoutInflater)
 
-        viewModel.screenState.observe(viewLifecycleOwner) {
+        usersViewModel.usersScreenState.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
                     binding.usersShimmer.visibility = View.VISIBLE
@@ -52,6 +56,7 @@ class UsersFragment : FragmentMVI<State.Users>() {
                     binding.usersShimmer.visibility = View.GONE
                     binding.usersRecycler.visibility = View.VISIBLE
                 }
+
                 else -> {
                     State.Error
                 }
@@ -64,14 +69,14 @@ class UsersFragment : FragmentMVI<State.Users>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.users.observe(viewLifecycleOwner) { state -> render(state) }
+        usersViewModel.users.observe(viewLifecycleOwner) { state -> render(state) }
 
         if (savedInstanceState == null) {
-            viewModel.processEvent(Event.SearchForUsers())
+            usersViewModel.processEvent(UsersEvent.SearchForUsers())
         }
 
         binding.searchUsersEditText.doAfterTextChanged {
-            viewModel.processEvent(Event.SearchForUsers(query = it.toString()))
+            usersViewModel.processEvent(UsersEvent.SearchForUsers(query = it.toString()))
         }
 
         binding.usersRecycler.apply {

@@ -7,12 +7,12 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ActivityMainBinding
 import com.study.messengerfintech.presentation.fragments.ChatFragment
 import com.study.messengerfintech.presentation.fragments.MainFragment
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: StreamsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

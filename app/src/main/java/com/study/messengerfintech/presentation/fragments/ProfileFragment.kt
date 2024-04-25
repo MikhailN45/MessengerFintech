@@ -12,14 +12,14 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ProfileFragmentBinding
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.model.UserStatus
-import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.ProfileEvent
 import com.study.messengerfintech.presentation.state.State
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.ProfileViewModel
 
 class ProfileFragment : FragmentMVI<State.Profile>(R.layout.profile_fragment) {
     private var _binding: ProfileFragmentBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MainViewModel by activityViewModels()
+    private val profileViewModel: ProfileViewModel by activityViewModels()
     private val currentUser = User.ME
 
     override fun render(state: State.Profile) {
@@ -38,8 +38,8 @@ class ProfileFragment : FragmentMVI<State.Profile>(R.layout.profile_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.userName.text = currentUser.name
-        viewModel.processEvent(Event.SetUserStatus(currentUser))
-        viewModel.userStatus.observe(viewLifecycleOwner) {
+        profileViewModel.processEvent(ProfileEvent.SetUserStatus(currentUser))
+        profileViewModel.userStatus.observe(viewLifecycleOwner) {
             render(it)
         }
 

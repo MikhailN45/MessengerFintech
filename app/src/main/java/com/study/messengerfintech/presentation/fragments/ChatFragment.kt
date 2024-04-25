@@ -14,15 +14,15 @@ import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.UnitedReaction
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.presentation.adapters.MessagesAdapter
-import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.ChatEvent
 import com.study.messengerfintech.presentation.state.State
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.ChatViewModel
 import com.study.messengerfintech.utils.EmojiAdd
 import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.OnEmojiClick
 
 class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
-    private val viewModel: MainViewModel by activityViewModels()
+    private val chatViewModel: ChatViewModel by activityViewModels()
     private var _binding: ChatFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -31,9 +31,9 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     private val userName: String? by lazy { arguments?.getString(USER_NAME) }
     private val userEmail: String? by lazy { arguments?.getString(USER_MAIL) }
 
-    private var chat = State.Chat("", listOf())
+    private var chatStateLocal = State.Chat("", listOf())
     private val messages
-        get() = chat.messages
+        get() = chatStateLocal.messages
 
     private val adapter: MessagesAdapter by lazy {
         MessagesAdapter(
@@ -48,6 +48,7 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        chatViewModel.setChatTitle(userName ?: topicName!!)
         loadMessages()
     }
 
@@ -58,7 +59,7 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     ): View {
         _binding = ChatFragmentBinding.inflate(layoutInflater)
 
-        viewModel.screenState.observe(viewLifecycleOwner) {
+        chatViewModel.chatScreenState.observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
                     is State.Loading -> {
@@ -75,7 +76,7 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
                     is State.Success -> {
                         progressBar.visibility = View.GONE
                         addFileButton.visibility = View.VISIBLE
-                        viewModel.positionToScroll.observe(viewLifecycleOwner) {
+                        chatViewModel.positionToScroll.observe(viewLifecycleOwner) {
                             adapter.submitList(messages) {
                                 binding.chatRecycler.scrollToPosition(it)
                             }
@@ -83,8 +84,6 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
                     }
 
                     else -> State.Error
-
-
                 }
             }
         }
@@ -95,8 +94,8 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initScreen()
-        viewModel.chat.observe(viewLifecycleOwner) { render(it) }
-        viewModel.positionToScroll.observe(viewLifecycleOwner) {
+        chatViewModel.chat.observe(viewLifecycleOwner) { render(it) }
+        chatViewModel.positionToScroll.observe(viewLifecycleOwner) {
             adapter.submitList(messages) {
                 binding.chatRecycler.scrollToPosition(it)
             }
@@ -104,7 +103,7 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     }
 
     override fun render(state: State.Chat) {
-        this.chat = state
+        this.chatStateLocal = state
         binding.chatTitle.text = state.name
         adapter.submitList(messages)
     }
@@ -118,10 +117,10 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     private fun processEmojiClick(parcel: OnEmojiClick) {
         when (parcel) {
             is EmojiAdd ->
-                Event.Emoji.Add(parcel.messageId, parcel.name)
+                ChatEvent.Emoji.Add(parcel.messageId, parcel.name)
 
             is EmojiDelete ->
-                Event.Emoji.Remove(parcel.messageId, parcel.name)
+                ChatEvent.Emoji.Remove(parcel.messageId, parcel.name)
         }
     }
 
@@ -167,20 +166,24 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
                 messages[messagePosition].emojiCodeReactionMap[emoji.getUnicode()]
             if (emojisOnMessage == null || !emojisOnMessage.usersId.contains(User.ME.id)) {
                 messages[messagePosition].addEmoji(emoji)
-                viewModel.processEvent(Event.Emoji.Add(messages[messagePosition].id, emoji.name))
+                chatViewModel.processEvent(
+                    ChatEvent.Emoji.Add(
+                        messages[messagePosition].id,
+                        emoji.name
+                    )
+                )
                 adapter.notifyItemChanged(messagePosition)
             }
         }
     }
 
     private fun loadMessages() {
-        viewModel.processEvent(
+        chatViewModel.processEvent(
             if (userEmail != null) {
-                Event.LoadMessages.Private(userEmail!!)
+                ChatEvent.LoadMessages.Private(userEmail!!)
             } else if (streamId != null && topicName != null) {
-                Event.LoadMessages.Topic(streamId!!, topicName!!)
+                ChatEvent.LoadMessages.Topic(streamId!!, topicName!!)
             } else {
-                viewModel.error(IllegalArgumentException("open chat -> Invalid arguments"))
                 parentFragmentManager.popBackStack()
                 return
             }
@@ -188,11 +191,11 @@ class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     }
 
     private fun sendMessage(content: String) {
-        viewModel.processEvent(
+        chatViewModel.processEvent(
             if (!userEmail.isNullOrBlank()) {
-                Event.SendMessage.Private(userEmail!!, content)
+                ChatEvent.SendMessage.Private(userEmail!!, content)
             } else {
-                Event.SendMessage.Topic(streamId!!, topicName!!, content)
+                ChatEvent.SendMessage.Topic(streamId!!, topicName!!, content)
             }
         )
     }

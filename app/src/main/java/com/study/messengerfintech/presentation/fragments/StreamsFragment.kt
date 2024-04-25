@@ -14,10 +14,10 @@ import com.study.messengerfintech.databinding.StreamsFragmentBinding
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.presentation.adapters.PagerAdapter
 import com.study.messengerfintech.presentation.events.Event
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 
 class StreamsFragment : Fragment() {
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: StreamsViewModel by activityViewModels()
     private var _binding: StreamsFragmentBinding? = null
     private val binding get() = _binding!!
 

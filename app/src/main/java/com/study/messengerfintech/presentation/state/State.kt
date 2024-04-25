@@ -12,7 +12,7 @@ sealed interface State {
     data object Error : State
 
     data class Chat(
-        val name: String,
+        val name: String = "",
         val messages: List<Message> = listOf(),
         val loaded: Boolean = false
     ) : State

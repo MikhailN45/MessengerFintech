@@ -18,13 +18,13 @@ import com.study.messengerfintech.presentation.adapters.StreamType
 import com.study.messengerfintech.presentation.adapters.StreamsTopicsAdapter
 import com.study.messengerfintech.presentation.events.Event
 import com.study.messengerfintech.presentation.state.State
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 
 class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_and_chats_fragment) {
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
     private var items: MutableList<StreamTopicItem> = mutableListOf()
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: StreamsViewModel by activityViewModels()
     private var streams = State.Streams(listOf())
 
     private val adapter = StreamsTopicsAdapter { onClickedItem ->
