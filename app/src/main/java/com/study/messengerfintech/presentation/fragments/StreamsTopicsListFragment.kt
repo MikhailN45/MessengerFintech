@@ -2,6 +2,8 @@ package com.study.messengerfintech.presentation.fragments
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +46,10 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
                     viewModel.processEvent(Event.ExpandStream(onClickedItem))
-                    addItemsToAdapter(onClickedItem)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        addItemsToAdapter(onClickedItem)
+
+                    }, 500)
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
             }
@@ -137,7 +142,7 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         val position = items.indexOf(stream)
         items.addAll(position + 1, stream.topics)
         adapter.notifyItemRangeInserted(position + 1, stream.topics.size)
-        adapter.notifyItemRangeChanged(position + stream.topics.size + 1, items.size)
+        adapter.notifyItemRangeChanged(position, items.size)
     }
 
     private fun deleteItemsFromAdapter(item: StreamItem) {
