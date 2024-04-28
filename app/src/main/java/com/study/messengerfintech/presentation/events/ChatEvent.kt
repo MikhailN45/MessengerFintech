@@ -1,5 +1,7 @@
 package com.study.messengerfintech.presentation.events
 
+import com.study.messengerfintech.domain.model.Reaction
+
 sealed interface ChatEvent {
     sealed interface LoadMessages : ChatEvent {
         data class Private(

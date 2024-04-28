@@ -1,16 +1,14 @@
 package com.study.messengerfintech.data.repository
 
 import android.util.Log
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.study.messengerfintech.data.model.MessageResponse
 import com.study.messengerfintech.data.model.ReactionResponse
 import com.study.messengerfintech.data.model.StreamResponse
 import com.study.messengerfintech.data.model.TopicResponse
 import com.study.messengerfintech.data.model.UserResponse
-import com.study.messengerfintech.data.network.AuthInterceptor
 import com.study.messengerfintech.data.network.NarrowInt
 import com.study.messengerfintech.data.network.NarrowStr
-import com.study.messengerfintech.data.network.ZulipApi
+import com.study.messengerfintech.data.network.ZulipRetrofitApi
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.Stream
@@ -22,38 +20,14 @@ import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.encodeToJsonElement
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object RepositoryImpl : Repository {
-    private const val BASE_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
-
-    private val format = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
-    }
-
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        .addInterceptor(AuthInterceptor())
-        .build()
-
-    @OptIn(ExperimentalSerializationApi::class)
-    private var retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(client)
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .addConverterFactory(format.asConverterFactory("application/json".toMediaType()))
-        .build()
-
-    private var service = retrofit.create(ZulipApi::class.java)
+@Singleton
+class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) : Repository {
 
     override fun loadStreams(): Single<List<Stream>> =
         service.getStreams()
@@ -67,6 +41,9 @@ object RepositoryImpl : Repository {
                             }
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
+                    .doOnError {
+                        Log.e("loadStreams", it.message.toString())
+                    }
             }
 
     override fun loadSubscribedStreams(): Single<List<Stream>> =
@@ -81,20 +58,23 @@ object RepositoryImpl : Repository {
                             }
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
+                    .doOnError {
+                        Log.e("loadSubscribedStreams", it.message.toString())
+                    }
             }
 
     override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =
         loadTopicMessages(stream, topic).map { it.size }
             .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }
-            .onErrorResumeNext { throwable: Throwable ->
-                Log.e("getMessagesCountForTopicResume", throwable.message.toString())
-                Single.just(0)
-            }
+            .onErrorResumeNext { Single.just(0) }
 
     override fun loadTopics(streamId: Int): Single<List<Topic>> =
         service.getTopicsInStream(streamId)
             .subscribeOn(Schedulers.io())
             .map { it.topics.toTopics() }
+            .doOnError {
+                Log.e("loadTopics", it.message.toString())
+            }
 
 
     override fun loadUsers(): Single<List<User>> =
@@ -103,10 +83,16 @@ object RepositoryImpl : Repository {
             .map {
                 it.members.map { userResponse -> userResponse.toUser() }
             }.flatMap { usersStatusPreload(it) }
+            .doOnError {
+                Log.e("loadUsers", it.message.toString())
+            }
 
     private fun usersStatusPreload(users: List<User>): Single<List<User>> {
         val statusLoaders = users.map { user ->
             loadStatus(user)
+                .doOnError {
+                    Log.e("usersStatusPreload", it.message.toString())
+                }
         }
         return Single.concatEager(statusLoaders).toList()
     }
@@ -121,13 +107,16 @@ object RepositoryImpl : Repository {
                 }
             }.onErrorReturn { user }
             .doOnError {
-                Log.e("LoadUserStatus", it.message.toString())
+                Log.e("loadStatus", it.message.toString())
             }
 
     override fun loadOwnUser(): Single<User> =
         service.getOwnUser()
             .subscribeOn(Schedulers.io())
             .map { it.toUser() }
+            .doOnError {
+                Log.e("loadOwnUser", it.message.toString())
+            }
 
     override fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>> {
         val narrow = listOf(
@@ -148,6 +137,10 @@ object RepositoryImpl : Repository {
                     )
                 }
             }.map { it.reversed() }
+            .doOnError {
+                Log.e("loadTopicMessages", it.message.toString())
+            }
+
     }
 
     override fun loadPrivateMessages(userEmail: String): Single<List<Message>> {
@@ -166,6 +159,9 @@ object RepositoryImpl : Repository {
                     messageResponse.toMessage()
                 }
             }.map { it.reversed() }
+            .doOnError {
+                Log.e("loadPrivateMessages", it.message.toString())
+            }
     }
 
     override fun sendMessage(
@@ -176,14 +172,25 @@ object RepositoryImpl : Repository {
     ): Single<Int> =
         service.sendMessage(type.type, to, content, topic)
             .map { it.id }
+            .doOnError {
+                Log.e("sendMessage", it.message.toString())
+            }
 
 
     override fun addEmoji(messageId: Int, emojiName: String): Completable =
         service.addEmojiReaction(messageId, name = emojiName).ignoreElement()
+            .subscribeOn(Schedulers.io())
+            .doOnError {
+                Log.e("addEmoji", it.message.toString())
+            }
 
 
     override fun deleteEmoji(messageId: Int, emojiName: String): Completable =
         service.deleteEmojiReaction(messageId, name = emojiName).ignoreElement()
+            .subscribeOn(Schedulers.io())
+            .doOnError {
+                Log.e("deleteEmoji", it.message.toString())
+            }
 
     private fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message =
         Message(

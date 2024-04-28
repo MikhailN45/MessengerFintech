@@ -6,6 +6,7 @@ import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.toStreamItem
 import com.study.messengerfintech.domain.model.toStreamItems
 import com.study.messengerfintech.domain.model.toTopicItems
+import javax.inject.Inject
 
 interface SearchTopicsUseCase {
     operator fun invoke(
@@ -14,7 +15,7 @@ interface SearchTopicsUseCase {
     ): List<StreamTopicItem>
 }
 
-class SearchTopicsUseCaseImpl : SearchTopicsUseCase {
+class SearchTopicsUseCaseImpl @Inject constructor() : SearchTopicsUseCase {
     override fun invoke(
         searchQuery: String,
         streams: List<Stream>

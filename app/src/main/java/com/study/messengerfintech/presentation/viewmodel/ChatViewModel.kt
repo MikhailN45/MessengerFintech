@@ -3,30 +3,30 @@ package com.study.messengerfintech.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.Message
+import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.presentation.events.ChatEvent
-import com.study.messengerfintech.presentation.state.State
+import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.utils.SendType
 import com.study.messengerfintech.utils.SingleLiveEvent
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class ChatViewModel : ViewModel() {
-    private val repository: Repository = RepositoryImpl
+class ChatViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
+
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val positionToScroll = SingleLiveEvent<Int>()
-    val chat = MutableLiveData(State.Chat())
+    val messageEvent = SingleLiveEvent<String>()
 
-    private val _chatScreenState: MutableLiveData<State> = MutableLiveData()
-    val chatScreenState: LiveData<State>
-        get() = _chatScreenState
+    private val _state: MutableLiveData<ChatState> = MutableLiveData(ChatState())
+    val state: LiveData<ChatState> = _state
 
     fun processEvent(event: ChatEvent) {
         when (event) {
@@ -36,14 +36,15 @@ class ChatViewModel : ViewModel() {
             is ChatEvent.SendMessage.Private ->
                 sendPrivateMessage(event.userEmail, event.content)
 
-            is ChatEvent.LoadMessages.Topic ->
-                manageChatMessages(getTopicMessages(event.streamId, event.topicName))
+            is ChatEvent.LoadMessages.Topic -> loadTopicMessages(
+                event.streamId,
+                event.topicName
+            )
 
             is ChatEvent.LoadMessages.Private ->
-                manageChatMessages(getPrivateMessages(event.userEmail))
+                loadPrivateMessages(event.userEmail)
 
-            is ChatEvent.Emoji.Add ->
-                addReaction(event.messageId, event.emojiName)
+            is ChatEvent.Emoji.Add -> addEmojiToMessage(event.messageId, event.emojiName)
 
             is ChatEvent.Emoji.Remove ->
                 deleteReaction(event.messageId, event.emojiName)
@@ -51,7 +52,22 @@ class ChatViewModel : ViewModel() {
     }
 
     fun setChatTitle(title: String) {
-        chat.value = State.Chat(title)
+        _state.value = state.value?.copy(title = title)
+    }
+
+    fun setReactionToMessage(reaction: Reaction, messagePosition: Int) {
+        val messages = state.value?.messages ?: return
+        messages[messagePosition].addEmoji(reaction)
+        //redeclaration for livedata change trigger
+        _state.value = state.value?.copy(messages = emptyList())
+        _state.value = state.value?.copy(messages = messages)
+
+        processEvent(
+            ChatEvent.Emoji.Add(
+                messages[messagePosition].id,
+                reaction.name
+            )
+        )
     }
 
     private fun sendMessage(
@@ -60,21 +76,22 @@ class ChatViewModel : ViewModel() {
         content: String,
         topic: String = ""
     ) {
-        _chatScreenState.postValue(State.Loading)
+        _state.value = state.value?.copy(isLoading = true)
         repository.sendMessage(type, to, content, topic)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { id ->
+                    _state.value = state.value?.copy(isLoading = false)
                     val message = Message(id, content, User.ME.id, true)
-                    val state = chat.value!!
-                    val updatedList =
-                        state.messages.toMutableList().apply { add(0, message) }
-                    chat.value = state.copy(messages = updatedList)
-                    positionToScroll.value = 0
-                    _chatScreenState.postValue(State.Success)
+                    val updatedMessages =
+                        state.value?.messages?.toMutableList()?.apply { add(0, message) }
+                    _state.value = state.value?.copy(messages = updatedMessages?.toList().orEmpty())
                 },
-                onError = { _chatScreenState.postValue(State.Error) }
+                onError = {
+                    _state.value = state.value?.copy(isLoading = false)
+                    messageEvent.value = it.message.orEmpty()
+                },
             ).addTo(compositeDisposable)
     }
 
@@ -84,37 +101,53 @@ class ChatViewModel : ViewModel() {
     private fun sendPublicMessage(stream: Int, topic: String, content: String) =
         sendMessage(SendType.STREAM, "[$stream]", content, topic)
 
-    private fun manageChatMessages(flow: Single<List<Message>>) {
-        _chatScreenState.postValue(State.Loading)
-        val chat = chat.value!!.copy()
-        flow
+    private fun loadPrivateMessages(user: String) {
+        _state.value = state.value?.copy(isLoading = true)
+        repository.loadPrivateMessages(user)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
-                    _chatScreenState.postValue(State.Success)
-                    val isMessagesRemaining = messageList.isEmpty()
-                    val messages =
-                        chat.messages.toMutableList().apply { addAll(messageList) }
-                    this.chat.value = chat.copy(messages = messages, loaded = isMessagesRemaining)
-                    if (chat.messages.isEmpty())
-                        positionToScroll.value = 0
+                    updateMessages(messageList)
+                    _state.value = state.value?.copy(isLoading = false)
                 },
-                onError = { _chatScreenState.postValue(State.Error) }
+                onError = {
+                    _state.value = state.value?.copy(isLoading = false)
+                    messageEvent.value = it.message.orEmpty()
+                }
             )
             .addTo(compositeDisposable)
     }
 
-    private fun getTopicMessages(streamId: Int, topic: String): Single<List<Message>> =
+    private fun loadTopicMessages(streamId: Int, topic: String) {
+        _state.value = state.value?.copy(isLoading = true)
         repository.loadTopicMessages(streamId, topic)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { messageList ->
+                    updateMessages(messageList)
+                    _state.value = state.value?.copy(isLoading = false)
+                },
+                onError = {
+                    _state.value = state.value?.copy(isLoading = false)
+                    messageEvent.value = it.message.orEmpty()
+                }
+            )
+            .addTo(compositeDisposable)
+    }
 
-    private fun getPrivateMessages(user: String): Single<List<Message>> =
-        repository.loadPrivateMessages(user)
+    private fun updateMessages(messages: List<Message>) {
+        val isMessagesRemaining = messages.isEmpty()
+        _state.value = state.value?.copy(
+            messages = messages,
+            loaded = isMessagesRemaining
+        )
+    }
 
-    private fun addReaction(messageId: Int, emojiName: String) {
+    private fun addEmojiToMessage(messageId: Int, emojiName: String) {
         repository.addEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
-                onError = { _chatScreenState.postValue(State.Error) }
+                onError = { messageEvent.value = it.message.orEmpty() }
             ).addTo(compositeDisposable)
     }
 
@@ -122,7 +155,7 @@ class ChatViewModel : ViewModel() {
         repository.deleteEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
-                onError = { _chatScreenState.postValue(State.Error) }
+                onError = { messageEvent.value = it.message.orEmpty() }
             ).addTo(compositeDisposable)
     }
 

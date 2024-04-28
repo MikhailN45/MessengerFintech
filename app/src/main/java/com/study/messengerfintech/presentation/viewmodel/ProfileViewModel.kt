@@ -3,7 +3,6 @@ package com.study.messengerfintech.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.presentation.events.ProfileEvent
@@ -13,9 +12,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class ProfileViewModel : ViewModel() {
-    private val repository: Repository = RepositoryImpl
+class ProfileViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
+
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     val userStatus = MutableLiveData<State.Profile>()
 

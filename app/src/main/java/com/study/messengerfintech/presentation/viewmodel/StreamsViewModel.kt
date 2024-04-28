@@ -5,14 +5,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.study.messengerfintech.data.repository.RepositoryImpl
 import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCase
-import com.study.messengerfintech.domain.usecase.SearchTopicsUseCaseImpl
-import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.StreamsEvent
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.STREAM
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.TOPIC
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.USER_MAIL
@@ -29,12 +27,15 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class StreamsViewModel : ViewModel() {
-    private val repository: Repository = RepositoryImpl
+class StreamsViewModel @Inject constructor(
+    private val repository: Repository,
+    private val searchTopicsUseCase: SearchTopicsUseCase
+) : ViewModel() {
+
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val searchStreamsSubject: BehaviorSubject<String> = BehaviorSubject.create()
-    private val searchTopicsUseCase: SearchTopicsUseCase = SearchTopicsUseCaseImpl()
     val chatInstance = SingleLiveEvent<Bundle>()
 
     val streamsAll = MutableLiveData(State.Streams(listOf()))
@@ -50,18 +51,18 @@ class StreamsViewModel : ViewModel() {
         initUser()
     }
 
-    fun processEvent(event: Event) {
+    fun processEvent(event: StreamsEvent) {
         when (event) {
-            is Event.SearchForStreams ->
+            is StreamsEvent.SearchForStreams ->
                 searchStreamsSubject.onNext(event.query)
 
-            is Event.OpenChat.Private ->
+            is StreamsEvent.OpenChat.Private ->
                 openPrivateChat(event.user)
 
-            is Event.OpenChat.Topic ->
+            is StreamsEvent.OpenChat.Topic ->
                 openPublicChat(event.streamId, event.topic)
 
-            is Event.ExpandStream ->
+            is StreamsEvent.ExpandStream ->
                 updateTopicsMessagesCount(event.stream)
         }
     }
@@ -142,7 +143,7 @@ class StreamsViewModel : ViewModel() {
         Bundle().apply {
             putString(USER_MAIL, user.email)
             putString(USER_NAME, user.name)
-            chatInstance.postValue(this)
+            chatInstance.value = (this)
         }
     }
 

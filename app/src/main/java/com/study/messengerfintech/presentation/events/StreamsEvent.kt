@@ -3,17 +3,16 @@ package com.study.messengerfintech.presentation.events
 import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.User
 
-sealed interface Event {
-
+sealed interface StreamsEvent {
     data class SearchForStreams(
         val query: String = ""
-    ) : Event
+    ) : StreamsEvent
 
     data class ExpandStream(
         val stream: StreamItem
-    ): Event
+    ): StreamsEvent
 
-    sealed interface OpenChat : Event {
+    sealed interface OpenChat : StreamsEvent {
         data class Private(
             val user: User
         ) : OpenChat

@@ -1,36 +1,48 @@
 package com.study.messengerfintech.presentation.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.UsersFragmentBinding
+import com.study.messengerfintech.getComponent
 import com.study.messengerfintech.presentation.adapters.UsersAdapter
-import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.StreamsEvent
 import com.study.messengerfintech.presentation.events.UsersEvent
 import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 import com.study.messengerfintech.presentation.viewmodel.UsersViewModel
+import javax.inject.Inject
 
 class UsersFragment : FragmentMVI<State.Users>(R.layout.streams_and_chats_fragment) {
-    private val viewModel: StreamsViewModel by activityViewModels()
-    private val usersViewModel: UsersViewModel by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: StreamsViewModel by activityViewModels { viewModelFactory }
+    private val usersViewModel: UsersViewModel by activityViewModels { viewModelFactory }
     private var _binding: UsersFragmentBinding? = null
     private val binding get() = _binding!!
+
     private val adapter = UsersAdapter(
-        onClick = { user ->
-            viewModel.processEvent(Event.OpenChat.Private(user))
-        }
+        onClick = { user -> viewModel.processEvent(StreamsEvent.OpenChat.Private(user)) }
     )
 
     override fun render(state: State.Users) {
         adapter.submitList(state.users) {
             binding.usersRecycler.scrollToPosition(0)
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        getComponent().userComponent().create().inject(this)
     }
 
     override fun onCreateView(

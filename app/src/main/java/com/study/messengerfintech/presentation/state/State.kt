@@ -11,11 +11,11 @@ sealed interface State {
 
     data object Error : State
 
-    data class Chat(
+    /*data class Chat(
         val name: String = "",
         val messages: List<Message> = listOf(),
         val loaded: Boolean = false
-    ) : State
+    ) : State*/
 
     data class Users(val users: List<User>) : State
 
@@ -23,3 +23,4 @@ sealed interface State {
 
     data class Profile(val user: User) : State
 }
+

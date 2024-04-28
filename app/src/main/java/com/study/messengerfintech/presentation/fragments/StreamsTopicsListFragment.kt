@@ -1,5 +1,6 @@
 package com.study.messengerfintech.presentation.fragments
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -8,23 +9,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsAndChatsFragmentBinding
 import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
+import com.study.messengerfintech.getComponent
 import com.study.messengerfintech.presentation.adapters.StreamType
 import com.study.messengerfintech.presentation.adapters.StreamsTopicsAdapter
-import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.StreamsEvent
 import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
+import javax.inject.Inject
 
 class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_and_chats_fragment) {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: StreamsViewModel by activityViewModels { viewModelFactory }
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
     private var items: MutableList<StreamTopicItem> = mutableListOf()
-    private val viewModel: StreamsViewModel by activityViewModels()
     private var streams = State.Streams(listOf())
 
     private val adapter = StreamsTopicsAdapter { onClickedItem ->
@@ -32,12 +38,11 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
             is TopicItem -> {
                 onClickedItem.also {
                     viewModel.processEvent(
-                        Event.OpenChat.Topic(
+                        StreamsEvent.OpenChat.Topic(
                             onClickedItem.streamId,
                             onClickedItem.title
                         )
                     )
-                    collapseStreams()
                 }
             }
 
@@ -45,7 +50,7 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
-                    viewModel.processEvent(Event.ExpandStream(onClickedItem))
+                    viewModel.processEvent(StreamsEvent.ExpandStream(onClickedItem))
                     Handler(Looper.getMainLooper()).postDelayed({
                         addItemsToAdapter(onClickedItem)
 
@@ -64,13 +69,17 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        getComponent().streamsComponent().create().inject(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = StreamsAndChatsFragmentBinding.inflate(layoutInflater)
-
 
         viewModel.screenState.observe(viewLifecycleOwner) {
             when (it) {
