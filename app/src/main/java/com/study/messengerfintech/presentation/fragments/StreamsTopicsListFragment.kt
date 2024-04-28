@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +32,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
     private var items: MutableList<StreamTopicItem> = mutableListOf()
-    private var streams = State.Streams(listOf())
 
     private val adapter = StreamsTopicsAdapter { onClickedItem ->
         when (onClickedItem) {
@@ -62,7 +62,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
     }
 
     override fun render(state: State.Streams) {
-        this.streams = state
         items = state.items.toMutableList()
         adapter.submitList(items) {
             binding.streamsAndChatsRecycler.scrollToPosition(0)
@@ -80,25 +79,14 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         savedInstanceState: Bundle?
     ): View {
         _binding = StreamsAndChatsFragmentBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.screenState.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
-                    binding.streamsShimmer.visibility = View.VISIBLE
-                    binding.streamsAndChatsRecycler.visibility = View.GONE
-                }
-
-                is State.Error -> {
-                    binding.streamsShimmer.visibility = View.GONE
-                    binding.streamsAndChatsRecycler.visibility = View.VISIBLE
-                }
-
-                is State.Success -> {
-                    binding.streamsShimmer.visibility = View.GONE
-                    binding.streamsAndChatsRecycler.visibility = View.VISIBLE
-                }
-
-                else -> State.Error
+            with(binding) {
+                streamsShimmer.isVisible = it is State.Loading
+                streamsAndChatsRecycler.isVisible = it !is State.Loading
             }
         }
 
@@ -122,8 +110,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
             adapter = this@StreamsTopicsListFragment.adapter
             layoutManager = LinearLayoutManager(context)
         }
-
-        return binding.root
     }
 
     override fun onStop() {
@@ -147,10 +133,10 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         items = items.filterIsInstance<StreamItem>().toMutableList()
     }
 
-    private fun addItemsToAdapter(stream: StreamItem) {
-        val position = items.indexOf(stream)
-        items.addAll(position + 1, stream.topics)
-        adapter.notifyItemRangeInserted(position + 1, stream.topics.size)
+    private fun addItemsToAdapter(item: StreamItem) {
+        val position = items.indexOf(item)
+        items.addAll(position + 1, item.topics)
+        adapter.notifyItemRangeInserted(position + 1, item.topics.size)
         adapter.notifyItemRangeChanged(position, items.size)
     }
 

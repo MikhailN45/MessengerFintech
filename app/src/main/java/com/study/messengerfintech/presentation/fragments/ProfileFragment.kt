@@ -16,11 +16,11 @@ import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.model.UserStatus
 import com.study.messengerfintech.getComponent
 import com.study.messengerfintech.presentation.events.ProfileEvent
-import com.study.messengerfintech.presentation.state.State
+import com.study.messengerfintech.presentation.state.ProfileState
 import com.study.messengerfintech.presentation.viewmodel.ProfileViewModel
 import javax.inject.Inject
 
-class ProfileFragment : FragmentMVI<State.Profile>(R.layout.profile_fragment) {
+class ProfileFragment : FragmentMVI<ProfileState>(R.layout.profile_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val profileViewModel: ProfileViewModel by activityViewModels { viewModelFactory }
@@ -28,7 +28,7 @@ class ProfileFragment : FragmentMVI<State.Profile>(R.layout.profile_fragment) {
     private val binding get() = _binding!!
     private val currentUser = User.ME
 
-    override fun render(state: State.Profile) {
+    override fun render(state: ProfileState) {
         updateStatusTextColor(state.user)
     }
 

@@ -40,7 +40,6 @@ class StreamsViewModel @Inject constructor(
 
     val streamsAll = MutableLiveData(State.Streams(listOf()))
     val streamsSubscribed = MutableLiveData(State.Streams(listOf()))
-    val users = MutableLiveData<State.Users>()
 
     private val _screenState: MutableLiveData<State> = MutableLiveData()
     val screenState: LiveData<State>
@@ -67,13 +66,6 @@ class StreamsViewModel @Inject constructor(
         }
     }
 
-    private fun initUser() {
-        repository.loadOwnUser().subscribeBy(
-            onSuccess = { user -> User.ME = user },
-            onError = { error -> Log.e("initOwnUser", error.toString()) }
-        ).addTo(compositeDisposable)
-    }
-
     private fun subscribeToSearchStreams() {
         val subject = searchStreamsSubject
             .subscribeOn(Schedulers.io())
@@ -81,7 +73,7 @@ class StreamsViewModel @Inject constructor(
             .doOnNext { _screenState.postValue(State.Loading) }
             .doOnError { error ->
                 Log.e("subscribeToSearchStreams", error.message.toString())
-                _screenState.postValue(State.Error)
+              //  _screenState.postValue(State.Error)
             }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .share()
@@ -137,6 +129,13 @@ class StreamsViewModel @Inject constructor(
                 }
             )
             .addTo(compositeDisposable)
+    }
+
+    private fun initUser() {
+        repository.loadOwnUser().subscribeBy(
+            onSuccess = { user -> User.ME = user },
+            onError = { error -> Log.e("initOwnUser", error.toString()) }
+        ).addTo(compositeDisposable)
     }
 
     private fun openPrivateChat(user: User) {

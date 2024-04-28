@@ -23,7 +23,7 @@ class ChatViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val messageEvent = SingleLiveEvent<String>()
+    private val messageEvent = SingleLiveEvent<String>()
 
     private val _state: MutableLiveData<ChatState> = MutableLiveData(ChatState())
     val state: LiveData<ChatState> = _state
@@ -49,10 +49,6 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.Emoji.Remove ->
                 deleteReaction(event.messageId, event.emojiName)
         }
-    }
-
-    fun setChatTitle(title: String) {
-        _state.value = state.value?.copy(title = title)
     }
 
     fun setReactionToMessage(reaction: Reaction, messagePosition: Int) {

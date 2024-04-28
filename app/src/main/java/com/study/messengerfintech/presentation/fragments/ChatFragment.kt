@@ -21,9 +21,7 @@ import com.study.messengerfintech.presentation.adapters.MessagesAdapter
 import com.study.messengerfintech.presentation.events.ChatEvent
 import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.presentation.viewmodel.ChatViewModel
-import com.study.messengerfintech.utils.EmojiAdd
-import com.study.messengerfintech.utils.EmojiDelete
-import com.study.messengerfintech.utils.OnEmojiClickEvent
+
 import javax.inject.Inject
 
 class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
@@ -61,7 +59,6 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        chatViewModel.setChatTitle(userName ?: topicName!!)
         loadMessages()
     }
 
@@ -86,9 +83,6 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun render(state: ChatState) = with(binding) {
         progressBar.isVisible = state.isLoading
-        sendMessageButton.isVisible =
-            !state.isLoading && sendMessageDraftText.text.isNotEmpty()
-        addFileButton.isVisible = !state.isLoading && sendMessageDraftText.text.isEmpty()
         adapter.submitList(state.messages) {
             chatRecycler.scrollToPosition(0)
         }
@@ -120,13 +114,8 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
             }
 
             sendMessageDraftText.doAfterTextChanged {
-                if (it.isNullOrBlank()) {
-                    sendMessageButton.visibility = View.GONE
-                    addFileButton.visibility = View.VISIBLE
-                } else {
-                    sendMessageButton.visibility = View.VISIBLE
-                    addFileButton.visibility = View.GONE
-                }
+                sendMessageButton.isVisible = !it.isNullOrBlank()
+                addFileButton.isVisible = it.isNullOrBlank()
             }
         }
 

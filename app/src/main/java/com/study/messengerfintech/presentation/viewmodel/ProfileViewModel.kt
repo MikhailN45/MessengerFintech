@@ -1,12 +1,12 @@
 package com.study.messengerfintech.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.presentation.events.ProfileEvent
-import com.study.messengerfintech.presentation.state.State
+import com.study.messengerfintech.presentation.state.ProfileState
+import com.study.messengerfintech.utils.SingleLiveEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -19,7 +19,8 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val userStatus = MutableLiveData<State.Profile>()
+    val userStatus = MutableLiveData<ProfileState>()
+    private val messageEvent = SingleLiveEvent<String>()
 
     fun processEvent(event: ProfileEvent) {
         when (event) {
@@ -32,10 +33,8 @@ class ProfileViewModel @Inject constructor(
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribeBy(
-            onSuccess = { userStatus.value = State.Profile(it) },
-            onError = { error ->
-                Log.e("loadStatus", error.toString())
-            }
+            onSuccess = { userStatus.value = ProfileState(it) },
+            onError = { messageEvent.value = it.message.orEmpty() }
         ).addTo(compositeDisposable)
 
     override fun onCleared() {

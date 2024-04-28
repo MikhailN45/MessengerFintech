@@ -12,7 +12,7 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.model.UserStatus
 
-class UsersAdapter(val onClick: (User) -> Unit) :
+class UsersAdapter(val onUserClick: (User) -> Unit) :
     ListAdapter<User, UsersAdapter.ViewHolder>(UsersDiffUtil()) {
     inner class ViewHolder(val binding: UserItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -43,7 +43,7 @@ class UsersAdapter(val onClick: (User) -> Unit) :
                 .into(this)
         }
 
-        holder.binding.root.setOnClickListener { onClick(user) }
+        holder.binding.root.setOnClickListener { onUserClick(user) }
     }
 }
 
