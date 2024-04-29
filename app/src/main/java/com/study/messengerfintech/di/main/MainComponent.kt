@@ -15,5 +15,4 @@ abstract class MainComponent {
     }
 
     abstract fun inject(activity: MainActivity)
-
 }

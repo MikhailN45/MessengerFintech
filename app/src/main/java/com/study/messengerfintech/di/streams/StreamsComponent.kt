@@ -16,5 +16,4 @@ abstract class StreamsComponent {
     }
 
     abstract fun inject(fragment: StreamsFragment)
-
 }

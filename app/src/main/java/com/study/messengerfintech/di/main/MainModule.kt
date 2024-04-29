@@ -14,5 +14,4 @@ abstract class MainModule {
     @IntoMap
     @ViewModelKey(StreamsViewModel::class)
     abstract fun bindViewModel(viewModel: StreamsViewModel): ViewModel
-
 }

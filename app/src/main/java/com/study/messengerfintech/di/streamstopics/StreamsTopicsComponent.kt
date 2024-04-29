@@ -16,5 +16,4 @@ abstract class StreamsTopicsComponent {
     }
 
     abstract fun inject(fragment: StreamsTopicsListFragment)
-
 }

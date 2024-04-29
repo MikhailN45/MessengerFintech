@@ -14,5 +14,4 @@ abstract class ChatModule {
     @IntoMap
     @ViewModelKey(ChatViewModel::class)
     abstract fun bindViewModel(viewmodel: ChatViewModel): ViewModel
-
 }

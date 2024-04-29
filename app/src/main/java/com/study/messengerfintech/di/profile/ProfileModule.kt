@@ -14,5 +14,4 @@ abstract class ProfileModule {
     @IntoMap
     @ViewModelKey(ProfileViewModel::class)
     abstract fun bindViewModel(viewModel: ProfileViewModel): ViewModel
-
 }

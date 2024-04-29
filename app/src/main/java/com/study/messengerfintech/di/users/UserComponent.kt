@@ -15,5 +15,4 @@ abstract class UserComponent {
     }
 
     abstract fun inject(fragment: UsersFragment)
-
 }

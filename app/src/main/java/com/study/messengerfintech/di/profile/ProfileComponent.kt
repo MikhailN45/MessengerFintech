@@ -3,7 +3,6 @@ package com.study.messengerfintech.di.profile
 import com.study.messengerfintech.presentation.fragments.ProfileFragment
 import dagger.Subcomponent
 
-
 @Subcomponent(
     modules =
     [ProfileModule::class]
@@ -16,5 +15,4 @@ abstract class ProfileComponent {
     }
 
     abstract fun inject(fragment: ProfileFragment)
-
 }

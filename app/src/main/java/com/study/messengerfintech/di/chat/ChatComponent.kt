@@ -15,5 +15,4 @@ abstract class ChatComponent {
     }
 
     abstract fun inject(fragment: ChatFragment)
-
 }

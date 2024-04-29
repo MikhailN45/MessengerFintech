@@ -34,7 +34,6 @@ interface AppComponent {
     fun profileComponent(): ProfileComponent.Factory
     fun streamsComponent(): StreamsTopicsComponent.Factory
     fun channelsComponent(): StreamsComponent.Factory
-
 }
 
 @Module(
