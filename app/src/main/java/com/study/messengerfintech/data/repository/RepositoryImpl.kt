@@ -1,6 +1,7 @@
 package com.study.messengerfintech.data.repository
 
 import android.util.Log
+import com.study.messengerfintech.data.database.AppDatabase
 import com.study.messengerfintech.data.model.MessageResponse
 import com.study.messengerfintech.data.model.ReactionResponse
 import com.study.messengerfintech.data.model.StreamResponse
@@ -18,6 +19,7 @@ import com.study.messengerfintech.domain.model.UserStatus
 import com.study.messengerfintech.domain.repository.Repository
 import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.json.Json
@@ -27,74 +29,139 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) : Repository {
+class RepositoryImpl @Inject constructor(
+    private val service: ZulipRetrofitApi,
+    private val database: AppDatabase
+) : Repository {
 
-    override fun loadStreams(): Single<List<Stream>> =
-        service.getStreams()
+    override fun requestAllStreams(): Completable {
+        return service.getStreams()
             .subscribeOn(Schedulers.io())
-            .flatMap { streamResponses ->
+            .flatMapCompletable { streamResponses ->
                 val streams = streamResponses.streams
                     .map { streamResponse ->
                         loadTopics(streamResponse.id)
                             .map { topics ->
-                                streamResponse.toStream(topics)
+                                streamResponse.toStream(topics, false)
                             }
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
-                    .doOnError {
-                        Log.e("loadStreams", it.message.toString())
+                    .flatMapCompletable { streamList ->
+                        database.streamDao().insert(streamList)
+                    }
+                    .doOnError { error: Throwable ->
+                        Log.e("requestAllStreams", "${error.message}")
                     }
             }
+            .onErrorComplete()
+    }
 
-    override fun loadSubscribedStreams(): Single<List<Stream>> =
-        service.getSubscribedStreams()
+    override fun getAllStreams(): Observable<List<Stream>> {
+        return database.streamDao().getAll()
+            .toObservable()
+            .observeOn(Schedulers.io())
+            .flatMap {
+                getTopicsFromStreams(it).toObservable()
+            }
+            .doOnEach {
+                Log.d("getAllStreams", "$it")
+            }
+    }
+
+    override fun requestSubscribedStreams(): Completable {
+        return service.getSubscribedStreams()
             .subscribeOn(Schedulers.io())
-            .flatMap { streamResponses ->
+            .flatMapCompletable { streamResponses ->
                 val streams = streamResponses.subscriptions
                     .map { streamResponse ->
                         loadTopics(streamResponse.id)
                             .map { topics ->
-                                streamResponse.toStream(topics)
+                                streamResponse.toStream(topics, true)
                             }
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
-                    .doOnError {
-                        Log.e("loadSubscribedStreams", it.message.toString())
+                    .flatMapCompletable { streamList ->
+                        database.streamDao().insert(streamList)
+                    }
+                    .doOnError { error: Throwable ->
+                        Log.e("requestSubscribedStreams", "${error.message}")
                     }
             }
+            .onErrorComplete()
+    }
+
+    override fun getSubscribedStreams(): Observable<List<Stream>> {
+        return database.streamDao().getSubscribed()
+            .toObservable()
+            .observeOn(Schedulers.io())
+            .flatMap {
+                getTopicsFromStreams(it).toObservable()
+            }
+            .doOnEach {
+                Log.d("getSubscribedStreams", "$it")
+            }
+    }
+
+
+    private fun getTopicsFromStreams(streams: List<Stream>): Single<List<Stream>> {
+        val streamsWithTopics = streams.map { stream ->
+            database.topicDao().getTopicsInStream(stream.id)
+                .doOnSuccess { Log.d("getTopicsFromStreams", "${stream.id} $it") }
+                .subscribeOn(Schedulers.io())
+                .map { topicList -> stream.toStream(topicList) }
+        }
+
+        return Single.concatEager(streamsWithTopics).toList()
+    }
+
 
     override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =
         loadTopicMessages(stream, topic).map { it.size }
             .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }
             .onErrorResumeNext { Single.just(0) }
 
-    override fun loadTopics(streamId: Int): Single<List<Topic>> =
-        service.getTopicsInStream(streamId)
+    override fun loadTopics(streamId: Int): Single<List<Topic>> {
+        val localAnswer = database.topicDao().getTopicsInStream(streamId)
+            .doOnSuccess { Log.d("getTopicsInStream", "$streamId $it") }
+
+        val remoteAnswer = service.getTopicsInStream(streamId)
             .subscribeOn(Schedulers.io())
-            .map { it.topics.toTopics() }
-            .doOnError {
-                Log.e("loadTopics", it.message.toString())
-            }
+            .map { it.topics.toTopics(streamId = streamId) }
+            .flatMap { topics -> database.topicDao().insert(topics).toSingleDefault(topics) }
+            .onErrorResumeNext { localAnswer }
+
+        return remoteAnswer.subscribeOn(Schedulers.io())
+    }
 
 
-    override fun loadUsers(): Single<List<User>> =
-        service.getUsers()
+    override fun loadUsers(): Observable<List<User>> {
+        val localAnswer = database.userDao().getAll()
+            .subscribeOn(Schedulers.io())
+
+        val remoteAnswer = service.getUsers()
             .subscribeOn(Schedulers.io())
             .map {
                 it.members.map { userResponse -> userResponse.toUser() }
             }.flatMap { usersStatusPreload(it) }
-            .doOnError {
-                Log.e("loadUsers", it.message.toString())
+            .doOnSuccess { database.userDao().insert(it) }
+            .onErrorResumeNext { error ->
+                Log.e("loadUsersRetrofit", "${error.message}")
+                localAnswer
             }
 
+        return Single.concat(localAnswer, remoteAnswer).toObservable()
+    }
+
+
     private fun usersStatusPreload(users: List<User>): Single<List<User>> {
-        val statusLoaders = users.map { user ->
+        val usersWithStatus = users.map { user ->
             loadStatus(user)
-                .doOnError {
-                    Log.e("usersStatusPreload", it.message.toString())
+                .doOnError { error ->
+                    Log.e("usersStatusPreload", "${error.message}")
                 }
         }
-        return Single.concatEager(statusLoaders).toList()
+
+        return Single.concatEager(usersWithStatus).toList()
     }
 
     override fun loadStatus(user: User): Single<User> =
@@ -106,17 +173,15 @@ class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) 
                     user
                 }
             }.onErrorReturn { user }
-            .doOnError {
-                Log.e("loadStatus", it.message.toString())
+            .doOnError { error ->
+                Log.e("getPresence", "${error.message}")
             }
 
-    override fun loadOwnUser(): Single<User> =
-        service.getOwnUser()
-            .subscribeOn(Schedulers.io())
-            .map { it.toUser() }
-            .doOnError {
-                Log.e("loadOwnUser", it.message.toString())
-            }
+    override fun loadOwnUser(): Single<User> = service.getOwnUser()
+        .subscribeOn(Schedulers.io())
+        .map { it.toUser() }
+        .flatMap { database.userDao().insert(it).toSingleDefault(it) }
+        .onErrorResumeNext { database.userDao().getOwnUser() }
 
     override fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>> {
         val narrow = listOf(
@@ -128,7 +193,7 @@ class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) 
             JsonArray(it).toString()
         }
 
-        return service.getMessages(narrow = narrow)
+        val remoteAnswer = service.getMessages(narrow = narrow)
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.messages.map { messageResponse ->
@@ -141,6 +206,7 @@ class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) 
                 Log.e("loadTopicMessages", it.message.toString())
             }
 
+        return remoteAnswer
     }
 
     override fun loadPrivateMessages(userEmail: String): Single<List<Message>> {
@@ -159,8 +225,8 @@ class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) 
                     messageResponse.toMessage()
                 }
             }.map { it.reversed() }
-            .doOnError {
-                Log.e("loadPrivateMessages", it.message.toString())
+            .doOnError { error ->
+                Log.e("getMessages", "${error.message}")
             }
     }
 
@@ -172,24 +238,24 @@ class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) 
     ): Single<Int> =
         service.sendMessage(type.type, to, content, topic)
             .map { it.id }
-            .doOnError {
-                Log.e("sendMessage", it.message.toString())
+            .doOnError { error ->
+                Log.e("sendMessage", "${error.message}")
             }
 
 
     override fun addEmoji(messageId: Int, emojiName: String): Completable =
         service.addEmojiReaction(messageId, name = emojiName).ignoreElement()
             .subscribeOn(Schedulers.io())
-            .doOnError {
-                Log.e("addEmoji", it.message.toString())
+            .doOnError { error ->
+                Log.e("addEmoji", "${error.message}")
             }
 
 
     override fun deleteEmoji(messageId: Int, emojiName: String): Completable =
         service.deleteEmojiReaction(messageId, name = emojiName).ignoreElement()
             .subscribeOn(Schedulers.io())
-            .doOnError {
-                Log.e("deleteEmoji", it.message.toString())
+            .doOnError { error ->
+                Log.e("deleteEmoji", "${error.message}")
             }
 
     private fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message =
@@ -210,18 +276,30 @@ class RepositoryImpl @Inject constructor(private val service: ZulipRetrofitApi) 
         name = name
     )
 
-    private fun StreamResponse.toStream(topics: List<Topic>): Stream = Stream(
-        id = id,
+    private fun StreamResponse.toStream(topics: List<Topic>, isSubscribed: Boolean): Stream =
+        Stream(
+            id = id,
+            title = title,
+            topics = topics,
+            isSubscribed = isSubscribed
+        )
+
+    private fun Stream.toStream(topics: List<Topic>): Stream =
+        Stream(
+            id = id,
+            title = title,
+            topics = topics,
+            isSubscribed = isSubscribed
+        )
+
+    private fun TopicResponse.toTopic(streamId: Int): Topic = Topic(
         title = title,
-        topics = topics
+        messageCount = messageCount,
+        streamId = streamId
     )
 
-    private fun TopicResponse.toTopic(): Topic = Topic(
-        title = title,
-        messageCount = messageCount
-    )
-
-    private fun List<TopicResponse>.toTopics(): List<Topic> = map { it.toTopic() }
+    private fun List<TopicResponse>.toTopics(streamId: Int): List<Topic> =
+        map { it.toTopic(streamId) }
 
 
     private fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User = User(

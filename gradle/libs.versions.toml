@@ -9,9 +9,9 @@ agp = "8.3.2"
 kotlin = "1.9.23"
 
 #Libraries versions
-coreKtx = "1.13.0"
+coreKtx = "1.13.1"
 appcompat = "1.6.1"
-material = "1.11.0"
+material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 viewpager2 = "1.0.0"
@@ -26,6 +26,7 @@ loggingInterceptor = "4.12.0"
 shimmer = "0.5.0"
 glide = "4.16.0"
 dagger = "2.50"
+room = "2.6.1"
 
 [libraries]
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
@@ -33,6 +34,9 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }

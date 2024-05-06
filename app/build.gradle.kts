@@ -73,4 +73,9 @@ dependencies {
     //DI
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
+
+    //Room
+    implementation (libs.androidx.room.runtime)
+    implementation (libs.androidx.room.rxjava2)
+    kapt(libs.androidx.room.compiler)
 }

@@ -59,7 +59,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadMessages()
+        loadMessages() //todo move to init vm block
     }
 
     override fun onCreateView(
@@ -83,6 +83,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun render(state: ChatState) = with(binding) {
         progressBar.isVisible = state.isLoading
+        chatRecycler.isVisible = !state.isLoading
         adapter.submitList(state.messages) {
             chatRecycler.scrollToPosition(0)
         }
