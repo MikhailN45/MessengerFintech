@@ -183,6 +183,15 @@ class RepositoryImpl @Inject constructor(
         .flatMap { database.userDao().insert(it).toSingleDefault(it) }
         .onErrorResumeNext { database.userDao().getOwnUser() }
 
+
+    private fun clearMessages(messages: List<Message>): List<Message> {
+        if (messages.size <= 50) return messages
+        messages.subList(0, messages.size - 50).onEach { message ->
+            database.messageDao().delete(message)
+        }
+        return messages.subList(messages.size - 50, messages.size)
+    }
+
     override fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>> {
         val narrow = listOf(
             NarrowInt("stream", stream),
@@ -193,20 +202,27 @@ class RepositoryImpl @Inject constructor(
             JsonArray(it).toString()
         }
 
-        val remoteAnswer = service.getMessages(narrow = narrow)
+        val localAnswer =
+            database.messageDao().getPublicMessages(stream, topic)
+                .map { clearMessages(it) }
+                .map { it.reversed() }
+
+        return service.getMessages(narrow = narrow)
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.messages.map { messageResponse ->
                     messageResponse.toMessage(
-                        reactions = messageResponse.reactions.map { it.toReaction() }
+                        reactions = messageResponse.reactions.map { it.toReaction() },
+                        streamId = stream,
+                        topicTitle = topic
+
                     )
                 }
             }.map { it.reversed() }
-            .doOnError {
-                Log.e("loadTopicMessages", it.message.toString())
+            .flatMap { messages ->
+                database.messageDao().insert(messages).toSingleDefault(messages)
             }
-
-        return remoteAnswer
+            .onErrorResumeNext { localAnswer }
     }
 
     override fun loadPrivateMessages(userEmail: String): Single<List<Message>> {
@@ -218,16 +234,22 @@ class RepositoryImpl @Inject constructor(
             JsonArray(it).toString()
         }
 
+        val localAnswer =
+            database.messageDao().getPrivateMessages(userEmail)
+                .map { clearMessages(it) }
+                .map { it.reversed() }
+
         return service.getMessages(narrow = narrow)
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.messages.map { messageResponse ->
-                    messageResponse.toMessage()
+                    messageResponse.toMessage(userEmail = userEmail)
                 }
             }.map { it.reversed() }
-            .doOnError { error ->
-                Log.e("getMessages", "${error.message}")
+            .flatMap { messages ->
+                database.messageDao().insert(messages).toSingleDefault(messages)
             }
+            .onErrorResumeNext { localAnswer }
     }
 
     override fun sendMessage(
@@ -258,7 +280,11 @@ class RepositoryImpl @Inject constructor(
                 Log.e("deleteEmoji", "${error.message}")
             }
 
-    private fun MessageResponse.toMessage(reactions: List<Reaction> = emptyList()): Message =
+    private fun MessageResponse.toMessage(
+        reactions: List<Reaction> = emptyList(),
+        streamId: Int,
+        topicTitle: String
+    ): Message =
         Message(
             id = id,
             content = content,
@@ -267,7 +293,25 @@ class RepositoryImpl @Inject constructor(
             senderName = senderName,
             timestamp = timestamp,
             avatarUrl = avatarUrl,
-            reactions = reactions
+            reactions = reactions,
+            streamId = streamId,
+            topicTitle = topicTitle
+        )
+
+    private fun MessageResponse.toMessage(
+        reactions: List<Reaction> = emptyList(),
+        userEmail: String
+    ): Message =
+        Message(
+            id = id,
+            content = content,
+            userId = userId,
+            isMine = isMine,
+            senderName = senderName,
+            timestamp = timestamp,
+            avatarUrl = avatarUrl,
+            reactions = reactions,
+            userEmail = userEmail
         )
 
     private fun ReactionResponse.toReaction(): Reaction = Reaction(

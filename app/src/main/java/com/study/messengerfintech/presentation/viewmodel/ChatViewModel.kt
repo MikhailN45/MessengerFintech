@@ -143,7 +143,7 @@ class ChatViewModel @Inject constructor(
         repository.addEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
-                onError = { messageEvent.value = it.message.orEmpty() }
+                onError = { messageEvent.postValue(it.message.orEmpty()) }
             ).addTo(compositeDisposable)
     }
 
@@ -151,7 +151,7 @@ class ChatViewModel @Inject constructor(
         repository.deleteEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
-                onError = { messageEvent.value = it.message.orEmpty() }
+                onError = { messageEvent.postValue(it.message.orEmpty()) }
             ).addTo(compositeDisposable)
     }
 
