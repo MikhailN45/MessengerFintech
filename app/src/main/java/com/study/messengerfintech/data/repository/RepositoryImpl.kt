@@ -114,7 +114,6 @@ class RepositoryImpl @Inject constructor(
         return Single.concatEager(streamsWithTopics).toList()
     }
 
-
     override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =
         loadTopicMessages(stream, topic, "newest").map { it.size }
             .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }

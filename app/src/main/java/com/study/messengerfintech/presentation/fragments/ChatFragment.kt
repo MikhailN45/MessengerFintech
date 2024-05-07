@@ -46,9 +46,13 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
             },
             onMessageLongClick = { position -> showBottomSheet(position) },
             onBind = { position ->
-                if (position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5) && chatViewModel.state.value?.loaded == false)
+                if (
+                    position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5)
+                    &&
+                    chatViewModel.state.value?.loaded == false
+                )
                     loadMessages()
-            } //todo check pos and mes
+            }
         )
     }
 
@@ -63,7 +67,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadMessages() //todo move to init vm block
+        loadMessages()
     }
 
     override fun onCreateView(
@@ -87,10 +91,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun render(state: ChatState) = with(binding) {
         progressBar.isVisible = state.isLoading
-        chatRecycler.isVisible = !state.isLoading
-        adapter.submitList(state.messages) {
-            chatRecycler.scrollToPosition(0)
-        }
+        adapter.submitList(state.messages)
     }
 
     private fun showBottomSheet(position: Int) {

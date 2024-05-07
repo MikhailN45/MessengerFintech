@@ -104,7 +104,7 @@ class ChatViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
-                    updateMessages(messageList)
+                    updateMessages(messageList, messageList.firstOrNull()?.topicTitle.orEmpty())
                     _state.value = state.value?.copy(isLoading = false)
                 },
                 onError = {
@@ -121,7 +121,7 @@ class ChatViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
-                    updateMessages(messageList)
+                    updateMessages(messageList, topic)
                     _state.value = state.value?.copy(isLoading = false)
                 },
                 onError = {
@@ -132,10 +132,17 @@ class ChatViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    private fun updateMessages(messages: List<Message>) {
+    private fun updateMessages(messages: List<Message>, newMessagesTopic: String) {
         val isMessagesRemaining = messages.isEmpty() || messages.size < 20
+        val currentMessagesTopic = state.value?.messages?.firstOrNull()?.topicTitle
+        val newMessages = mutableListOf<Message>()
+        if (currentMessagesTopic == newMessagesTopic) {
+            newMessages.addAll(state.value?.messages.orEmpty())
+        }
+        newMessages.addAll(messages)
+
         _state.value = state.value?.copy(
-            messages = messages,
+            messages = newMessages,
             loaded = isMessagesRemaining
         )
     }
