@@ -142,7 +142,7 @@ class StreamsViewModel @Inject constructor(
     private fun initUser() {
         repository.loadOwnUser().subscribeBy(
             onSuccess = { user -> User.ME = user },
-            onError = { error -> Log.e("initOwnUser", "${error.message}") }
+            onError = { error -> Log.e("initUser", "${error.message}") }
         ).addTo(compositeDisposable)
     }
 

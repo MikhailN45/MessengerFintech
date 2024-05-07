@@ -218,7 +218,6 @@ class RepositoryImpl @Inject constructor(
                         reactions = messageResponse.reactions.map { it.toReaction() },
                         streamId = stream,
                         topicTitle = topic
-
                     )
                 }
             }
@@ -233,7 +232,7 @@ class RepositoryImpl @Inject constructor(
             .onErrorResumeNext { localAnswer }
     }
 
-    override fun loadPrivateMessages(userEmail: String): Single<List<Message>> {
+    override fun loadPrivateMessages(userEmail: String, anchor: String): Single<List<Message>> {
         val narrow = listOf(
             NarrowStr("pm-with", userEmail)
         ).map {
@@ -247,13 +246,18 @@ class RepositoryImpl @Inject constructor(
                 .map { clearMessages(it) }
                 .map { it.reversed() }
 
-        return service.getMessages(narrow = narrow)
+        return service.getMessages(narrow = narrow, anchor = anchor)
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.messages.map { messageResponse ->
                     messageResponse.toMessage(userEmail = userEmail)
                 }
-            }.map { it.reversed() }
+            }
+            .map {
+                if (anchor != "newest") it.subList(0, it.size - 1)
+                else it
+            }
+            .map { it.reversed() }
             .flatMap { messages ->
                 database.messageDao().insert(messages).toSingleDefault(messages)
             }

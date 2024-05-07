@@ -43,7 +43,7 @@ class ChatViewModel @Inject constructor(
             )
 
             is ChatEvent.LoadMessages.Private ->
-                loadPrivateMessages(event.userEmail)
+                loadPrivateMessages(event.userEmail, event.anchor)
 
             is ChatEvent.Emoji.Add -> addEmojiToMessage(event.messageId, event.emojiName)
 
@@ -98,13 +98,13 @@ class ChatViewModel @Inject constructor(
     private fun sendPublicMessage(stream: Int, topic: String, content: String) =
         sendMessage(SendType.STREAM, "[$stream]", content, topic)
 
-    private fun loadPrivateMessages(user: String) {
+    private fun loadPrivateMessages(user: String, anchor: String) {
         _state.value = state.value?.copy(isLoading = true)
-        repository.loadPrivateMessages(user)
+        repository.loadPrivateMessages(user, anchor)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
-                    updateMessages(messageList, messageList.firstOrNull()?.topicTitle.orEmpty())
+                    updateMessagesForPrivate(messageList, messageList.firstOrNull()?.userEmail.orEmpty())
                     _state.value = state.value?.copy(isLoading = false)
                 },
                 onError = {
@@ -121,7 +121,7 @@ class ChatViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
-                    updateMessages(messageList, topic)
+                    updateMessagesForTopic(messageList, topic)
                     _state.value = state.value?.copy(isLoading = false)
                 },
                 onError = {
@@ -132,11 +132,26 @@ class ChatViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    private fun updateMessages(messages: List<Message>, newMessagesTopic: String) {
+    private fun updateMessagesForTopic(messages: List<Message>, newMessagesTopic: String) {
         val isMessagesRemaining = messages.isEmpty() || messages.size < 20
         val currentMessagesTopic = state.value?.messages?.firstOrNull()?.topicTitle
         val newMessages = mutableListOf<Message>()
         if (currentMessagesTopic == newMessagesTopic) {
+            newMessages.addAll(state.value?.messages.orEmpty())
+        }
+        newMessages.addAll(messages)
+
+        _state.value = state.value?.copy(
+            messages = newMessages,
+            loaded = isMessagesRemaining
+        )
+    }
+
+    private fun updateMessagesForPrivate(messages: List<Message>, user: String) {
+        val isMessagesRemaining = messages.isEmpty() || messages.size < 20
+        val currentCompanion = state.value?.messages?.firstOrNull()?.userEmail
+        val newMessages = mutableListOf<Message>()
+        if (currentCompanion == user) {
             newMessages.addAll(state.value?.messages.orEmpty())
         }
         newMessages.addAll(messages)

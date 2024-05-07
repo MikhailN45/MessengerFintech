@@ -24,7 +24,7 @@ interface Repository {
 
     fun loadTopicMessages(stream: Int, topic: String, anchor: String): Single<List<Message>>
 
-    fun loadPrivateMessages(userEmail: String): Single<List<Message>>
+    fun loadPrivateMessages(userEmail: String, anchor: String): Single<List<Message>>
 
     fun sendMessage(
         type: SendType,

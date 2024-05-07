@@ -154,7 +154,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
         chatViewModel.processEvent(
             if (userEmail != null) {
-                ChatEvent.LoadMessages.Private(userEmail!!)
+                ChatEvent.LoadMessages.Private(userEmail!!, anchor)
             } else if (streamId != null && topicName != null) {
                 ChatEvent.LoadMessages.Topic(streamId!!, topicName!!, anchor)
             } else {
