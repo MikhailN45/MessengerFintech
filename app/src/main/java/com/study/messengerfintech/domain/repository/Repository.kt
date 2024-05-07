@@ -22,7 +22,7 @@ interface Repository {
 
     fun loadTopics(streamId: Int): Single<List<Topic>>
 
-    fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>>
+    fun loadTopicMessages(stream: Int, topic: String, anchor: String): Single<List<Message>>
 
     fun loadPrivateMessages(userEmail: String): Single<List<Message>>
 

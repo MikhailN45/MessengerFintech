@@ -16,7 +16,8 @@ import com.study.messengerfintech.utils.Utils.getDayCount
 class MessagesAdapter(
     val onEmojiAddClick: (messageId: Int, emojiName: String) -> Unit,
     val onEmojiDeleteClick: (messageId: Int, emojiName: String) -> Unit,
-    val onMessageLongClick: (position: Int) -> Unit
+    val onMessageLongClick: (position: Int) -> Unit,
+    val onBind: (position: Int) -> Unit
 ) : ListAdapter<Message, MessagesAdapter.ViewHolder>(MessageDiffUtilCallback()) {
 
     inner class ViewHolder(val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root)
@@ -32,6 +33,7 @@ class MessagesAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        onBind(position)
         getItem(position).apply {
             viewHolder.binding.message.setMessage(this)
             viewHolder.binding.message.setOnEmojiClickListener { event ->

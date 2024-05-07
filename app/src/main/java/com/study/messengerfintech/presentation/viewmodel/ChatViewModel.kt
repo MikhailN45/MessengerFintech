@@ -38,7 +38,8 @@ class ChatViewModel @Inject constructor(
 
             is ChatEvent.LoadMessages.Topic -> loadTopicMessages(
                 event.streamId,
-                event.topicName
+                event.topicName,
+                event.anchor
             )
 
             is ChatEvent.LoadMessages.Private ->
@@ -114,9 +115,9 @@ class ChatViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    private fun loadTopicMessages(streamId: Int, topic: String) {
+    private fun loadTopicMessages(streamId: Int, topic: String, anchor: String = "newest") {
         _state.value = state.value?.copy(isLoading = true)
-        repository.loadTopicMessages(streamId, topic)
+        repository.loadTopicMessages(streamId, topic, anchor)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
@@ -132,7 +133,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun updateMessages(messages: List<Message>) {
-        val isMessagesRemaining = messages.isEmpty()
+        val isMessagesRemaining = messages.isEmpty() || messages.size < 20
         _state.value = state.value?.copy(
             messages = messages,
             loaded = isMessagesRemaining

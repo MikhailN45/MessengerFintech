@@ -116,7 +116,7 @@ class RepositoryImpl @Inject constructor(
 
 
     override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =
-        loadTopicMessages(stream, topic).map { it.size }
+        loadTopicMessages(stream, topic, "newest").map { it.size }
             .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }
             .onErrorResumeNext { Single.just(0) }
 
@@ -192,7 +192,11 @@ class RepositoryImpl @Inject constructor(
         return messages.subList(messages.size - 50, messages.size)
     }
 
-    override fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>> {
+    override fun loadTopicMessages(
+        stream: Int,
+        topic: String,
+        anchor: String
+    ): Single<List<Message>> {
         val narrow = listOf(
             NarrowInt("stream", stream),
             NarrowStr("topic", topic)
@@ -207,7 +211,7 @@ class RepositoryImpl @Inject constructor(
                 .map { clearMessages(it) }
                 .map { it.reversed() }
 
-        return service.getMessages(narrow = narrow)
+        return service.getMessages(narrow = narrow, anchor = anchor)
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.messages.map { messageResponse ->
@@ -218,7 +222,12 @@ class RepositoryImpl @Inject constructor(
 
                     )
                 }
-            }.map { it.reversed() }
+            }
+            .map {
+                if (anchor != "newest") it.subList(0, it.size - 1)
+                else it
+            }
+            .map { it.reversed() }
             .flatMap { messages ->
                 database.messageDao().insert(messages).toSingleDefault(messages)
             }

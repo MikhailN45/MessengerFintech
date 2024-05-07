@@ -44,7 +44,11 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
             onEmojiDeleteClick = { messageId, emojiName ->
                 chatViewModel.processEvent(ChatEvent.Emoji.Remove(messageId, emojiName))
             },
-            onMessageLongClick = { position -> showBottomSheet(position) }
+            onMessageLongClick = { position -> showBottomSheet(position) },
+            onBind = { position ->
+                if (position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5) && chatViewModel.state.value?.loaded == false)
+                    loadMessages()
+            } //todo check pos and mes
         )
     }
 
@@ -140,11 +144,18 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     }
 
     private fun loadMessages() {
+        val anchor =
+            if (!chatViewModel.state.value?.messages.isNullOrEmpty()) {
+                "${chatViewModel.state.value?.messages?.last()?.id}"
+            } else {
+                "newest"
+            }
+
         chatViewModel.processEvent(
             if (userEmail != null) {
                 ChatEvent.LoadMessages.Private(userEmail!!)
             } else if (streamId != null && topicName != null) {
-                ChatEvent.LoadMessages.Topic(streamId!!, topicName!!)
+                ChatEvent.LoadMessages.Topic(streamId!!, topicName!!, anchor)
             } else {
                 parentFragmentManager.popBackStack()
                 return
