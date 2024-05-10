@@ -10,6 +10,7 @@ import dagger.multibindings.IntoMap
 @Module
 abstract class ProfileModule {
 
+    @ProfileScope
     @Binds
     @IntoMap
     @ViewModelKey(ProfileViewModel::class)

@@ -2,6 +2,8 @@ package com.study.messengerfintech.presentation.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +23,6 @@ import com.study.messengerfintech.presentation.adapters.MessagesAdapter
 import com.study.messengerfintech.presentation.events.ChatEvent
 import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.presentation.viewmodel.ChatViewModel
-
 import javax.inject.Inject
 
 class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
@@ -82,6 +83,12 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initScreen()
+
+        chatViewModel.scrollEvent.observe(viewLifecycleOwner) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.chatRecycler.scrollToPosition(0)
+            }, 100)
+        }
 
         chatViewModel.state.observe(viewLifecycleOwner) { state ->
             render(state)

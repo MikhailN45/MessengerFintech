@@ -4,6 +4,7 @@ import com.study.messengerfintech.di.main.MainModule
 import com.study.messengerfintech.presentation.fragments.StreamsFragment
 import dagger.Subcomponent
 
+@StreamsScope
 @Subcomponent(
     modules =
     [MainModule::class]

@@ -24,6 +24,8 @@ class ChatViewModel @Inject constructor(
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val messageEvent = SingleLiveEvent<String>()
+    val scrollEvent = SingleLiveEvent<Unit>()
+
 
     private val _state: MutableLiveData<ChatState> = MutableLiveData(ChatState())
     val state: LiveData<ChatState> = _state
@@ -84,6 +86,7 @@ class ChatViewModel @Inject constructor(
                     val updatedMessages =
                         state.value?.messages?.toMutableList()?.apply { add(0, message) }
                     _state.value = state.value?.copy(messages = updatedMessages?.toList().orEmpty())
+                    scrollEvent.value = Unit
                 },
                 onError = {
                     _state.value = state.value?.copy(isLoading = false)

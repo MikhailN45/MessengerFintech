@@ -3,6 +3,7 @@ package com.study.messengerfintech.di.chat
 import com.study.messengerfintech.presentation.fragments.ChatFragment
 import dagger.Subcomponent
 
+@ChatScope
 @Subcomponent(
     modules =
     [ChatModule::class]

@@ -3,6 +3,7 @@ package com.study.messengerfintech.di.main
 import com.study.messengerfintech.presentation.MainActivity
 import dagger.Subcomponent
 
+@MainScope
 @Subcomponent(
     modules =
     [MainModule::class]
