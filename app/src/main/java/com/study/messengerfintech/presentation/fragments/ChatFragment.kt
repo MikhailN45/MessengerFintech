@@ -145,7 +145,9 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
                     emoji.getUnicode()
                 )
             if (emojisOnMessage == null || !emojisOnMessage.usersId.contains(User.ME.id)) {
-                chatViewModel.setReactionToMessage(emoji, messagePosition)
+                chatViewModel.processEvent(
+                    ChatEvent.ReactionClick(emoji, messagePosition)
+                )
             }
             adapter.notifyItemChanged(messagePosition)
         }

@@ -47,14 +47,18 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.LoadMessages.Private ->
                 loadPrivateMessages(event.userEmail, event.anchor)
 
-            is ChatEvent.Emoji.Add -> addEmojiToMessage(event.messageId, event.emojiName)
+            is ChatEvent.Emoji.Add ->
+                addEmojiToMessage(event.messageId, event.emojiName)
 
             is ChatEvent.Emoji.Remove ->
                 deleteReaction(event.messageId, event.emojiName)
+
+            is ChatEvent.ReactionClick ->
+                setReactionToMessage(event.reaction, event.messagePosition)
         }
     }
 
-    fun setReactionToMessage(reaction: Reaction, messagePosition: Int) {
+    private fun setReactionToMessage(reaction: Reaction, messagePosition: Int) {
         val messages = state.value?.messages ?: return
         messages[messagePosition].addEmoji(reaction)
         //redeclaration for livedata change trigger
