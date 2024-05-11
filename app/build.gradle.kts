@@ -36,8 +36,13 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
+    }
+
+    android.testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+        animationsDisabled = true
     }
 }
 
@@ -55,27 +60,41 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
 
     //rx
-    implementation (libs.rxjava)
-    implementation (libs.rxandroid)
-    implementation (libs.rxkotlin)
-    implementation (libs.adapter.rxjava2)
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
+    implementation(libs.rxkotlin)
+    implementation(libs.adapter.rxjava2)
 
     //network
-    implementation (libs.retrofit)
-    implementation (libs.retrofit2.kotlinx.serialization.converter)
-    implementation (libs.logging.interceptor)
-    implementation (libs.kotlinx.serialization.json)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.serialization.json)
 
     //UI
-    implementation (libs.shimmer)
-    implementation (libs.bumptechGlide)
+    implementation(libs.shimmer)
+    implementation(libs.bumptechGlide)
 
     //DI
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
     //Room
-    implementation (libs.androidx.room.runtime)
-    implementation (libs.androidx.room.rxjava2)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.rxjava2)
     kapt(libs.androidx.room.compiler)
+
+    //Tests
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.rules)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.agent)
+    androidTestImplementation(libs.kaspresso)
+    androidTestImplementation(libs.hamcrest)
+    androidTestImplementation(libs.androidx.espresso.intents)
 }
