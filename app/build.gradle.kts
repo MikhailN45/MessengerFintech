@@ -30,18 +30,21 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
     }
 
-    android.testOptions {
-        unitTests.all { it.useJUnitPlatform() }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+            it.useJUnit()
+        }
         animationsDisabled = true
     }
 }
@@ -70,6 +73,7 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
+    androidTestImplementation(libs.mockwebserver)
 
     //UI
     implementation(libs.shimmer)
@@ -86,15 +90,22 @@ dependencies {
 
     //Tests
     testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation (libs.androidx.fragment.testing)
+    debugImplementation(libs.androidx.fragment.testing)
     testImplementation(libs.androidx.rules)
+    androidTestUtil(libs.androidx.orchestrator)
+
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
+
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.android)
     testImplementation(libs.mockk.agent)
+
+    androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.kaspresso)
     androidTestImplementation(libs.hamcrest)
-    androidTestImplementation(libs.androidx.espresso.intents)
 }

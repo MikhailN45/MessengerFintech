@@ -38,7 +38,8 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.SendMessage.Private ->
                 sendPrivateMessage(event.userEmail, event.content)
 
-            is ChatEvent.LoadMessages.Topic -> loadTopicMessages(
+            is ChatEvent.LoadMessages.Topic ->
+                loadTopicMessages(
                 event.streamId,
                 event.topicName,
                 event.anchor
@@ -111,7 +112,7 @@ class ChatViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
-                    updateMessagesForPrivate(messageList, messageList.firstOrNull()?.userEmail.orEmpty())
+                    updateMessagesForPrivate(messageList, user)
                     _state.value = state.value?.copy(isLoading = false)
                 },
                 onError = {

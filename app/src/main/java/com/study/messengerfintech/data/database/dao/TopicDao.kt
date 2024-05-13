@@ -17,7 +17,7 @@ interface TopicDao {
     @Query("SELECT * FROM topics WHERE title = :title")
     fun getTopicByTitle(title: String): Single<Topic>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(topic: List<Topic>): Completable
 
     @Update

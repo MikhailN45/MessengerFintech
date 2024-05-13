@@ -1,0 +1,14 @@
+{
+  "result": "success",
+  "msg": "",
+  "topics": [
+    {
+      "name": "test theme",
+      "max_id": 438213761
+    },
+    {
+      "name": "События канала",
+      "max_id": 437940095
+    }
+  ]
+}

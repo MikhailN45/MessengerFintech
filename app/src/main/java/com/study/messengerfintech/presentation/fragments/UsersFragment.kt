@@ -66,7 +66,7 @@ class UsersFragment : FragmentMVI<UsersState>(R.layout.streams_and_chats_fragmen
             usersViewModel.processEvent(UsersEvent.SearchForUsers())
         }
 
-        binding.searchUsersEditText.doAfterTextChanged {
+        binding.topbarSearchEditText.doAfterTextChanged {
             usersViewModel.processEvent(UsersEvent.SearchForUsers(query = it.toString()))
         }
 

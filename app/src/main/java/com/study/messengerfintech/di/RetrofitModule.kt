@@ -12,16 +12,10 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 class RetrofitModule {
-
-    @Provides
-    @Named("URL")
-    fun provideURL() = API_URL
-
     @Provides
     fun provideOkHttpClient() = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
@@ -31,9 +25,9 @@ class RetrofitModule {
     @Singleton
     @Provides
     @ExperimentalSerializationApi
-    fun provideRetrofit(@Named("URL") url: String, client: OkHttpClient, json: Json): Retrofit =
+    fun provideRetrofit(client: OkHttpClient, json: Json, urlProvider: UrlProvider): Retrofit =
         Retrofit.Builder()
-            .baseUrl(url)
+            .baseUrl(urlProvider.apiUrl)
             .client(client)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
@@ -43,8 +37,4 @@ class RetrofitModule {
     @Provides
     fun provideService(retrofit: Retrofit): ZulipRetrofitApi =
         retrofit.create(ZulipRetrofitApi::class.java)
-
-    companion object {
-        const val API_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
-    }
 }

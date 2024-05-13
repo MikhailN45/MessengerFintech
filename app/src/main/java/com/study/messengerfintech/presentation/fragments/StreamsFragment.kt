@@ -49,7 +49,7 @@ class StreamsFragment : Fragment() {
             viewModel.processEvent(StreamsEvent.SearchForStreams())
         }
 
-        searchUsersEditText.doAfterTextChanged {
+        topbarSearchEditText.doAfterTextChanged {
             viewModel.processEvent(StreamsEvent.SearchForStreams(it.toString()))
         }
 
