@@ -6,7 +6,6 @@ import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.view.indices
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,9 +15,6 @@ import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.utils.Utils.colors
-
-const val VIEW_TYPE_STREAM = 0
-const val VIEW_TYPE_TOPIC = 1
 
 class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit) :
     ListAdapter<StreamTopicItem, RecyclerView.ViewHolder>(StreamTopicDiffUtilCallback()) {
@@ -88,8 +84,6 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
                 streamExpandButton.rotation =
                     if (item.isExpanded) 180f
                     else 0f
-                progressBar.isVisible = item.isLoading
-                streamExpandButton.isVisible = !item.isLoading
             }
         }
 
@@ -118,6 +112,11 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
         fun setOnClickListener(i: View.OnClickListener) {
             binding.root.setOnClickListener(i)
         }
+    }
+
+    companion object {
+        const val VIEW_TYPE_STREAM = 0
+        const val VIEW_TYPE_TOPIC = 1
     }
 }
 

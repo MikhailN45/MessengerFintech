@@ -2,14 +2,14 @@ package com.study.messengerfintech.domain.model
 
 data class Topic(
     val title: String,
-    val lastMessageID: Int,
+    var messageCount: Int
 )
 
 fun toTopicItem(topicResponses: List<Topic>, streamId: Int): List<TopicItem> =
     topicResponses.mapIndexed { index, topic ->
         TopicItem(
             title = topic.title,
-            messageCount = 0,
+            messageCount = topic.messageCount,
             topicId = index,
             streamId = streamId
         )

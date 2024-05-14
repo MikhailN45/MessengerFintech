@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        viewModel.chat.observe(this) { bundle ->
+        viewModel.chatInstance.observe(this) { bundle ->
             supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.activity_fragment_container,

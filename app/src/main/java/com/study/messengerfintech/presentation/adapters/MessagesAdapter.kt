@@ -3,18 +3,19 @@ package com.study.messengerfintech.presentation.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.study.messengerfintech.utils.OnEmojiClick
 import com.study.messengerfintech.databinding.ItemMessageBinding
 import com.study.messengerfintech.domain.model.Message
+import com.study.messengerfintech.utils.OnEmojiClick
 import com.study.messengerfintech.utils.Utils.getDate
 import com.study.messengerfintech.utils.Utils.getDayCount
 
 class MessagesAdapter(
-    private val dataSet: MutableList<Message>, //todo remove and use diffUtils
-    val emojiClickListener: (OnEmojiClick) -> Unit,
-    val longClickListener: (position: Int) -> Unit
-) : RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
+    val onEmojiClick: (OnEmojiClick) -> Unit,
+    val onLongClick: (position: Int) -> Unit
+) : ListAdapter<Message, MessagesAdapter.ViewHolder>(MessageDiffUtilCallback()) {
 
     inner class ViewHolder(val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -29,23 +30,29 @@ class MessagesAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        dataSet[position].apply {
+        getItem(position).apply {
             viewHolder.binding.message.setMessage(this)
-            viewHolder.binding.message.setOnEmojiClickListener(emojiClickListener)            
-            viewHolder.binding.date.text = getDate(dataSet[position].timestamp)
+            viewHolder.binding.message.setOnEmojiClickListener(onEmojiClick)
+            viewHolder.binding.message.setMessageOnLongClick { onLongClick(position) }
+            viewHolder.binding.date.text = getDate(getItem(position).timestamp)
             viewHolder.binding.date.isVisible = isDateNeeded(position)
-            viewHolder.binding.message.setMessageOnLongClick {
-                longClickListener(position)
-            }
         }
     }
 
     private fun isDateNeeded(position: Int): Boolean {
-        if (position == 0) return true
-        val yesterday = dataSet[position - 1].timestamp
-        val today = dataSet[position].timestamp
+        if (position + 1 == itemCount) return true
+        val yesterday = getItem(position + 1).timestamp
+        val today = getItem(position).timestamp
         return getDayCount(yesterday) < getDayCount(today)
     }
+}
 
-    override fun getItemCount() = dataSet.size
+class MessageDiffUtilCallback : DiffUtil.ItemCallback<Message>() {
+    override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+        return oldItem == newItem && (oldItem.emojiCodeReactionMap == newItem.emojiCodeReactionMap)
+    }
 }

@@ -27,13 +27,4 @@
         android:src="@drawable/ic_expand_stream"
         app:tint="@color/expand_button_color" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="end|center"
-        android:indeterminateTint="@color/white"
-        android:scaleType="center"
-        android:visibility="visible" />
-
 </FrameLayout>

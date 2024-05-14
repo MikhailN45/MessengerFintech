@@ -1,72 +1,54 @@
 package com.study.messengerfintech.presentation.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ChatFragmentBinding
-import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.UnitedReaction
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.presentation.adapters.MessagesAdapter
-import com.study.messengerfintech.presentation.state.ChatState
+import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.presentation.viewmodel.MainViewModel
 import com.study.messengerfintech.utils.EmojiAdd
 import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.OnEmojiClick
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 
-class ChatFragment : Fragment(R.layout.chat_fragment) {
+class ChatFragment : FragmentMVI<State.Chat>(R.layout.chat_fragment) {
     private val viewModel: MainViewModel by activityViewModels()
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-
-    //todo extract messages to viewmodel
-    private lateinit var messages: MutableList<Message>
     private var _binding: ChatFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private val streamId: Int? by lazy { arguments?.getInt(STREAM) }
+    private val topicName: String? by lazy { arguments?.getString(TOPIC) }
+    private val userName: String? by lazy { arguments?.getString(USER_NAME) }
+    private val userEmail: String? by lazy { arguments?.getString(USER_MAIL) }
+
+    private var chat = State.Chat("", listOf())
+    private val messages
+        get() = chat.messages
+
     private val adapter: MessagesAdapter by lazy {
-        MessagesAdapter(messages,
-            emojiClickListener = { parcel: OnEmojiClick ->
-                processEmojiClick(parcel)
-            },
-            longClickListener = { position ->
-                showBottomSheet(position)
-            })
+        MessagesAdapter(
+            onEmojiClick = { parcel: OnEmojiClick -> processEmojiClick(parcel) },
+            onLongClick = { position -> showBottomSheet(position) }
+        )
     }
 
     private val layoutManager = LinearLayoutManager(context).apply {
-        stackFromEnd = true
+        reverseLayout = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let { bundle ->
-            viewModel.getMessagesForPrivateOrTopic(bundle)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    messages = it.toMutableList()
-                    viewModel.chatScreenSuccessful()
-                    initScreen()
-                }, { error ->
-                    viewModel.chatScreenError(error)
-                }).addTo(compositeDisposable)
-        }
-
-        viewModel.chatScreenLoading()
+        loadMessages()
     }
 
     override fun onCreateView(
@@ -76,25 +58,33 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
     ): View {
         _binding = ChatFragmentBinding.inflate(layoutInflater)
 
-        viewModel.chatState.observe(viewLifecycleOwner) {
+        viewModel.screenState.observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
-                    is ChatState.Loading -> {
+                    is State.Loading -> {
                         progressBar.visibility = View.VISIBLE
                         sendMessageButton.visibility = View.GONE
                         addFileButton.visibility = View.GONE
                     }
 
-                    is ChatState.Error -> {
-                        Log.e("ChatScreenError", it.error.message.toString())
+                    is State.Error -> {
                         progressBar.visibility = View.GONE
+                        sendMessageButton.visibility = View.VISIBLE
                     }
 
-                    is ChatState.Success -> {
+                    is State.Success -> {
                         progressBar.visibility = View.GONE
                         addFileButton.visibility = View.VISIBLE
+                        viewModel.positionToScroll.observe(viewLifecycleOwner) {
+                            adapter.submitList(messages) {
+                                binding.chatRecycler.scrollToPosition(it)
+                            }
+                        }
                     }
-                    //todo put UI initialization in state
+
+                    else -> State.Error
+
+
                 }
             }
         }
@@ -102,9 +92,21 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initScreen()
+        viewModel.chat.observe(viewLifecycleOwner) { render(it) }
+        viewModel.positionToScroll.observe(viewLifecycleOwner) {
+            adapter.submitList(messages) {
+                binding.chatRecycler.scrollToPosition(it)
+            }
+        }
+    }
+
+    override fun render(state: State.Chat) {
+        this.chat = state
+        binding.chatTitle.text = state.name
+        adapter.submitList(messages)
     }
 
     private fun showBottomSheet(position: Int) {
@@ -116,18 +118,16 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
     private fun processEmojiClick(parcel: OnEmojiClick) {
         when (parcel) {
             is EmojiAdd ->
-                viewModel.addReaction(parcel.messageId, parcel.name)
+                Event.Emoji.Add(parcel.messageId, parcel.name)
 
             is EmojiDelete ->
-                viewModel.deleteReaction(parcel.messageId, parcel.name)
+                Event.Emoji.Remove(parcel.messageId, parcel.name)
         }
     }
 
     private fun initScreen() {
         with(binding) {
-            chatTitle.text = "#%s".format(
-                arguments?.getString(TOPIC) ?: arguments?.getString(USER_NAME)
-            )
+            chatTitle.text = "#%s".format(topicName ?: userName)
 
             backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
 
@@ -167,40 +167,43 @@ class ChatFragment : Fragment(R.layout.chat_fragment) {
                 messages[messagePosition].emojiCodeReactionMap[emoji.getUnicode()]
             if (emojisOnMessage == null || !emojisOnMessage.usersId.contains(User.ME.id)) {
                 messages[messagePosition].addEmoji(emoji)
-                viewModel.addReaction(messages[messagePosition].id, emoji.name)
+                viewModel.processEvent(Event.Emoji.Add(messages[messagePosition].id, emoji.name))
                 adapter.notifyItemChanged(messagePosition)
             }
         }
     }
 
+    private fun loadMessages() {
+        viewModel.processEvent(
+            if (userEmail != null) {
+                Event.LoadMessages.Private(userEmail!!)
+            } else if (streamId != null && topicName != null) {
+                Event.LoadMessages.Topic(streamId!!, topicName!!)
+            } else {
+                viewModel.error(IllegalArgumentException("open chat -> Invalid arguments"))
+                parentFragmentManager.popBackStack()
+                return
+            }
+        )
+    }
+
     private fun sendMessage(content: String) {
-        val bundle = requireArguments()
-        viewModel.chatScreenLoading()
-        val singleId: Single<Int> = if (bundle.containsKey(USER)) {
-            val userEmail = bundle.getString(USER)!!
-            viewModel.sendMessageToUser(userEmail, content)
-                .subscribeOn(Schedulers.io())
-        } else {
-            val streamId = bundle.getInt(STREAM)
-            val chatName = bundle.getString(TOPIC)!!
-            viewModel.sendMessageToTopic(streamId, chatName, content)
-                .subscribeOn(Schedulers.io())
-        }
-        singleId
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { id ->
-                    //todo delegate logic to adapter
-                    messages.add(Message(id, content, User.ME.id))
-                    adapter.notifyItemInserted(messages.size - 1)
-                    layoutManager.scrollToPosition(messages.size - 1)
-                    viewModel.chatScreenSuccessful()
-                }, { viewModel.chatScreenError(it) }
-            ).addTo(compositeDisposable)
+        viewModel.processEvent(
+            if (!userEmail.isNullOrBlank()) {
+                Event.SendMessage.Private(userEmail!!, content)
+            } else {
+                Event.SendMessage.Topic(streamId!!, topicName!!, content)
+            }
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
-        const val USER = "user_email"
+        const val USER_MAIL = "user_email"
         const val USER_NAME = "user_name"
         const val STREAM = "stream"
         const val TOPIC = "topic"

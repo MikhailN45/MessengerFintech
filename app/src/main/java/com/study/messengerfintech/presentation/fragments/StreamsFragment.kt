@@ -12,8 +12,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsFragmentBinding
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
 import com.study.messengerfintech.presentation.adapters.PagerAdapter
+import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.viewmodel.MainViewModel
 
 class StreamsFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
@@ -31,14 +32,16 @@ class StreamsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState == null) viewModel.searchStreams(BLANK_STRING)
-
-        searchUsersEditText.doAfterTextChanged {
-            viewModel.searchStreams(it.toString())
+        if (savedInstanceState == null) {
+            viewModel.processEvent(Event.SearchForStreams())
         }
 
-        binding.searchUsersButton.setOnLongClickListener {
-            viewModel.openPrivateChat(User.ME)
+        searchUsersEditText.doAfterTextChanged {
+            viewModel.processEvent(Event.SearchForStreams(it.toString()))
+        }
+
+        searchUsersButton.setOnLongClickListener {
+            viewModel.processEvent(Event.OpenChat.Private(User.ME))
             false
         }
 
@@ -65,9 +68,5 @@ class StreamsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object{
-        const val BLANK_STRING = ""
     }
 }
