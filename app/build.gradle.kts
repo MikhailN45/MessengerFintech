@@ -45,6 +45,7 @@ android {
             it.useJUnitPlatform()
             it.useJUnit()
         }
+        unitTests.isReturnDefaultValues = true
         animationsDisabled = true
     }
 }
@@ -92,20 +93,35 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation (libs.androidx.fragment.testing)
+    androidTestImplementation(libs.androidx.fragment.testing)
     debugImplementation(libs.androidx.fragment.testing)
     testImplementation(libs.androidx.rules)
     androidTestUtil(libs.androidx.orchestrator)
 
+    //kotest
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
 
+    //mockk
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.android)
     testImplementation(libs.mockk.agent)
+    testImplementation(libs.mockito.core)
 
+    //kaspresso
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.kaspresso)
     androidTestImplementation(libs.hamcrest)
+
+    testImplementation (libs.testing.ktx)
+    testImplementation(libs.core.testing)
+
+    //wiremock
+    debugImplementation(libs.androidx.core)
+    androidTestImplementation(libs.httpclient.android)
+    androidTestImplementation(libs.wiremock.standalone){
+        exclude(group = "org.apache.httpcomponents", module = "httpclient")
+    }
+
 }

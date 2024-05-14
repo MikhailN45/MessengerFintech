@@ -106,8 +106,6 @@ class ChatFragmentTest : TestCase() {
     @Test
     fun exitTopicChatByBackButton() = run {
         mockServer.dispatcher = MockServerDispatcher()
-        val streamsListScreen = StreamAndTopicListScreen
-
         ActivityScenario.launch(MainActivity::class.java)
         scenario(OpenTopicChat())
         ChatScreen {
@@ -115,8 +113,11 @@ class ChatFragmentTest : TestCase() {
                 backButton.click()
             }
         }
-        step("Check chat is closed") {
-            streamsListScreen.streamAndTopicsRecycler.isDisplayed()
+
+        StreamAndTopicListScreen {
+            step("Check chat is closed") {
+                streamAndTopicsRecycler.isDisplayed()
+            }
         }
     }
 
