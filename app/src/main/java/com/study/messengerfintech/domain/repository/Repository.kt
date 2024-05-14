@@ -6,21 +6,25 @@ import com.study.messengerfintech.domain.model.Topic
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 interface Repository {
+    fun requestAllStreams(): Completable
 
-    fun loadStreams(): Single<List<Stream>>
+    fun requestSubscribedStreams(): Completable
 
-    fun loadSubscribedStreams(): Single<List<Stream>>
+    fun getAllStreams(): Observable<List<Stream>>
+
+    fun getSubscribedStreams(): Observable<List<Stream>>
 
     fun getMessageCountForTopic(stream: Int, topic: String): Single<Int>
 
     fun loadTopics(streamId: Int): Single<List<Topic>>
 
-    fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>>
+    fun loadTopicMessages(stream: Int, topic: String, anchor: String): Single<List<Message>>
 
-    fun loadPrivateMessages(userEmail: String): Single<List<Message>>
+    fun loadPrivateMessages(userEmail: String, anchor: String): Single<List<Message>>
 
     fun sendMessage(
         type: SendType,
@@ -32,7 +36,7 @@ interface Repository {
 
     fun loadStatus(user: User): Single<User>
 
-    fun loadUsers(): Single<List<User>>
+    fun loadUsers(): Observable<List<User>>
 
     fun addEmoji(messageId: Int, emojiName: String): Completable
 

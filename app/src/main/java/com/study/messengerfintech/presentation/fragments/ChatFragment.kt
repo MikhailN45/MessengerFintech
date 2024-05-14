@@ -2,6 +2,8 @@ package com.study.messengerfintech.presentation.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +23,6 @@ import com.study.messengerfintech.presentation.adapters.MessagesAdapter
 import com.study.messengerfintech.presentation.events.ChatEvent
 import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.presentation.viewmodel.ChatViewModel
-
 import javax.inject.Inject
 
 class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
@@ -44,7 +45,15 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
             onEmojiDeleteClick = { messageId, emojiName ->
                 chatViewModel.processEvent(ChatEvent.Emoji.Remove(messageId, emojiName))
             },
-            onMessageLongClick = { position -> showBottomSheet(position) }
+            onMessageLongClick = { position -> showBottomSheet(position) },
+            onBind = { position ->
+                if (
+                    position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5)
+                    &&
+                    chatViewModel.state.value?.loaded == false
+                )
+                    loadMessages()
+            }
         )
     }
 
@@ -75,6 +84,12 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initScreen()
 
+        chatViewModel.scrollEvent.observe(viewLifecycleOwner) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.chatRecycler.scrollToPosition(0)
+            }, 100)
+        }
+
         chatViewModel.state.observe(viewLifecycleOwner) { state ->
             render(state)
         }
@@ -83,9 +98,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
 
     override fun render(state: ChatState) = with(binding) {
         progressBar.isVisible = state.isLoading
-        adapter.submitList(state.messages) {
-            chatRecycler.scrollToPosition(0)
-        }
+        adapter.submitList(state.messages)
     }
 
     private fun showBottomSheet(position: Int) {
@@ -139,11 +152,18 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     }
 
     private fun loadMessages() {
+        val anchor =
+            if (!chatViewModel.state.value?.messages.isNullOrEmpty()) {
+                "${chatViewModel.state.value?.messages?.last()?.id}"
+            } else {
+                "newest"
+            }
+
         chatViewModel.processEvent(
             if (userEmail != null) {
-                ChatEvent.LoadMessages.Private(userEmail!!)
+                ChatEvent.LoadMessages.Private(userEmail!!, anchor)
             } else if (streamId != null && topicName != null) {
-                ChatEvent.LoadMessages.Topic(streamId!!, topicName!!)
+                ChatEvent.LoadMessages.Topic(streamId!!, topicName!!, anchor)
             } else {
                 parentFragmentManager.popBackStack()
                 return

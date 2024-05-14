@@ -67,13 +67,21 @@ class StreamsViewModel @Inject constructor(
     }
 
     private fun subscribeToSearchStreams() {
+        repository.requestAllStreams()
+            .subscribe()
+            .addTo(compositeDisposable)
+
+        repository.requestSubscribedStreams()
+            .subscribe()
+            .addTo(compositeDisposable)
+
         val subject = searchStreamsSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
             .doOnNext { _screenState.postValue(State.Loading) }
             .doOnError { error ->
-                Log.e("subscribeToSearchStreams", error.message.toString())
-              //  _screenState.postValue(State.Error)
+                Log.e("subscribeToSearchStreams", "${error.message}")
+                _screenState.postValue(State.Error)
             }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .share()
@@ -81,8 +89,8 @@ class StreamsViewModel @Inject constructor(
         subject.flatMap { searchQuery ->
             Observables.zip(
                 Observable.just(searchQuery),
-                repository.loadStreams().toObservable(),
-                repository.loadSubscribedStreams().toObservable(),
+                repository.getAllStreams(),
+                repository.getSubscribedStreams(),
             )
         }.map {
             val (searchQuery, allStreams, subscribedStreams) = it
@@ -125,7 +133,7 @@ class StreamsViewModel @Inject constructor(
                     stream.topics = updatedTopics.sortedByDescending { it.messageCount }
                 },
                 { error ->
-                    Log.e("updateTopicsMessageCount", error.message.toString())
+                    Log.e("updateTopicsMessageCount", "${error.message}")
                 }
             )
             .addTo(compositeDisposable)
@@ -134,7 +142,7 @@ class StreamsViewModel @Inject constructor(
     private fun initUser() {
         repository.loadOwnUser().subscribeBy(
             onSuccess = { user -> User.ME = user },
-            onError = { error -> Log.e("initOwnUser", error.toString()) }
+            onError = { error -> Log.e("initUser", "${error.message}") }
         ).addTo(compositeDisposable)
     }
 

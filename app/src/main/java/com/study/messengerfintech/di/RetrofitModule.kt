@@ -20,7 +20,7 @@ class RetrofitModule {
 
     @Provides
     @Named("URL")
-    fun provideURL() = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
+    fun provideURL() = API_URL
 
     @Provides
     fun provideOkHttpClient() = OkHttpClient.Builder()
@@ -43,4 +43,8 @@ class RetrofitModule {
     @Provides
     fun provideService(retrofit: Retrofit): ZulipRetrofitApi =
         retrofit.create(ZulipRetrofitApi::class.java)
+
+    companion object {
+        const val API_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
+    }
 }

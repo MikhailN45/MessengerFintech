@@ -14,7 +14,7 @@ class SearchUsersUseCaseImpl @Inject constructor(
 ) : SearchUsersUseCase {
 
     override fun invoke(searchQuery: String): Observable<List<User>> {
-        return repository.loadUsers().toObservable()
+        return repository.loadUsers()
             .map { users ->
                 if (searchQuery.isNotEmpty())
                     users.filter { user ->

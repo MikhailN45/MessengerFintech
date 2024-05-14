@@ -49,7 +49,7 @@ interface ZulipRetrofitApi {
     @GET("messages")
     fun getMessages(
         @Query("anchor") anchor: String = "newest",
-        @Query("num_before") numBefore: Int = 1000,
+        @Query("num_before") numBefore: Int = 20,
         @Query("num_after") numAfter: Int = 0,
         @Query("narrow") narrow: String,
     ): Single<MessagesReceiveResponse>

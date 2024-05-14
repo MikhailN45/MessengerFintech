@@ -3,6 +3,7 @@ package com.study.messengerfintech.di.profile
 import com.study.messengerfintech.presentation.fragments.ProfileFragment
 import dagger.Subcomponent
 
+@ProfileScope
 @Subcomponent(
     modules =
     [ProfileModule::class]

@@ -4,12 +4,14 @@ package com.study.messengerfintech.presentation.events
 sealed interface ChatEvent {
     sealed interface LoadMessages : ChatEvent {
         data class Private(
-            val userEmail: String
+            val userEmail: String,
+            val anchor: String
         ) : LoadMessages
 
         data class Topic(
             val streamId: Int,
-            val topicName: String
+            val topicName: String,
+            val anchor: String
         ) : LoadMessages
     }
 

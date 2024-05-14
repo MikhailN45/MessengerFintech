@@ -1,5 +1,8 @@
 package com.study.messengerfintech.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Reaction(
     val userId: Int,
     val code: String,

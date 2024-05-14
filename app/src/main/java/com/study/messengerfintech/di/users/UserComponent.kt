@@ -3,6 +3,7 @@ package com.study.messengerfintech.di.users
 import com.study.messengerfintech.presentation.fragments.UsersFragment
 import dagger.Subcomponent
 
+@UsersScope
 @Subcomponent(
     modules =
     [UserModule::class]
