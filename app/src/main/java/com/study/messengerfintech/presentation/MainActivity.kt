@@ -3,19 +3,25 @@ package com.study.messengerfintech.presentation
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.ActivityMainBinding
+import com.study.messengerfintech.getComponent
 import com.study.messengerfintech.presentation.fragments.ChatFragment
 import com.study.messengerfintech.presentation.fragments.MainFragment
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: StreamsViewModel by viewModels { viewModelFactory }
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getComponent().mainComponent().create().inject(this)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -27,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.chatInstance.observe(this) { bundle ->
             supportFragmentManager.beginTransaction()
-                .replace(
+                .add(
                     R.id.activity_fragment_container,
                     ChatFragment.newInstance(bundle)
                 )

@@ -15,7 +15,7 @@ import com.study.messengerfintech.domain.model.UnitedReaction
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.utils.EmojiAdd
 import com.study.messengerfintech.utils.EmojiDelete
-import com.study.messengerfintech.utils.OnEmojiClick
+import com.study.messengerfintech.utils.OnEmojiClickEvent
 import com.study.messengerfintech.utils.Utils.toPx
 
 class MessageBodyViewGroup @JvmOverloads constructor(
@@ -94,8 +94,8 @@ class MessageBodyViewGroup @JvmOverloads constructor(
         flexBox.addView(emoji, 0)
     }
 
-    private var emojiClickListener: (OnEmojiClick) -> Unit = { _ -> }
-    fun setOnEmojiClickListener(callback: (OnEmojiClick) -> Unit) {
+    private var emojiClickListener: (OnEmojiClickEvent) -> Unit = { _ -> }
+    fun setOnEmojiClickListener(callback: (OnEmojiClickEvent) -> Unit) {
         emojiClickListener = callback
     }
 

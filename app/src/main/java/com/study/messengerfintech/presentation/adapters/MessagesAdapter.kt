@@ -8,13 +8,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.study.messengerfintech.databinding.ItemMessageBinding
 import com.study.messengerfintech.domain.model.Message
-import com.study.messengerfintech.utils.OnEmojiClick
+import com.study.messengerfintech.utils.EmojiAdd
+import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.Utils.getDate
 import com.study.messengerfintech.utils.Utils.getDayCount
 
 class MessagesAdapter(
-    val onEmojiClick: (OnEmojiClick) -> Unit,
-    val onLongClick: (position: Int) -> Unit
+    val onEmojiAddClick: (messageId: Int, emojiName: String) -> Unit,
+    val onEmojiDeleteClick: (messageId: Int, emojiName: String) -> Unit,
+    val onMessageLongClick: (position: Int) -> Unit
 ) : ListAdapter<Message, MessagesAdapter.ViewHolder>(MessageDiffUtilCallback()) {
 
     inner class ViewHolder(val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root)
@@ -32,8 +34,13 @@ class MessagesAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         getItem(position).apply {
             viewHolder.binding.message.setMessage(this)
-            viewHolder.binding.message.setOnEmojiClickListener(onEmojiClick)
-            viewHolder.binding.message.setMessageOnLongClick { onLongClick(position) }
+            viewHolder.binding.message.setOnEmojiClickListener { event ->
+                when (event) {
+                    is EmojiAdd -> onEmojiAddClick(event.messageId, event.emojiName)
+                    is EmojiDelete -> onEmojiDeleteClick(event.messageId, event.emojiName)
+                }
+            }
+            viewHolder.binding.message.setMessageOnLongClick { onMessageLongClick(position) }
             viewHolder.binding.date.text = getDate(getItem(position).timestamp)
             viewHolder.binding.date.isVisible = isDateNeeded(position)
         }

@@ -14,7 +14,9 @@ interface Repository {
 
     fun loadSubscribedStreams(): Single<List<Stream>>
 
-    fun loadTopics(id: Int): Single<List<Topic>>
+    fun getMessageCountForTopic(stream: Int, topic: String): Single<Int>
+
+    fun loadTopics(streamId: Int): Single<List<Topic>>
 
     fun loadTopicMessages(stream: Int, topic: String): Single<List<Message>>
 

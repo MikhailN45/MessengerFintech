@@ -53,7 +53,7 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
                             if (item.isExpanded) 180f
                             else 0f
                         ).apply {
-                            duration = 400
+                            duration = 500
                         }.start()
                     }
                 }

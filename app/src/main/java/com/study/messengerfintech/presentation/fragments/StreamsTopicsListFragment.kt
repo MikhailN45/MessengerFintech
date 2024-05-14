@@ -1,41 +1,48 @@
 package com.study.messengerfintech.presentation.fragments
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamsAndChatsFragmentBinding
 import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
+import com.study.messengerfintech.getComponent
 import com.study.messengerfintech.presentation.adapters.StreamType
 import com.study.messengerfintech.presentation.adapters.StreamsTopicsAdapter
-import com.study.messengerfintech.presentation.events.Event
+import com.study.messengerfintech.presentation.events.StreamsEvent
 import com.study.messengerfintech.presentation.state.State
-import com.study.messengerfintech.presentation.viewmodel.MainViewModel
+import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
+import javax.inject.Inject
 
 class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_and_chats_fragment) {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: StreamsViewModel by activityViewModels { viewModelFactory }
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
     private var items: MutableList<StreamTopicItem> = mutableListOf()
-    private val viewModel: MainViewModel by activityViewModels()
-    private var streams = State.Streams(listOf())
 
     private val adapter = StreamsTopicsAdapter { onClickedItem ->
         when (onClickedItem) {
             is TopicItem -> {
                 onClickedItem.also {
                     viewModel.processEvent(
-                        Event.OpenChat.Topic(
+                        StreamsEvent.OpenChat.Topic(
                             onClickedItem.streamId,
                             onClickedItem.title
                         )
                     )
-                    collapseStreams()
                 }
             }
 
@@ -43,7 +50,11 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
-                    addItemsToAdapter(onClickedItem)
+                    viewModel.processEvent(StreamsEvent.ExpandStream(onClickedItem))
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        addItemsToAdapter(onClickedItem)
+
+                    }, 500)
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
             }
@@ -51,11 +62,15 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
     }
 
     override fun render(state: State.Streams) {
-        this.streams = state
         items = state.items.toMutableList()
         adapter.submitList(items) {
             binding.streamsAndChatsRecycler.scrollToPosition(0)
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        getComponent().streamsComponent().create().inject(this)
     }
 
     override fun onCreateView(
@@ -64,25 +79,14 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         savedInstanceState: Bundle?
     ): View {
         _binding = StreamsAndChatsFragmentBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.screenState.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
-                    binding.streamsShimmer.visibility = View.VISIBLE
-                    binding.streamsAndChatsRecycler.visibility = View.GONE
-                }
-
-                is State.Error -> {
-                    binding.streamsShimmer.visibility = View.GONE
-                    binding.streamsAndChatsRecycler.visibility = View.VISIBLE
-                }
-
-                is State.Success -> {
-                    binding.streamsShimmer.visibility = View.GONE
-                    binding.streamsAndChatsRecycler.visibility = View.VISIBLE
-                }
-
-                else -> State.Error
+            with(binding) {
+                streamsShimmer.isVisible = it is State.Loading
+                streamsAndChatsRecycler.isVisible = it !is State.Loading
             }
         }
 
@@ -106,8 +110,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
             adapter = this@StreamsTopicsListFragment.adapter
             layoutManager = LinearLayoutManager(context)
         }
-
-        return binding.root
     }
 
     override fun onStop() {
@@ -117,6 +119,8 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
 
     override fun onDestroyView() {
         super.onDestroyView()
+        items = items.filterIsInstance<StreamItem>().toMutableList()
+        items.clear()
         _binding = null
     }
 
@@ -129,11 +133,11 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         items = items.filterIsInstance<StreamItem>().toMutableList()
     }
 
-    private fun addItemsToAdapter(stream: StreamItem) {
-        val position = items.indexOf(stream)
-        items.addAll(position + 1, stream.topics)
-        adapter.notifyItemRangeInserted(position + 1, stream.topics.size)
-        adapter.notifyItemRangeChanged(position + stream.topics.size + 1, items.size)
+    private fun addItemsToAdapter(item: StreamItem) {
+        val position = items.indexOf(item)
+        items.addAll(position + 1, item.topics)
+        adapter.notifyItemRangeInserted(position + 1, item.topics.size)
+        adapter.notifyItemRangeChanged(position, items.size)
     }
 
     private fun deleteItemsFromAdapter(item: StreamItem) {
@@ -145,7 +149,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         }
         adapter.notifyItemRangeRemoved(position + 1, counter)
         adapter.notifyItemRangeChanged(position + 1, adapter.itemCount)
-
     }
 
     companion object {
