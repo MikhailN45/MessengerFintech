@@ -25,7 +25,7 @@ import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.presentation.viewmodel.ChatViewModel
 import javax.inject.Inject
 
-class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
+class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val chatViewModel: ChatViewModel by activityViewModels { viewModelFactory }
@@ -38,23 +38,18 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     private val userEmail: String? by lazy { arguments?.getString(USER_MAIL) }
 
     private val adapter: MessagesAdapter by lazy {
-        MessagesAdapter(
-            onEmojiAddClick = { messageId, emojiName ->
-                chatViewModel.processEvent(ChatEvent.Emoji.Add(messageId, emojiName))
-            },
+        MessagesAdapter(onEmojiAddClick = { messageId, emojiName ->
+            chatViewModel.processEvent(ChatEvent.Emoji.Add(messageId, emojiName))
+        },
             onEmojiDeleteClick = { messageId, emojiName ->
                 chatViewModel.processEvent(ChatEvent.Emoji.Remove(messageId, emojiName))
             },
             onMessageLongClick = { position -> showBottomSheet(position) },
             onBind = { position ->
-                if (
-                    position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5)
-                    &&
-                    chatViewModel.state.value?.loaded == false
-                )
-                    loadMessages()
-            }
-        )
+                if (position == ((chatViewModel.state.value?.messages?.size
+                        ?: 0) - 5) && chatViewModel.state.value?.loaded == false
+                ) loadMessages()
+            })
     }
 
     private val layoutManager = LinearLayoutManager(context).apply {
@@ -72,9 +67,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = ChatFragmentBinding.inflate(layoutInflater)
         return binding.root
@@ -102,8 +95,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     }
 
     private fun showBottomSheet(position: Int) {
-        SmileBottomSheet()
-            .apply { arguments = bundleOf(SmileBottomSheet.MESSAGE_KEY to position) }
+        SmileBottomSheet().apply { arguments = bundleOf(SmileBottomSheet.MESSAGE_KEY to position) }
             .show(childFragmentManager, SmileBottomSheet.TAG)
     }
 
@@ -133,8 +125,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
         }
 
         childFragmentManager.setFragmentResultListener(
-            SmileBottomSheet.SMILE_RESULT,
-            this
+            SmileBottomSheet.SMILE_RESULT, this
         ) { _, bundle ->
             val messagePosition = bundle.getInt(SmileBottomSheet.MESSAGE_KEY)
             val smileKey = bundle.getString(SmileBottomSheet.SMILE_KEY)!!

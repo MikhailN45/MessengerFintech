@@ -2,7 +2,7 @@ package com.study.messengerfintech.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.study.messengerfintech.data.network.AuthInterceptor
-import com.study.messengerfintech.data.network.ZulipRetrofitApi
+import com.study.messengerfintech.data.network.ZulipApiService
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -35,6 +35,6 @@ class RetrofitModule {
 
     @Singleton
     @Provides
-    fun provideService(retrofit: Retrofit): ZulipRetrofitApi =
-        retrofit.create(ZulipRetrofitApi::class.java)
+    fun provideService(retrofit: Retrofit): ZulipApiService =
+        retrofit.create(ZulipApiService::class.java)
 }

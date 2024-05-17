@@ -2,7 +2,6 @@ package com.study.messengerfintech.utils
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Color
 import android.util.TypedValue
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -24,10 +23,6 @@ object Utils {
         val secondsInDay = 86400
         return timestamp / secondsInDay
     }
-
-    val colors = arrayOf(
-        Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA, Color.WHITE
-    )
 
     val emojiNameUnicodeHashMap: HashMap<String, String> = hashMapOf(
         "smile" to "\uD83D\uDE42",

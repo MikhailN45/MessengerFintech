@@ -9,7 +9,7 @@ import com.study.messengerfintech.data.model.TopicResponse
 import com.study.messengerfintech.data.model.UserResponse
 import com.study.messengerfintech.data.network.NarrowInt
 import com.study.messengerfintech.data.network.NarrowStr
-import com.study.messengerfintech.data.network.ZulipRetrofitApi
+import com.study.messengerfintech.data.network.ZulipApiService
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.Stream
@@ -30,7 +30,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RepositoryImpl @Inject constructor(
-    private val service: ZulipRetrofitApi,
+    private val service: ZulipApiService,
     private val database: AppDatabase
 ) : Repository {
 

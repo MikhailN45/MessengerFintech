@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -59,6 +61,12 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.viewpager2)
 
+    //firebase analytics
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+
+
     //navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
@@ -91,11 +99,11 @@ dependencies {
 
     //Tests
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.rules)
     androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.fragment.testing)
     debugImplementation(libs.androidx.fragment.testing)
-    testImplementation(libs.androidx.rules)
     androidTestUtil(libs.androidx.orchestrator)
 
     //kotest
@@ -114,14 +122,6 @@ dependencies {
     androidTestImplementation(libs.kaspresso)
     androidTestImplementation(libs.hamcrest)
 
-    testImplementation (libs.testing.ktx)
+    testImplementation(libs.testing.ktx)
     testImplementation(libs.core.testing)
-
-    //wiremock
-    debugImplementation(libs.androidx.core)
-    androidTestImplementation(libs.httpclient.android)
-    androidTestImplementation(libs.wiremock.standalone){
-        exclude(group = "org.apache.httpcomponents", module = "httpclient")
-    }
-
 }

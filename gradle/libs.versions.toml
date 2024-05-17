@@ -1,6 +1,5 @@
 [versions]
 #Build artifacts
-coreTesting = "1.1.1"
 minSdk = "28"
 compileSdk = "34"
 targetSdk = "34"
@@ -8,6 +7,8 @@ targetSdk = "34"
 #Plugin versions
 agp = "8.3.2"
 kotlin = "1.9.23"
+gms = "4.4.1"
+crashlytics = "3.0.1"
 
 #Libraries versions
 coreKtx = "1.13.1"
@@ -42,10 +43,11 @@ okhttp = "4.12.0"
 mockitoCore = "4.5.1"
 wiremockStandalone = "2.27.2"
 httpclientAndroid = "4.3.5.1"
+coreTesting = "1.1.1"
+firebaseBom = "33.0.0"
 
 [libraries]
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
-androidx-core = { module = "androidx.test:core", version.ref = "rules" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoIntents" }
@@ -63,8 +65,8 @@ androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref =
 core-testing = { module = "android.arch.core:core-testing", version.ref = "coreTesting" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
-httpclient-android = { module = "org.apache.httpcomponents:httpclient-android", version.ref = "httpclientAndroid" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kaspresso = { module = "com.kaspersky.android-components:kaspresso", version.ref = "kaspresso" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
@@ -88,7 +90,8 @@ rxkotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "rxkotlin" 
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 bumptechGlide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 testing-ktx = { module = "com.jraska.livedata:testing-ktx", version.ref = "testingKtx" }
-wiremock-standalone = { module = "com.github.tomakehurst:wiremock-standalone", version.ref = "wiremockStandalone" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -96,3 +99,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "gms" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }

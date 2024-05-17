@@ -20,7 +20,7 @@ import com.study.messengerfintech.presentation.state.ProfileState
 import com.study.messengerfintech.presentation.viewmodel.ProfileViewModel
 import javax.inject.Inject
 
-class ProfileFragment : FragmentMVI<ProfileState>(R.layout.profile_fragment) {
+class ProfileFragment : FragmentMvi<ProfileState>(R.layout.profile_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val profileViewModel: ProfileViewModel by activityViewModels { viewModelFactory }

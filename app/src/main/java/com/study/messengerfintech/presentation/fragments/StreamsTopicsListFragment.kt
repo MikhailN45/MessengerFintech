@@ -23,7 +23,7 @@ import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 import javax.inject.Inject
 
-class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_and_chats_fragment) {
+class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_and_chats_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: StreamsViewModel by activityViewModels { viewModelFactory }
@@ -48,7 +48,7 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
-                    viewModel.processEvent(StreamsEvent.ExpandStream(onClickedItem))
+                    //viewModel.processEvent(StreamsEvent.ExpandStream(onClickedItem))
                     addItemsToAdapter(onClickedItem)
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
@@ -91,14 +91,9 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
             arguments?.getParcelable(STREAM_TYPE)
         } ?: StreamType.AllStreams
         if (streamType == StreamType.SubscribedStreams) {
-            viewModel.streamsSubscribed.observe(viewLifecycleOwner) { state ->
-                render(state)
-            }
+            viewModel.streamsSubscribed.observe(viewLifecycleOwner, ::render)
         } else {
-            viewModel.streamsAll.observe(viewLifecycleOwner) { state ->
-                render(state)
-            }
-
+            viewModel.streamsAll.observe(viewLifecycleOwner, ::render)
         }
 
         binding.streamsAndChatsRecycler.apply {

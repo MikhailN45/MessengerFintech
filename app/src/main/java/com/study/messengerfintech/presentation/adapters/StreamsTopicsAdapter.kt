@@ -9,12 +9,12 @@ import androidx.core.view.indices
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.study.messengerfintech.R
 import com.study.messengerfintech.databinding.StreamItemBinding
 import com.study.messengerfintech.databinding.TopicItemBinding
 import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.StreamTopicItem
 import com.study.messengerfintech.domain.model.TopicItem
-import com.study.messengerfintech.utils.Utils.colors
 
 class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit) :
     ListAdapter<StreamTopicItem, RecyclerView.ViewHolder>(StreamTopicDiffUtilCallback()) {
@@ -104,7 +104,14 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
                         else ""
                     }
                 for (i in chatItem.indices) {
-                    chatItem.setBackgroundColor(colors.random())
+                    chatItem.setBackgroundResource(
+                        if (item.topicId % 2 == 0) {
+                           R.drawable.topic_green_backround
+                        } else {
+                            R.drawable.topic_yellow_background
+                        }
+
+                    )
                 }
             }
         }

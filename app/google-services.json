@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "410701565883",
+    "project_id": "messengerfintech-a115b",
+    "storage_bucket": "messengerfintech-a115b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410701565883:android:bc757a1c98c0d9a0917e9e",
+        "android_client_info": {
+          "package_name": "com.study.messengerfintech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdZnph7wFXWhIDPEgWSHiaw5Z4gWBxYBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
