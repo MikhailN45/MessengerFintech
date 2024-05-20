@@ -1,7 +1,7 @@
 package com.study.messengerfintech.domain.usecase
 
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.repository.Repository
+import com.study.messengerfintech.domain.repository.UserRepository
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -10,7 +10,7 @@ interface SearchUsersUseCase {
 }
 
 class SearchUsersUseCaseImpl @Inject constructor(
-    private val repository: Repository
+    private val repository: UserRepository
 ) : SearchUsersUseCase {
 
     override fun invoke(searchQuery: String): Observable<List<User>> {

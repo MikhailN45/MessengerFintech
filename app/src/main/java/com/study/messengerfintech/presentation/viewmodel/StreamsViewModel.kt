@@ -5,10 +5,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.study.messengerfintech.domain.model.StreamItem
-import com.study.messengerfintech.domain.model.TopicItem
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.repository.Repository
+import com.study.messengerfintech.domain.repository.StreamRepository
 import com.study.messengerfintech.domain.usecase.SearchTopicsUseCase
 import com.study.messengerfintech.presentation.events.StreamsEvent
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.STREAM
@@ -18,7 +16,6 @@ import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.
 import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.utils.SingleLiveEvent
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
@@ -30,7 +27,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class StreamsViewModel @Inject constructor(
-    private val repository: Repository,
+    private val streamRepository: StreamRepository,
     private val searchTopicsUseCase: SearchTopicsUseCase
 ) : ViewModel() {
 
@@ -61,17 +58,17 @@ class StreamsViewModel @Inject constructor(
             is StreamsEvent.OpenChat.Topic ->
                 openPublicChat(event.streamId, event.topic)
 
-            is StreamsEvent.ExpandStream ->
-                updateTopicsMessagesCount(event.stream)
+            /*is StreamsEvent.ExpandStream ->
+                updateTopicsMessagesCount(event.stream)*/
         }
     }
 
     private fun subscribeToSearchStreams() {
-        repository.requestAllStreams()
+        streamRepository.requestAllStreams()
             .subscribe()
             .addTo(compositeDisposable)
 
-        repository.requestSubscribedStreams()
+        streamRepository.requestSubscribedStreams()
             .subscribe()
             .addTo(compositeDisposable)
 
@@ -89,8 +86,8 @@ class StreamsViewModel @Inject constructor(
         subject.flatMap { searchQuery ->
             Observables.zip(
                 Observable.just(searchQuery),
-                repository.getAllStreams(),
-                repository.getSubscribedStreams(),
+                streamRepository.getAllStreams(),
+                streamRepository.getSubscribedStreams(),
             )
         }.map {
             val (searchQuery, allStreams, subscribedStreams) = it
@@ -111,7 +108,7 @@ class StreamsViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    private fun updateTopicsMessagesCount(stream: StreamItem) {
+    /*private fun updateTopicsMessagesCount(stream: StreamItem) {
         val topicList: MutableList<Single<TopicItem>> = mutableListOf()
         stream.topics.forEach { topic ->
             val topicListWithCount = repository.getMessageCountForTopic(
@@ -137,10 +134,10 @@ class StreamsViewModel @Inject constructor(
                 }
             )
             .addTo(compositeDisposable)
-    }
+    }*/
 
     private fun initUser() {
-        repository.loadOwnUser().subscribeBy(
+        streamRepository.loadOwnUser().subscribeBy(
             onSuccess = { user -> User.ME = user },
             onError = { error -> Log.e("initUser", "${error.message}") }
         ).addTo(compositeDisposable)

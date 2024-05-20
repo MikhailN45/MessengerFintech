@@ -2,14 +2,11 @@ package com.study.messengerfintech.presentation.viewmodel
 
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.repository.Repository
-import com.study.messengerfintech.presentation.events.ChatEvent
+import com.study.messengerfintech.domain.repository.ChatRepository
 import com.study.messengerfintech.utils.SchedulerRule
 import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
 import io.reactivex.Single
-import junit.framework.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,12 +26,12 @@ class SendMessageTest {
     val executorRule = InstantTaskExecutorRule()
 
     @Mock
-    lateinit var repository: Repository
+    lateinit var chatRepository: ChatRepository
     private lateinit var viewModel: ChatViewModel
 
     @Before
     fun setup() {
-        viewModel = ChatViewModel(repository = mock(Repository::class.java))
+        viewModel = ChatViewModel(chatRepository = mock(ChatRepository::class.java))
     }
 
     @Test
@@ -42,14 +39,14 @@ class SendMessageTest {
         val messageId = 1
         val emojiName = "smile"
 
-        doReturn(Completable.complete()).`when`(repository)
+        doReturn(Completable.complete()).`when`(chatRepository)
             .addEmoji(messageId, emojiName = emojiName)
 
-        repository.addEmoji(messageId, emojiName)
+        chatRepository.addEmoji(messageId, emojiName)
             .test()
             .assertComplete()
 
-        verify(repository).addEmoji(messageId, emojiName = emojiName)
+        verify(chatRepository).addEmoji(messageId, emojiName = emojiName)
     }
 
     @Test
@@ -57,14 +54,14 @@ class SendMessageTest {
         val messageId = 1
         val emojiName = "smile"
 
-        doReturn(Completable.complete()).`when`(repository)
+        doReturn(Completable.complete()).`when`(chatRepository)
             .deleteEmoji(messageId, emojiName = emojiName)
 
-        repository.deleteEmoji(messageId, emojiName)
+        chatRepository.deleteEmoji(messageId, emojiName)
             .test()
             .assertComplete()
 
-        verify(repository).deleteEmoji(messageId, emojiName = emojiName)
+        verify(chatRepository).deleteEmoji(messageId, emojiName = emojiName)
     }
 
     @Test
@@ -75,13 +72,13 @@ class SendMessageTest {
         val topic = "Greetings"
         val messageId = 123
 
-        doReturn(Single.just(messageId)).`when`(repository)
+        doReturn(Single.just(messageId)).`when`(chatRepository)
             .sendMessage(type, to, content, topic)
 
-        repository.sendMessage(type, to, content, topic)
+        chatRepository.sendMessage(type, to, content, topic)
             .test()
             .assertComplete()
 
-        verify(repository).sendMessage(type, to, content, topic)
+        verify(chatRepository).sendMessage(type, to, content, topic)
     }
 }

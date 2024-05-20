@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.repository.Repository
+import com.study.messengerfintech.domain.repository.ChatRepository
 import com.study.messengerfintech.presentation.events.ChatEvent
 import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.utils.SendType
@@ -19,7 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ChatViewModel @Inject constructor(
-    private val repository: Repository
+    private val chatRepository: ChatRepository
 ) : ViewModel() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -81,7 +81,7 @@ class ChatViewModel @Inject constructor(
         topic: String = ""
     ) {
         _state.value = state.value?.copy(isLoading = true)
-        repository.sendMessage(type, to, content, topic)
+        chatRepository.sendMessage(type, to, content, topic)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -108,7 +108,7 @@ class ChatViewModel @Inject constructor(
 
     private fun loadPrivateMessages(user: String, anchor: String) {
         _state.value = state.value?.copy(isLoading = true)
-        repository.loadPrivateMessages(user, anchor)
+        chatRepository.loadPrivateMessages(user, anchor)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
@@ -125,7 +125,7 @@ class ChatViewModel @Inject constructor(
 
     private fun loadTopicMessages(streamId: Int, topic: String, anchor: String = "newest") {
         _state.value = state.value?.copy(isLoading = true)
-        repository.loadTopicMessages(streamId, topic, anchor)
+        chatRepository.loadTopicMessages(streamId, topic, anchor)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { messageList ->
@@ -171,7 +171,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun addEmojiToMessage(messageId: Int, emojiName: String) {
-        repository.addEmoji(messageId, emojiName)
+        chatRepository.addEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
                 onError = { messageEvent.postValue(it.message.orEmpty()) }
@@ -179,7 +179,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun deleteReaction(messageId: Int, emojiName: String) {
-        repository.deleteEmoji(messageId, emojiName)
+        chatRepository.deleteEmoji(messageId, emojiName)
             .subscribeBy(
                 onComplete = {},
                 onError = { messageEvent.postValue(it.message.orEmpty()) }

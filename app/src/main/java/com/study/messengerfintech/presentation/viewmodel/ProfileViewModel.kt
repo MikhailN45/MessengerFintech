@@ -3,7 +3,7 @@ package com.study.messengerfintech.presentation.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.repository.Repository
+import com.study.messengerfintech.domain.repository.UserRepository
 import com.study.messengerfintech.presentation.events.ProfileEvent
 import com.study.messengerfintech.presentation.state.ProfileState
 import com.study.messengerfintech.utils.SingleLiveEvent
@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: UserRepository
 ) : ViewModel() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()

@@ -1,6 +1,5 @@
 package com.study.messengerfintech.presentation.events
 
-import com.study.messengerfintech.domain.model.StreamItem
 import com.study.messengerfintech.domain.model.User
 
 sealed interface StreamsEvent {
@@ -8,9 +7,9 @@ sealed interface StreamsEvent {
         val query: String = ""
     ) : StreamsEvent
 
-    data class ExpandStream(
+    /*data class ExpandStream(
         val stream: StreamItem
-    ): StreamsEvent
+    ): StreamsEvent*/
 
     sealed interface OpenChat : StreamsEvent {
         data class Private(
