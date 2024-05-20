@@ -17,7 +17,7 @@ material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 testingKtx = "1.3.0"
-viewpager2 = "1.0.0"
+viewpager2 = "1.1.0"
 navigationFragmentKtx = "2.7.7"
 rxandroid = "2.1.1"
 rxjava = "2.2.21"
@@ -38,12 +38,11 @@ rules = "1.5.0"
 hamcrest = "2.2"
 espressoIntents = "3.5.1"
 orchestrator = "1.4.2"
-fragmentTesting = "1.7.0"
+fragmentTesting = "1.7.1"
 okhttp = "4.12.0"
 mockitoCore = "4.5.1"
-wiremockStandalone = "2.27.2"
-httpclientAndroid = "4.3.5.1"
-coreTesting = "1.1.1"
+mockitoKotlin = "4.0.0"
+coreTesting = "2.2.0"
 firebaseBom = "33.0.0"
 
 [libraries]
@@ -62,7 +61,6 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" }
 androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
-core-testing = { module = "android.arch.core:core-testing", version.ref = "coreTesting" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -90,6 +88,8 @@ rxkotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "rxkotlin" 
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 bumptechGlide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 testing-ktx = { module = "com.jraska.livedata:testing-ktx", version.ref = "testingKtx" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting"}
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 

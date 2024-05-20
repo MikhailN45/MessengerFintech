@@ -32,6 +32,7 @@ class ChatFragmentTest : TestCase() {
     fun setUp() {
         val appComponent = App.INSTANCE.appComponent.getApiUrlProvider()
         appComponent.apiUrl = mockServer.url("/").toString()
+        mockServer.dispatcher = MockServerDispatcher()
     }
 
     @After
@@ -42,7 +43,6 @@ class ChatFragmentTest : TestCase() {
     //Happy Path
     @Test
     fun openChat() = run {
-        mockServer.dispatcher = MockServerDispatcher()
         ActivityScenario.launch(MainActivity::class.java)
         scenario(OpenTopicChat())
         ChatScreen {
@@ -53,7 +53,6 @@ class ChatFragmentTest : TestCase() {
 
     @Test
     fun sendMessage() = run {
-        mockServer.dispatcher = MockServerDispatcher()
         ActivityScenario.launch(MainActivity::class.java)
         scenario(OpenTopicChat())
         ChatScreen {
@@ -75,7 +74,6 @@ class ChatFragmentTest : TestCase() {
     @Test
     fun setReactionToMessage() = run {
         val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        mockServer.dispatcher = MockServerDispatcher()
         ActivityScenario.launch(MainActivity::class.java)
         scenario(OpenTopicChat())
         ChatScreen {
@@ -105,7 +103,6 @@ class ChatFragmentTest : TestCase() {
     //Integration
     @Test
     fun exitTopicChatByBackButton() = run {
-        mockServer.dispatcher = MockServerDispatcher()
         ActivityScenario.launch(MainActivity::class.java)
         scenario(OpenTopicChat())
         ChatScreen {
@@ -124,7 +121,6 @@ class ChatFragmentTest : TestCase() {
     //UI visibility
     @Test
     fun checkChatUiDisplaysCorrect() = run {
-        mockServer.dispatcher = MockServerDispatcher()
         val bundle = bundleOf(
             ChatFragment.STREAM to 436402,
             ChatFragment.TOPIC to "Test Topic"

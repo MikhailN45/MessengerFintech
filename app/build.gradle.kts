@@ -123,5 +123,6 @@ dependencies {
     androidTestImplementation(libs.hamcrest)
 
     testImplementation(libs.testing.ktx)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.core.testing)
 }
