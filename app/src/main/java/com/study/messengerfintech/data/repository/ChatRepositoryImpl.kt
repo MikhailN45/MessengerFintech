@@ -2,13 +2,10 @@ package com.study.messengerfintech.data.repository
 
 import android.util.Log
 import com.study.messengerfintech.data.database.AppDatabase
-import com.study.messengerfintech.data.model.MessageResponse
-import com.study.messengerfintech.data.model.ReactionResponse
 import com.study.messengerfintech.data.network.NarrowInt
 import com.study.messengerfintech.data.network.NarrowStr
 import com.study.messengerfintech.data.network.ZulipApiService
 import com.study.messengerfintech.domain.model.Message
-import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.repository.ChatRepository
 import com.study.messengerfintech.utils.SendType
 import io.reactivex.Completable
@@ -27,7 +24,7 @@ class ChatRepositoryImpl @Inject constructor(
     private fun clearMessages(messages: List<Message>): List<Message> {
         if (messages.size <= 50) return messages
         messages.subList(0, messages.size - 50).onEach { message ->
-            database.messageDao().delete(message)
+            database.messageDao().delete(message.toMessageDto())
         }
         return messages.subList(messages.size - 50, messages.size)
     }
@@ -48,7 +45,7 @@ class ChatRepositoryImpl @Inject constructor(
 
         val localAnswer =
             database.messageDao().getPublicMessages(stream, topic)
-                .map { clearMessages(it) }
+                .map { clearMessages(it.toListMessage()) }
                 .map { it.reversed() }
 
         return service.getMessages(narrow = narrow, anchor = anchor)
@@ -68,7 +65,7 @@ class ChatRepositoryImpl @Inject constructor(
             }
             .map { it.reversed() }
             .flatMap { messages ->
-                database.messageDao().insert(messages).toSingleDefault(messages)
+                database.messageDao().insert(messages.toListMessageDto()).toSingleDefault(messages)
             }
             .onErrorResumeNext { localAnswer }
     }
@@ -84,7 +81,7 @@ class ChatRepositoryImpl @Inject constructor(
 
         val localAnswer =
             database.messageDao().getPrivateMessages(userEmail)
-                .map { clearMessages(it) }
+                .map { clearMessages(it.toListMessage()) }
                 .map { it.reversed() }
 
         return service.getMessages(narrow = narrow, anchor = anchor)
@@ -100,7 +97,7 @@ class ChatRepositoryImpl @Inject constructor(
             }
             .map { it.reversed() }
             .flatMap { messages ->
-                database.messageDao().insert(messages).toSingleDefault(messages)
+                database.messageDao().insert(messages.toListMessageDto()).toSingleDefault(messages)
             }
             .onErrorResumeNext { localAnswer }
     }
@@ -133,43 +130,3 @@ class ChatRepositoryImpl @Inject constructor(
                 Log.e("deleteEmoji", "${error.message}")
             }
 }
-
-private fun MessageResponse.toMessage(
-    reactions: List<Reaction> = emptyList(),
-    streamId: Int,
-    topicTitle: String
-): Message =
-    Message(
-        id = id,
-        content = content,
-        userId = userId,
-        isMine = isMine,
-        senderName = senderName,
-        timestamp = timestamp,
-        avatarUrl = avatarUrl,
-        reactions = reactions,
-        streamId = streamId,
-        topicTitle = topicTitle
-    )
-
-private fun MessageResponse.toMessage(
-    reactions: List<Reaction> = emptyList(),
-    userEmail: String
-): Message =
-    Message(
-        id = id,
-        content = content,
-        userId = userId,
-        isMine = isMine,
-        senderName = senderName,
-        timestamp = timestamp,
-        avatarUrl = avatarUrl,
-        reactions = reactions,
-        userEmail = userEmail
-    )
-
-private fun ReactionResponse.toReaction(): Reaction = Reaction(
-    userId = userId,
-    code = code,
-    name = name
-)

@@ -18,7 +18,7 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class SendMessageTest {
+class SendMessageTestDto {
     @get:Rule
     val schedulerRule = SchedulerRule()
 

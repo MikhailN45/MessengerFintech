@@ -5,7 +5,7 @@ compileSdk = "34"
 targetSdk = "34"
 
 #Plugin versions
-agp = "8.3.2"
+agp = "8.4.0"
 kotlin = "1.9.23"
 gms = "4.4.1"
 crashlytics = "3.0.1"

@@ -5,21 +5,21 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.study.messengerfintech.domain.model.Topic
+import com.study.messengerfintech.data.database.dto.TopicDto
 import io.reactivex.Completable
 import io.reactivex.Single
 
 @Dao
 interface TopicDao {
-    @Query("SELECT * FROM topics WHERE stream_id = :streamId")
-    fun getTopicsInStream(streamId: Int): Single<List<Topic>>
+    @Query("SELECT * FROM topics WHERE stream_id = :streamId ORDER BY title")
+    fun getTopicsInStream(streamId: Int): Single<List<TopicDto>>
 
     @Query("SELECT * FROM topics WHERE title = :title")
-    fun getTopicByTitle(title: String): Single<Topic>
+    fun getTopicByTitle(title: String): Single<TopicDto>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(topic: List<Topic>): Completable
+    fun insert(topic: List<TopicDto>): Completable
 
     @Update
-    fun update(topic: Topic)
+    fun update(topic: TopicDto)
 }

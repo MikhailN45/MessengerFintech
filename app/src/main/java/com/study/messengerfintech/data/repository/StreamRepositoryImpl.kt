@@ -2,14 +2,10 @@ package com.study.messengerfintech.data.repository
 
 import android.util.Log
 import com.study.messengerfintech.data.database.AppDatabase
-import com.study.messengerfintech.data.model.StreamResponse
-import com.study.messengerfintech.data.model.TopicResponse
-import com.study.messengerfintech.data.model.UserResponse
 import com.study.messengerfintech.data.network.ZulipApiService
 import com.study.messengerfintech.domain.model.Stream
 import com.study.messengerfintech.domain.model.Topic
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.domain.model.UserStatus
 import com.study.messengerfintech.domain.repository.StreamRepository
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -37,7 +33,7 @@ class StreamRepositoryImpl @Inject constructor(
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
                     .flatMapCompletable { streamList ->
-                        database.streamDao().insert(streamList)
+                        database.streamDao().insert(streamList.toListStreamDto())
                     }
                     .doOnError { error: Throwable ->
                         Log.e("requestAllStreams", "${error.message}")
@@ -51,7 +47,7 @@ class StreamRepositoryImpl @Inject constructor(
             .toObservable()
             .observeOn(Schedulers.io())
             .flatMap {
-                getTopicsFromStreams(it).toObservable()
+                getTopicsFromStreams(it.toListStream()).toObservable()
             }
             .doOnEach {
                 Log.d("getAllStreams", "$it")
@@ -71,7 +67,7 @@ class StreamRepositoryImpl @Inject constructor(
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
                     .flatMapCompletable { streamList ->
-                        database.streamDao().insert(streamList)
+                        database.streamDao().insert(streamList.toListStreamDto())
                     }
                     .doOnError { error: Throwable ->
                         Log.e("requestSubscribedStreams", "${error.message}")
@@ -85,7 +81,7 @@ class StreamRepositoryImpl @Inject constructor(
             .toObservable()
             .observeOn(Schedulers.io())
             .flatMap {
-                getTopicsFromStreams(it).toObservable()
+                getTopicsFromStreams(it.toListStream()).toObservable()
             }
             .doOnEach {
                 Log.d("getSubscribedStreams", "$it")
@@ -98,7 +94,7 @@ class StreamRepositoryImpl @Inject constructor(
             database.topicDao().getTopicsInStream(stream.id)
                 .doOnSuccess { Log.d("getTopicsFromStreams", "${stream.id} $it") }
                 .subscribeOn(Schedulers.io())
-                .map { topicList -> stream.toStream(topicList) }
+                .map { topicList -> stream.toStream(topicList.toListTopic()) }
         }
 
         return Single.concatEager(streamsWithTopics).toList()
@@ -112,11 +108,14 @@ class StreamRepositoryImpl @Inject constructor(
     private fun loadTopics(streamId: Int): Single<List<Topic>> {
         val localAnswer = database.topicDao().getTopicsInStream(streamId)
             .doOnSuccess { Log.d("getTopicsInStream", "$streamId $it") }
+            .map { it.toListTopic() }
 
         val remoteAnswer = service.getTopicsInStream(streamId)
             .subscribeOn(Schedulers.io())
             .map { it.topics.toTopics(streamId = streamId) }
-            .flatMap { topics -> database.topicDao().insert(topics).toSingleDefault(topics) }
+            .flatMap { topics ->
+                database.topicDao().insert(topics.toListTopicDto()).toSingleDefault(topics)
+            }
             .onErrorResumeNext { localAnswer }
 
         return remoteAnswer.subscribeOn(Schedulers.io())
@@ -125,40 +124,6 @@ class StreamRepositoryImpl @Inject constructor(
     override fun loadOwnUser(): Single<User> = service.getOwnUser()
         .subscribeOn(Schedulers.io())
         .map { it.toUser() }
-        .flatMap { database.userDao().insert(it).toSingleDefault(it) }
-        .onErrorResumeNext { database.userDao().getOwnUser() }
-
-    private fun StreamResponse.toStream(topics: List<Topic>, isSubscribed: Boolean): Stream =
-        Stream(
-            id = id,
-            title = title,
-            topics = topics,
-            isSubscribed = isSubscribed
-        )
-
-    private fun Stream.toStream(topics: List<Topic>): Stream =
-        Stream(
-            id = id,
-            title = title,
-            topics = topics,
-            isSubscribed = isSubscribed
-        )
-
-    private fun TopicResponse.toTopic(streamId: Int): Topic = Topic(
-        title = title,
-        messageCount = messageCount,
-        streamId = streamId
-    )
-
-    private fun List<TopicResponse>.toTopics(streamId: Int): List<Topic> =
-        map { it.toTopic(streamId) }
-
-
-    private fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User = User(
-        id = id,
-        name = name,
-        email = email,
-        avatarUrl = avatarUrl,
-        status = status
-    )
+        .flatMap { database.userDao().insert(it.toUserDto()).toSingleDefault(it) }
+        .onErrorResumeNext { database.userDao().getOwnUser().map { it.toUser() } }
 }

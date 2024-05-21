@@ -2,7 +2,6 @@ package com.study.messengerfintech.data.repository
 
 import android.util.Log
 import com.study.messengerfintech.data.database.AppDatabase
-import com.study.messengerfintech.data.model.UserResponse
 import com.study.messengerfintech.data.network.ZulipApiService
 import com.study.messengerfintech.domain.model.User
 import com.study.messengerfintech.domain.model.UserStatus
@@ -16,16 +15,19 @@ class UserRepositoryImpl @Inject constructor(
     private val service: ZulipApiService,
     private val database: AppDatabase
 ) : UserRepository {
+
     override fun loadUsers(): Observable<List<User>> {
         val localAnswer = database.userDao().getAll()
             .subscribeOn(Schedulers.io())
+            .map { it.toListUser() }
 
         val remoteAnswer = service.getUsers()
             .subscribeOn(Schedulers.io())
             .map {
                 it.members.map { userResponse -> userResponse.toUser() }
-            }.flatMap { usersStatusPreload(it) }
-            .doOnSuccess { database.userDao().insert(it) }
+            }
+            .flatMap { usersStatusPreload(it) }
+            .doOnSuccess { database.userDao().insert(it.toListUserDto()) }
             .onErrorResumeNext { error ->
                 Log.e("loadUsersRetrofit", "${error.message}")
                 localAnswer
@@ -53,16 +55,9 @@ class UserRepositoryImpl @Inject constructor(
                     user.status = UserStatus.stringToStatus(status)
                     user
                 }
-            }.onErrorReturn { user }
+            }
+            .onErrorReturn { user }
             .doOnError { error ->
                 Log.e("getPresence", "${error.message}")
             }
 }
-
-private fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User = User(
-    id = id,
-    name = name,
-    email = email,
-    avatarUrl = avatarUrl,
-    status = status
-)
