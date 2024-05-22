@@ -5,8 +5,9 @@ compileSdk = "34"
 targetSdk = "34"
 
 #Plugin versions
-agp = "8.4.0"
+agp = "8.4.1"
 kotlin = "1.9.23"
+ksp = "1.9.23-1.0.20"
 gms = "4.4.1"
 crashlytics = "3.0.1"
 
@@ -89,7 +90,7 @@ shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 bumptechGlide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 testing-ktx = { module = "com.jraska.livedata:testing-ktx", version.ref = "testingKtx" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting"}
+core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
@@ -98,6 +99,6 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = { id = "com.google.gms.google-services", version.ref = "gms" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }

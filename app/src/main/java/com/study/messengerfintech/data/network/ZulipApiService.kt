@@ -1,13 +1,13 @@
 package com.study.messengerfintech.data.network
 
-import com.study.messengerfintech.data.model.AllStreamRootResponse
-import com.study.messengerfintech.data.model.MessageSendResponse
-import com.study.messengerfintech.data.model.MessagesReceiveResponse
-import com.study.messengerfintech.data.model.PresenceResponse
-import com.study.messengerfintech.data.model.SubscribedStreamsRootResponse
-import com.study.messengerfintech.data.model.TopicsRootResponse
-import com.study.messengerfintech.data.model.UserResponse
-import com.study.messengerfintech.data.model.UsersRootResponse
+import com.study.messengerfintech.data.network.model.AllStreamRootResponse
+import com.study.messengerfintech.data.network.model.MessageSendResponse
+import com.study.messengerfintech.data.network.model.MessagesReceiveResponse
+import com.study.messengerfintech.data.network.model.PresenceResponse
+import com.study.messengerfintech.data.network.model.SubscribedStreamsRootResponse
+import com.study.messengerfintech.data.network.model.TopicsRootResponse
+import com.study.messengerfintech.data.network.model.UserResponse
+import com.study.messengerfintech.data.network.model.UsersRootResponse
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.http.DELETE

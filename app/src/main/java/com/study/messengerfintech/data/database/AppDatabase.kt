@@ -6,17 +6,17 @@ import com.study.messengerfintech.data.database.dao.MessageDao
 import com.study.messengerfintech.data.database.dao.StreamDao
 import com.study.messengerfintech.data.database.dao.TopicDao
 import com.study.messengerfintech.data.database.dao.UserDao
-import com.study.messengerfintech.data.database.dto.MessageDto
-import com.study.messengerfintech.data.database.dto.StreamDto
-import com.study.messengerfintech.data.database.dto.TopicDto
-import com.study.messengerfintech.data.database.dto.UserDto
+import com.study.messengerfintech.data.database.model.MessageDb
+import com.study.messengerfintech.data.database.model.StreamDb
+import com.study.messengerfintech.data.database.model.TopicDb
+import com.study.messengerfintech.data.database.model.UserDb
 
 @Database(
     entities = [
-        StreamDto::class,
-        TopicDto::class,
-        UserDto::class,
-        MessageDto::class
+        StreamDb::class,
+        TopicDb::class,
+        UserDb::class,
+        MessageDb::class
     ],
     version = 1
 )

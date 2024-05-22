@@ -1,11 +1,11 @@
-package com.study.messengerfintech.data.database.dto
+package com.study.messengerfintech.data.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.study.messengerfintech.domain.model.UserStatus
 
 @Entity(tableName = "users")
-data class UserDto(
+data class UserDb(
     @PrimaryKey
     val id: Int,
     val name: String,

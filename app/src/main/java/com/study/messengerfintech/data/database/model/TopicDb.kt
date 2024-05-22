@@ -1,4 +1,4 @@
-package com.study.messengerfintech.data.database.dto
+package com.study.messengerfintech.data.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Entity(tableName = "topics")
 @Serializable
-data class TopicDto(
+data class TopicDb(
     @PrimaryKey
     @ColumnInfo("title")
     val title: String,

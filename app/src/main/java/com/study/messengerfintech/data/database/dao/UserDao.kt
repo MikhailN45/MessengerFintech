@@ -4,21 +4,21 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.study.messengerfintech.data.database.dto.UserDto
+import com.study.messengerfintech.data.database.model.UserDb
 import io.reactivex.Completable
 import io.reactivex.Single
 
 @Dao
 interface UserDao {
     @Query("SELECT * FROM users")
-    fun getAll(): Single<List<UserDto>>
+    fun getAll(): Single<List<UserDb>>
 
     @Query("SELECT * FROM users WHERE id = 708846")
-    fun getOwnUser(): Single<UserDto>
+    fun getOwnUser(): Single<UserDb>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: UserDto): Completable
+    fun insert(user: UserDb): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(users: List<UserDto>)
+    fun insert(users: List<UserDb>)
 }

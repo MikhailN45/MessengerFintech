@@ -1,4 +1,4 @@
-package com.study.messengerfintech.data.database.dto
+package com.study.messengerfintech.data.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -10,7 +10,7 @@ import java.util.Date
 
 @Entity(tableName = "messages")
 @TypeConverters(TypeConverter::class)
-data class MessageDto(
+data class MessageDb(
     @PrimaryKey
     val id: Int,
     @ColumnInfo("content")

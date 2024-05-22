@@ -1,14 +1,14 @@
 package com.study.messengerfintech.data.repository
 
-import com.study.messengerfintech.data.database.dto.MessageDto
-import com.study.messengerfintech.data.database.dto.StreamDto
-import com.study.messengerfintech.data.database.dto.TopicDto
-import com.study.messengerfintech.data.database.dto.UserDto
-import com.study.messengerfintech.data.model.MessageResponse
-import com.study.messengerfintech.data.model.ReactionResponse
-import com.study.messengerfintech.data.model.StreamResponse
-import com.study.messengerfintech.data.model.TopicResponse
-import com.study.messengerfintech.data.model.UserResponse
+import com.study.messengerfintech.data.database.model.MessageDb
+import com.study.messengerfintech.data.database.model.StreamDb
+import com.study.messengerfintech.data.database.model.TopicDb
+import com.study.messengerfintech.data.database.model.UserDb
+import com.study.messengerfintech.data.network.model.MessageResponse
+import com.study.messengerfintech.data.network.model.ReactionApi
+import com.study.messengerfintech.data.network.model.StreamResponse
+import com.study.messengerfintech.data.network.model.TopicResponse
+import com.study.messengerfintech.data.network.model.UserResponse
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.Stream
@@ -33,15 +33,15 @@ fun Stream.toStream(topics: List<Topic>): Stream =
         isSubscribed = isSubscribed
     )
 
-fun Stream.toStreamDto(): StreamDto =
-    StreamDto(
+fun Stream.toStreamDto(): StreamDb =
+    StreamDb(
         title = title,
         id = id,
         topics = topics,
         isSubscribed = isSubscribed
     )
 
-fun StreamDto.toStream(): Stream =
+fun StreamDb.toStream(): Stream =
     Stream(
         title = title,
         id = id,
@@ -49,10 +49,10 @@ fun StreamDto.toStream(): Stream =
         isSubscribed = isSubscribed
     )
 
-fun List<Stream>.toListStreamDto(): List<StreamDto> =
+fun List<Stream>.toListStreamDto(): List<StreamDb> =
     map { it.toStreamDto() }
 
-fun List<StreamDto>.toListStream(): List<Stream> =
+fun List<StreamDb>.toListStream(): List<Stream> =
     map { it.toStream() }
 
 //Topic
@@ -66,24 +66,24 @@ fun TopicResponse.toTopic(streamId: Int): Topic =
 fun List<TopicResponse>.toTopics(streamId: Int): List<Topic> =
     map { it.toTopic(streamId) }
 
-fun Topic.toTopicDto(): TopicDto =
-    TopicDto(
+fun Topic.toTopicDto(): TopicDb =
+    TopicDb(
         title = title,
         messageCount = messageCount,
         streamId = streamId
     )
 
-fun TopicDto.toTopic(): Topic =
+fun TopicDb.toTopic(): Topic =
     Topic(
         title = title,
         messageCount = messageCount,
         streamId = streamId
     )
 
-fun List<Topic>.toListTopicDto(): List<TopicDto> =
+fun List<Topic>.toListTopicDto(): List<TopicDb> =
     map { it.toTopicDto() }
 
-fun List<TopicDto>.toListTopic(): List<Topic> =
+fun List<TopicDb>.toListTopic(): List<Topic> =
     map { it.toTopic() }
 
 //User
@@ -96,8 +96,8 @@ fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User =
         status = status
     )
 
-fun User.toUserDto(): UserDto =
-    UserDto(
+fun User.toUserDto(): UserDb =
+    UserDb(
         id = id,
         name = name,
         email = email,
@@ -105,7 +105,7 @@ fun User.toUserDto(): UserDto =
         status = status
     )
 
-fun UserDto.toUser(): User =
+fun UserDb.toUser(): User =
     User(
         id = id,
         name = name,
@@ -114,10 +114,10 @@ fun UserDto.toUser(): User =
         status = status
     )
 
-fun List<User>.toListUserDto(): List<UserDto> =
+fun List<User>.toListUserDto(): List<UserDb> =
     map { it.toUserDto() }
 
-fun List<UserDto>.toListUser(): List<User> =
+fun List<UserDb>.toListUser(): List<User> =
     map { it.toUser() }
 
 //Message
@@ -155,8 +155,8 @@ fun MessageResponse.toMessage(
         userEmail = userEmail
     )
 
-fun Message.toMessageDto(): MessageDto =
-    MessageDto(
+fun Message.toMessageDto(): MessageDb =
+    MessageDb(
         id,
         content,
         userId,
@@ -170,7 +170,7 @@ fun Message.toMessageDto(): MessageDto =
         topicTitle
     )
 
-fun MessageDto.toMessage(): Message =
+fun MessageDb.toMessage(): Message =
     Message(
         id,
         content,
@@ -185,14 +185,14 @@ fun MessageDto.toMessage(): Message =
         topicTitle
     )
 
-fun List<Message>.toListMessageDto(): List<MessageDto> =
+fun List<Message>.toListMessageDto(): List<MessageDb> =
     map { it.toMessageDto() }
 
-fun List<MessageDto>.toListMessage(): List<Message> =
+fun List<MessageDb>.toListMessage(): List<Message> =
     map { it.toMessage() }
 
 //Reaction
-fun ReactionResponse.toReaction(): Reaction = Reaction(
+fun ReactionApi.toReaction(): Reaction = Reaction(
     userId = userId,
     code = code,
     name = name
