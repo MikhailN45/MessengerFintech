@@ -45,10 +45,6 @@ class StreamsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState == null) {
-            viewModel.processEvent(StreamsEvent.SearchForStreams())
-        }
-
         topbarSearchEditText.doAfterTextChanged {
             viewModel.processEvent(StreamsEvent.SearchForStreams(it.toString()))
         }

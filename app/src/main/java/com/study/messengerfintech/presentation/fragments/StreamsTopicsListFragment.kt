@@ -90,6 +90,7 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
         } else {
             arguments?.getParcelable(STREAM_TYPE)
         } ?: StreamType.AllStreams
+
         if (streamType == StreamType.SubscribedStreams) {
             viewModel.streamsSubscribed.observe(viewLifecycleOwner, ::render)
         } else {

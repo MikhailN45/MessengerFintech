@@ -24,7 +24,7 @@ class MockServerDispatcher : Dispatcher() {
                     fromAssets("chat_new_message.json")
                 )
 
-            path.startsWith("/topics") -> MockResponse()
+            path.startsWith("/users/me/432915/topics") -> MockResponse()
                 .setResponseCode(200)
                 .setBody(
                     fromAssets("topics.json")

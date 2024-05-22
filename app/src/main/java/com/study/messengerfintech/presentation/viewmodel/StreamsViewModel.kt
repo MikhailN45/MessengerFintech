@@ -15,6 +15,7 @@ import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.
 import com.study.messengerfintech.presentation.fragments.ChatFragment.Companion.USER_NAME
 import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.utils.SingleLiveEvent
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -64,11 +65,12 @@ class StreamsViewModel @Inject constructor(
     }
 
     private fun subscribeToSearchStreams() {
-        streamRepository.requestAllStreams()
-            .subscribe()
-            .addTo(compositeDisposable)
-
-        streamRepository.requestSubscribedStreams()
+        Completable.mergeArray(
+            streamRepository.requestAllStreams(),
+            streamRepository.requestSubscribedStreams()
+        ).doOnComplete {
+            searchStreamsSubject.onNext("")
+        }
             .subscribe()
             .addTo(compositeDisposable)
 
