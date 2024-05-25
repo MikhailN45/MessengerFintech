@@ -25,14 +25,6 @@ fun StreamResponse.toStream(topics: List<Topic>, isSubscribed: Boolean): Stream 
         isSubscribed = isSubscribed
     )
 
-fun Stream.toStream(topics: List<Topic>): Stream =
-    Stream(
-        id = id,
-        title = title,
-        topics = topics,
-        isSubscribed = isSubscribed
-    )
-
 fun Stream.toStreamDto(): StreamDb =
     StreamDb(
         title = title,

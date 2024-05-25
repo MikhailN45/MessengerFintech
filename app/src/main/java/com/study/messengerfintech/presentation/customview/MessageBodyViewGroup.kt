@@ -40,7 +40,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
     private lateinit var message: Message
 
-    fun setMessage(message: Message) {
+    fun setMessageData(message: Message) {
         this.message = message
         this.messageText.text =
             HtmlCompat.fromHtml(message.content, HtmlCompat.FROM_HTML_MODE_LEGACY).trim()

@@ -94,7 +94,7 @@ class StreamsViewModel @Inject constructor(
                 streamRepository.getSubscribedStreams()
             )
         }.map {
-            val (searchQuery, allStreams, subscribedStreams) = it //TODO(no topics )
+            val (searchQuery, allStreams, subscribedStreams) = it
             val streamsAllTopics = searchTopicsUseCase(searchQuery, allStreams)
             val streamsSubscribedTopics = searchTopicsUseCase(searchQuery, subscribedStreams)
             Pair(streamsAllTopics, streamsSubscribedTopics)

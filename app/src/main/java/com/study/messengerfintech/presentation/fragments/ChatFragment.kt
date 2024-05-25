@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val chatViewModel: ChatViewModel by activityViewModels { viewModelFactory }
+    private val chatViewModel: ChatViewModel by viewModels { viewModelFactory }
     private var _binding: ChatFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -46,7 +46,7 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
                 chatViewModel.processEvent(ChatEvent.Emoji.Remove(messageId, emojiName))
             },
             onMessageLongClick = { position ->
-                showBottomSheet(position) //TODO (new message pos not update here)
+                showBottomSheet(position)
             },
             onBind = { position ->
                 if (
@@ -131,7 +131,6 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
             }
         }
 
-        //TODO "when add new messages position is always 0 on it new messages"
         childFragmentManager.setFragmentResultListener(
             SmileBottomSheet.SMILE_RESULT, this
         ) { _, bundle ->
@@ -154,9 +153,8 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
 
     private fun loadMessages() {
         val anchor =
-            //TODO(здесь передается неправильный anchor в новый чат потому что стейт не очищается)
             if (!chatViewModel.state.value?.messages.isNullOrEmpty()) {
-                "${chatViewModel.state.value?.messages?.last()?.id}"
+                "${chatViewModel.state.value?.messages?.lastOrNull()?.id}"
             } else {
                 "newest"
             }

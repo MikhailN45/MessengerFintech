@@ -32,20 +32,23 @@ class MessagesAdapter(
         )
     }
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) = with(viewHolder.binding) {
         onBind(position)
-        getItem(position).apply {
-            viewHolder.binding.message.setMessage(this)
-            viewHolder.binding.message.setOnEmojiClickListener { event ->
-                when (event) {
-                    is EmojiAdd -> onEmojiAddClick(event.messageId, event.emojiName)
-                    is EmojiDelete -> onEmojiDeleteClick(event.messageId, event.emojiName)
-                }
+        val message = getItem(position)
+
+        messageView.setMessageData(message)
+        messageView.setOnEmojiClickListener { event ->
+            when (event) {
+                is EmojiAdd -> onEmojiAddClick(event.messageId, event.emojiName)
+                is EmojiDelete -> onEmojiDeleteClick(event.messageId, event.emojiName)
             }
-            viewHolder.binding.message.setMessageOnLongClick { onMessageLongClick(position) }
-            viewHolder.binding.date.text = getDate(getItem(position).timestamp)
-            viewHolder.binding.date.isVisible = isDateNeeded(position)
         }
+        messageView.setMessageOnLongClick {
+            val messagePosition = currentList.indexOf(message)
+            onMessageLongClick(messagePosition)
+        }
+        dateView.text = getDate(message.timestamp)
+        dateView.isVisible = isDateNeeded(position)
     }
 
     private fun isDateNeeded(position: Int): Boolean {
