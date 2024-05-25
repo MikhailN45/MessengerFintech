@@ -38,18 +38,25 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
     private val userEmail: String? by lazy { arguments?.getString(USER_MAIL) }
 
     private val adapter: MessagesAdapter by lazy {
-        MessagesAdapter(onEmojiAddClick = { messageId, emojiName ->
-            chatViewModel.processEvent(ChatEvent.Emoji.Add(messageId, emojiName))
-        },
+        MessagesAdapter(
+            onEmojiAddClick = { messageId, emojiName ->
+                chatViewModel.processEvent(ChatEvent.Emoji.Add(messageId, emojiName))
+            },
             onEmojiDeleteClick = { messageId, emojiName ->
                 chatViewModel.processEvent(ChatEvent.Emoji.Remove(messageId, emojiName))
             },
-            onMessageLongClick = { position -> showBottomSheet(position) },
+            onMessageLongClick = { position ->
+                showBottomSheet(position) //TODO (new message pos not update here)
+            },
             onBind = { position ->
-                if (position == ((chatViewModel.state.value?.messages?.size
-                        ?: 0) - 5) && chatViewModel.state.value?.loaded == false
-                ) loadMessages()
-            })
+                if (
+                    position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5)
+                    &&
+                    chatViewModel.state.value?.loaded == false
+                )
+                    loadMessages()
+            }
+        )
     }
 
     private val layoutManager = LinearLayoutManager(context).apply {
@@ -124,6 +131,7 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
             }
         }
 
+        //TODO "when add new messages position is always 0 on it new messages"
         childFragmentManager.setFragmentResultListener(
             SmileBottomSheet.SMILE_RESULT, this
         ) { _, bundle ->
@@ -146,6 +154,7 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
 
     private fun loadMessages() {
         val anchor =
+            //TODO(здесь передается неправильный anchor в новый чат потому что стейт не очищается)
             if (!chatViewModel.state.value?.messages.isNullOrEmpty()) {
                 "${chatViewModel.state.value?.messages?.last()?.id}"
             } else {

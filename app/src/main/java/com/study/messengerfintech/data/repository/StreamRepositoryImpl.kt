@@ -46,9 +46,7 @@ class StreamRepositoryImpl @Inject constructor(
         return database.streamDao().getAll()
             .toObservable()
             .observeOn(Schedulers.io())
-            .flatMap {
-                getTopicsFromStreams(it.toListStream()).toObservable()
-            }
+            .map { it.toListStream() }
             .doOnEach {
                 Log.d("getAllStreams", "$it")
             }
@@ -80,24 +78,10 @@ class StreamRepositoryImpl @Inject constructor(
         return database.streamDao().getSubscribed()
             .toObservable()
             .observeOn(Schedulers.io())
-            .flatMap {
-                getTopicsFromStreams(it.toListStream()).toObservable()
-            }
+            .map { it.toListStream() }
             .doOnEach {
                 Log.d("getSubscribedStreams", "$it")
             }
-    }
-
-
-    private fun getTopicsFromStreams(streams: List<Stream>): Single<List<Stream>> {
-        val streamsWithTopics = streams.map { stream ->
-            database.topicDao().getTopicsInStream(stream.id)
-                .doOnSuccess { Log.d("getTopicsFromStreams", "${stream.id} $it") }
-                .subscribeOn(Schedulers.io())
-                .map { topicList -> stream.toStream(topicList.toListTopic()) }
-        }
-
-        return Single.concatEager(streamsWithTopics).toList()
     }
 
     /*override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =

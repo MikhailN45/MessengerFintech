@@ -59,10 +59,10 @@ class ChatRepositoryImpl @Inject constructor(
                     )
                 }
             }
-            .map {
+            /*.map {
                 if (anchor != "newest") it.subList(0, it.size - 1)
                 else it
-            }
+            }*/
             .map { it.reversed() }
             .flatMap { messages ->
                 database.messageDao().insert(messages.toListMessageDto()).toSingleDefault(messages)
@@ -91,10 +91,10 @@ class ChatRepositoryImpl @Inject constructor(
                     messageResponse.toMessage(userEmail = userEmail)
                 }
             }
-            .map {
+            /*.map {
                 if (anchor != "newest") it.subList(0, it.size - 1)
                 else it
-            }
+            }*/
             .map { it.reversed() }
             .flatMap { messages ->
                 database.messageDao().insert(messages.toListMessageDto()).toSingleDefault(messages)

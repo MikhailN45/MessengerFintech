@@ -65,6 +65,8 @@ class StreamsViewModel @Inject constructor(
     }
 
     private fun subscribeToSearchStreams() {
+        _screenState.postValue(State.Loading)
+
         Completable.mergeArray(
             streamRepository.requestAllStreams(),
             streamRepository.requestSubscribedStreams()
@@ -89,10 +91,10 @@ class StreamsViewModel @Inject constructor(
             Observables.zip(
                 Observable.just(searchQuery),
                 streamRepository.getAllStreams(),
-                streamRepository.getSubscribedStreams(),
+                streamRepository.getSubscribedStreams()
             )
         }.map {
-            val (searchQuery, allStreams, subscribedStreams) = it
+            val (searchQuery, allStreams, subscribedStreams) = it //TODO(no topics )
             val streamsAllTopics = searchTopicsUseCase(searchQuery, allStreams)
             val streamsSubscribedTopics = searchTopicsUseCase(searchQuery, subscribedStreams)
             Pair(streamsAllTopics, streamsSubscribedTopics)
