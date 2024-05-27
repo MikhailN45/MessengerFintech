@@ -16,12 +16,13 @@ class SearchUsersUseCaseImpl @Inject constructor(
     override fun invoke(searchQuery: String): Observable<List<User>> {
         return repository.loadUsers()
             .map { users ->
-                if (searchQuery.isNotEmpty())
+                if (searchQuery.isNotEmpty()) {
                     users.filter { user ->
                         user.name.contains(searchQuery, ignoreCase = true)
                     }
-                else
+                } else {
                     users
+                }
             }
     }
 }

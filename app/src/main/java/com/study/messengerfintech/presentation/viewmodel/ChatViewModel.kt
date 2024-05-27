@@ -26,24 +26,23 @@ class ChatViewModel @Inject constructor(
     private val messageEvent = SingleLiveEvent<String>()
     val scrollEvent = SingleLiveEvent<Unit>()
 
-
     private val _state: MutableLiveData<ChatState> = MutableLiveData(ChatState())
     val state: LiveData<ChatState> = _state
 
     fun processEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.SendMessage.Topic ->
-                sendPublicMessage(event.streamId, event.topicName, event.content)
+                sendPublicMessage(event.streamId, event.topicTitle, event.content)
 
             is ChatEvent.SendMessage.Private ->
                 sendPrivateMessage(event.userEmail, event.content)
 
             is ChatEvent.LoadMessages.Topic ->
                 loadTopicMessages(
-                event.streamId,
-                event.topicName,
-                event.anchor
-            )
+                    event.streamId,
+                    event.topicTitle,
+                    event.anchor
+                )
 
             is ChatEvent.LoadMessages.Private ->
                 loadPrivateMessages(event.userEmail, event.anchor)
@@ -62,7 +61,6 @@ class ChatViewModel @Inject constructor(
     private fun setReactionToMessage(reaction: Reaction, messagePosition: Int) {
         val messages = state.value?.messages ?: return
         messages[messagePosition].addEmoji(reaction)
-        //redeclaration for livedata change trigger
         _state.value = state.value?.copy(messages = emptyList())
         _state.value = state.value?.copy(messages = messages)
 
@@ -141,7 +139,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun updateMessagesForTopic(messages: List<Message>, newMessagesTopic: String) {
-        val isMessagesRemaining = messages.isEmpty() || messages.size < 20
+        val isMessagesAreOver = messages.isEmpty() || messages.size < 20
         val currentMessagesTopic = state.value?.messages?.firstOrNull()?.topicTitle
         val newMessages = mutableListOf<Message>()
         if (currentMessagesTopic == newMessagesTopic) {
@@ -151,12 +149,12 @@ class ChatViewModel @Inject constructor(
 
         _state.value = state.value?.copy(
             messages = newMessages,
-            loaded = isMessagesRemaining
+            isAllChatMessageAreLoaded = isMessagesAreOver
         )
     }
 
     private fun updateMessagesForPrivate(messages: List<Message>, user: String) {
-        val isMessagesRemaining = messages.isEmpty() || messages.size < 20
+        val isMessagesAreOver = messages.isEmpty() || messages.size < 20
         val currentCompanion = state.value?.messages?.firstOrNull()?.userEmail
         val newMessages = mutableListOf<Message>()
         if (currentCompanion == user) {
@@ -166,14 +164,14 @@ class ChatViewModel @Inject constructor(
 
         _state.value = state.value?.copy(
             messages = newMessages,
-            loaded = isMessagesRemaining
+            isAllChatMessageAreLoaded = isMessagesAreOver
         )
     }
 
     private fun addEmojiToMessage(messageId: Int, emojiName: String) {
         chatRepository.addEmoji(messageId, emojiName)
             .subscribeBy(
-                onComplete = {},
+                onComplete = { },
                 onError = { messageEvent.postValue(it.message.orEmpty()) }
             ).addTo(compositeDisposable)
     }
@@ -181,7 +179,7 @@ class ChatViewModel @Inject constructor(
     private fun deleteReaction(messageId: Int, emojiName: String) {
         chatRepository.deleteEmoji(messageId, emojiName)
             .subscribeBy(
-                onComplete = {},
+                onComplete = { },
                 onError = { messageEvent.postValue(it.message.orEmpty()) }
             ).addTo(compositeDisposable)
     }

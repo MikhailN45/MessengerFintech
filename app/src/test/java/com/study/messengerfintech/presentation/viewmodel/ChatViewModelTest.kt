@@ -18,7 +18,7 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class SendMessageTestDto {
+class ChatViewModelTest {
     @get:Rule
     val schedulerRule = SchedulerRule()
 

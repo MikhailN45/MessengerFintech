@@ -7,10 +7,6 @@ sealed interface StreamsEvent {
         val query: String = ""
     ) : StreamsEvent
 
-    /*data class ExpandStream(
-        val stream: StreamItem
-    ): StreamsEvent*/
-
     sealed interface OpenChat : StreamsEvent {
         data class Private(
             val user: User

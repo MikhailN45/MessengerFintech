@@ -16,6 +16,4 @@ interface StreamRepository {
     fun getSubscribedStreams(): Observable<List<Stream>>
 
     fun loadOwnUser(): Single<User>
-
-    // fun getMessageCountForTopic(stream: Int, topic: String): Single<Int>
 }

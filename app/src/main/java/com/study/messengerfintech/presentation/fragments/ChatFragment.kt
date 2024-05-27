@@ -52,7 +52,7 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
                 if (
                     position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5)
                     &&
-                    chatViewModel.state.value?.loaded == false
+                    chatViewModel.state.value?.isAllChatMessageAreLoaded == false
                 )
                     loadMessages()
             }
@@ -96,8 +96,8 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
     }
 
 
-    override fun render(state: ChatState) = with(binding) {
-        progressBar.isVisible = state.isLoading
+    override fun render(state: ChatState) {
+        binding.progressBar.isVisible = state.isLoading
         adapter.submitList(state.messages)
     }
 
@@ -109,7 +109,6 @@ class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
     private fun initScreen() {
         with(binding) {
             chatTitle.text = "#%s".format(topicName ?: userName)
-
             backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
 
             chatRecycler.apply {

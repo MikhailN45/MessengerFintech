@@ -21,14 +21,6 @@ class ChatRepositoryImpl @Inject constructor(
     private val database: AppDatabase
 ) : ChatRepository {
 
-    private fun clearMessages(messages: List<Message>): List<Message> {
-        if (messages.size <= 50) return messages
-        messages.subList(0, messages.size - 50).onEach { message ->
-            database.messageDao().delete(message.toMessageDto())
-        }
-        return messages.subList(messages.size - 50, messages.size)
-    }
-
     override fun loadTopicMessages(
         stream: Int,
         topic: String,
@@ -59,13 +51,13 @@ class ChatRepositoryImpl @Inject constructor(
                     )
                 }
             }
-            /*.map {
+            .map {
                 if (anchor != "newest") it.subList(0, it.size - 1)
                 else it
-            }*/
+            }
             .map { it.reversed() }
             .flatMap { messages ->
-                database.messageDao().insert(messages.toListMessageDto()).toSingleDefault(messages)
+                database.messageDao().insert(messages.toListMessageDb()).toSingleDefault(messages)
             }
             .onErrorResumeNext { localAnswer }
     }
@@ -88,18 +80,29 @@ class ChatRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.messages.map { messageResponse ->
-                    messageResponse.toMessage(userEmail = userEmail)
+                    messageResponse.toMessage(
+                        messageResponse.reactions.map { it.toReaction() },
+                        userEmail = userEmail
+                    )
                 }
             }
-            /*.map {
+            .map {
                 if (anchor != "newest") it.subList(0, it.size - 1)
                 else it
-            }*/
+            }
             .map { it.reversed() }
             .flatMap { messages ->
-                database.messageDao().insert(messages.toListMessageDto()).toSingleDefault(messages)
+                database.messageDao().insert(messages.toListMessageDb()).toSingleDefault(messages)
             }
             .onErrorResumeNext { localAnswer }
+    }
+
+    private fun clearMessages(messages: List<Message>): List<Message> {
+        if (messages.size <= 50) return messages
+        messages.subList(0, messages.size - 50).onEach { message ->
+            database.messageDao().delete(message.toMessageDb())
+        }
+        return messages.subList(messages.size - 50, messages.size)
     }
 
     override fun sendMessage(

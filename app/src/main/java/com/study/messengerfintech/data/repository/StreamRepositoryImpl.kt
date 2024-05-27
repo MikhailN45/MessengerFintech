@@ -33,7 +33,7 @@ class StreamRepositoryImpl @Inject constructor(
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
                     .flatMapCompletable { streamList ->
-                        database.streamDao().insert(streamList.toListStreamDto())
+                        database.streamDao().insert(streamList.toListStreamDb())
                     }
                     .doOnError { error: Throwable ->
                         Log.e("requestAllStreams", "${error.message}")
@@ -65,7 +65,7 @@ class StreamRepositoryImpl @Inject constructor(
                     }
                 Single.zip(streams) { it.toList() as List<Stream> }
                     .flatMapCompletable { streamList ->
-                        database.streamDao().insert(streamList.toListStreamDto())
+                        database.streamDao().insert(streamList.toListStreamDb())
                     }
                     .doOnError { error: Throwable ->
                         Log.e("requestSubscribedStreams", "${error.message}")
@@ -84,11 +84,6 @@ class StreamRepositoryImpl @Inject constructor(
             }
     }
 
-    /*override fun getMessageCountForTopic(stream: Int, topic: String): Single<Int> =
-        loadTopicMessages(stream, topic, "newest").map { it.size }
-            .doOnError { Log.e("getMessagesCountForTopic", it.message.toString()) }
-            .onErrorResumeNext { Single.just(0) }*/
-
     private fun loadTopics(streamId: Int): Single<List<Topic>> {
         val localAnswer = database.topicDao().getTopicsInStream(streamId)
             .doOnSuccess { Log.d("getTopicsInStream", "$streamId $it") }
@@ -98,7 +93,7 @@ class StreamRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .map { it.topics.toTopics(streamId = streamId) }
             .flatMap { topics ->
-                database.topicDao().insert(topics.toListTopicDto()).toSingleDefault(topics)
+                database.topicDao().insert(topics.toListTopicDb()).toSingleDefault(topics)
             }
             .onErrorResumeNext { localAnswer }
 
@@ -108,6 +103,6 @@ class StreamRepositoryImpl @Inject constructor(
     override fun loadOwnUser(): Single<User> = service.getOwnUser()
         .subscribeOn(Schedulers.io())
         .map { it.toUser() }
-        .flatMap { database.userDao().insert(it.toUserDto()).toSingleDefault(it) }
+        .flatMap { database.userDao().insert(it.toUserDb()).toSingleDefault(it) }
         .onErrorResumeNext { database.userDao().getOwnUser().map { it.toUser() } }
 }

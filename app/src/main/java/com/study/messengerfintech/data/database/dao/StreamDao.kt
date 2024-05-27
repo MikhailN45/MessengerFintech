@@ -16,6 +16,6 @@ interface StreamDao {
     @Query("SELECT * FROM streams WHERE isSubscribed = 1 ORDER BY title")
     fun getSubscribed(): Flowable<List<StreamDb>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(streams: List<StreamDb>): Completable
 }

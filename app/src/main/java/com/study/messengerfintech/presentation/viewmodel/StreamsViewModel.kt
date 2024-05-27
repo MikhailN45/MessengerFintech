@@ -58,9 +58,6 @@ class StreamsViewModel @Inject constructor(
 
             is StreamsEvent.OpenChat.Topic ->
                 openPublicChat(event.streamId, event.topic)
-
-            /*is StreamsEvent.ExpandStream ->
-                updateTopicsMessagesCount(event.stream)*/
         }
     }
 
@@ -112,34 +109,6 @@ class StreamsViewModel @Inject constructor(
             .addTo(compositeDisposable)
     }
 
-    /*private fun updateTopicsMessagesCount(stream: StreamItem) {
-        val topicList: MutableList<Single<TopicItem>> = mutableListOf()
-        stream.topics.forEach { topic ->
-            val topicListWithCount = repository.getMessageCountForTopic(
-                stream.streamId,
-                topic.title
-            )
-                .map { messageCount ->
-                    topic.messageCount = messageCount
-                    topic
-                }
-            topicList.add(topicListWithCount)
-        }
-
-        Single.zip(topicList) { topic -> topic.map { it as TopicItem } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { updatedTopics ->
-                    stream.topics = updatedTopics.sortedByDescending { it.messageCount }
-                },
-                { error ->
-                    Log.e("updateTopicsMessageCount", "${error.message}")
-                }
-            )
-            .addTo(compositeDisposable)
-    }*/
-
     private fun initUser() {
         streamRepository.loadOwnUser().subscribeBy(
             onSuccess = { user -> User.ME = user },
@@ -165,6 +134,6 @@ class StreamsViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.dispose()
+        compositeDisposable.clear()
     }
 }

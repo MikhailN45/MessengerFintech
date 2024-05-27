@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Topic(
     val title: String,
-    var messageCount: Int = 0,
-    val streamId: Int = 0
+    val messageCount: Int,
+    val streamId: Int
 )
 
 fun List<Topic>.toTopicItems(streamId: Int): List<TopicItem> = mapIndexed { index, topic ->

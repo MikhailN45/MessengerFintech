@@ -40,7 +40,6 @@ class ChatFragmentTest : TestCase() {
         mockServer.shutdown()
     }
 
-    //Happy Path
     @Test
     fun openChat() = run {
         ActivityScenario.launch(MainActivity::class.java)
@@ -100,7 +99,6 @@ class ChatFragmentTest : TestCase() {
         }
     }
 
-    //Integration
     @Test
     fun exitTopicChatByBackButton() = run {
         ActivityScenario.launch(MainActivity::class.java)
@@ -118,7 +116,6 @@ class ChatFragmentTest : TestCase() {
         }
     }
 
-    //UI visibility
     @Test
     fun checkChatUiDisplaysCorrect() = run {
         val bundle = bundleOf(

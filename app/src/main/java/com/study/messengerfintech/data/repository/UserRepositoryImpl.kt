@@ -26,8 +26,8 @@ class UserRepositoryImpl @Inject constructor(
             .map {
                 it.members.map { userResponse -> userResponse.toUser() }
             }
-            .flatMap { usersStatusPreload(it) }
-            .doOnSuccess { database.userDao().insert(it.toListUserDto()) }
+            .flatMap { updateUsersPresence(it) }
+            .doOnSuccess { database.userDao().insert(it.toListUserDb()) }
             .onErrorResumeNext { error ->
                 Log.e("loadUsersRetrofit", "${error.message}")
                 localAnswer
@@ -36,7 +36,7 @@ class UserRepositoryImpl @Inject constructor(
         return Single.concat(localAnswer, remoteAnswer).toObservable()
     }
 
-    private fun usersStatusPreload(users: List<User>): Single<List<User>> {
+    private fun updateUsersPresence(users: List<User>): Single<List<User>> {
         val usersWithStatus = users.map { user ->
             loadStatus(user)
                 .doOnError { error ->

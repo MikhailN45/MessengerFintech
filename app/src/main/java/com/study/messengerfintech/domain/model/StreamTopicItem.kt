@@ -4,7 +4,7 @@ sealed interface StreamTopicItem
 data class StreamItem(
     val streamId: Int,
     val title: String,
-    var topics: List<TopicItem>,
+    val topics: List<TopicItem>,
     var isExpanded: Boolean = false
 ) : StreamTopicItem
 

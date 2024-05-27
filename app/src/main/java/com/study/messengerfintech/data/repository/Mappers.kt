@@ -25,7 +25,7 @@ fun StreamResponse.toStream(topics: List<Topic>, isSubscribed: Boolean): Stream 
         isSubscribed = isSubscribed
     )
 
-fun Stream.toStreamDto(): StreamDb =
+fun Stream.toStreamDb(): StreamDb =
     StreamDb(
         title = title,
         id = id,
@@ -41,8 +41,8 @@ fun StreamDb.toStream(): Stream =
         isSubscribed = isSubscribed
     )
 
-fun List<Stream>.toListStreamDto(): List<StreamDb> =
-    map { it.toStreamDto() }
+fun List<Stream>.toListStreamDb(): List<StreamDb> =
+    map { it.toStreamDb() }
 
 fun List<StreamDb>.toListStream(): List<Stream> =
     map { it.toStream() }
@@ -58,7 +58,7 @@ fun TopicResponse.toTopic(streamId: Int): Topic =
 fun List<TopicResponse>.toTopics(streamId: Int): List<Topic> =
     map { it.toTopic(streamId) }
 
-fun Topic.toTopicDto(): TopicDb =
+fun Topic.toTopicDb(): TopicDb =
     TopicDb(
         title = title,
         messageCount = messageCount,
@@ -72,8 +72,8 @@ fun TopicDb.toTopic(): Topic =
         streamId = streamId
     )
 
-fun List<Topic>.toListTopicDto(): List<TopicDb> =
-    map { it.toTopicDto() }
+fun List<Topic>.toListTopicDb(): List<TopicDb> =
+    map { it.toTopicDb() }
 
 fun List<TopicDb>.toListTopic(): List<Topic> =
     map { it.toTopic() }
@@ -88,7 +88,7 @@ fun UserResponse.toUser(status: UserStatus = UserStatus.Offline): User =
         status = status
     )
 
-fun User.toUserDto(): UserDb =
+fun User.toUserDb(): UserDb =
     UserDb(
         id = id,
         name = name,
@@ -106,8 +106,8 @@ fun UserDb.toUser(): User =
         status = status
     )
 
-fun List<User>.toListUserDto(): List<UserDb> =
-    map { it.toUserDto() }
+fun List<User>.toListUserDb(): List<UserDb> =
+    map { it.toUserDb() }
 
 fun List<UserDb>.toListUser(): List<User> =
     map { it.toUser() }
@@ -147,7 +147,7 @@ fun MessageResponse.toMessage(
         userEmail = userEmail
     )
 
-fun Message.toMessageDto(): MessageDb =
+fun Message.toMessageDb(): MessageDb =
     MessageDb(
         id,
         content,
@@ -177,8 +177,8 @@ fun MessageDb.toMessage(): Message =
         topicTitle
     )
 
-fun List<Message>.toListMessageDto(): List<MessageDb> =
-    map { it.toMessageDto() }
+fun List<Message>.toListMessageDb(): List<MessageDb> =
+    map { it.toMessageDb() }
 
 fun List<MessageDb>.toListMessage(): List<Message> =
     map { it.toMessage() }

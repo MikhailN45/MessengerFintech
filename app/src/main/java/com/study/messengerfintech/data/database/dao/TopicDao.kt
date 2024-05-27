@@ -14,12 +14,6 @@ interface TopicDao {
     @Query("SELECT * FROM topics WHERE stream_id = :streamId ORDER BY title")
     fun getTopicsInStream(streamId: Int): Single<List<TopicDb>>
 
-    @Query("SELECT * FROM topics WHERE title = :title")
-    fun getTopicByTitle(title: String): Single<TopicDb>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(topic: List<TopicDb>): Completable
-
-    @Update
-    fun update(topic: TopicDb)
 }

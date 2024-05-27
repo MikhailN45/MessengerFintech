@@ -12,7 +12,7 @@ sealed interface ChatEvent {
 
         data class Topic(
             val streamId: Int,
-            val topicName: String,
+            val topicTitle: String,
             val anchor: String
         ) : LoadMessages
     }
@@ -25,7 +25,7 @@ sealed interface ChatEvent {
 
         data class Topic(
             val streamId: Int,
-            val topicName: String,
+            val topicTitle: String,
             val content: String
         ) : SendMessage
     }

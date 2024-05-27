@@ -48,7 +48,6 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
-                    //viewModel.processEvent(StreamsEvent.ExpandStream(onClickedItem))
                     addItemsToAdapter(onClickedItem)
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
@@ -110,8 +109,6 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
 
     override fun onDestroyView() {
         super.onDestroyView()
-        items = items.filterIsInstance<StreamItem>().toMutableList()
-        items.clear()
         _binding = null
     }
 

@@ -103,6 +103,7 @@ class StreamsTopicsAdapter(private val onClick: (item: StreamTopicItem) -> Unit)
                         if (it > 0) it.toString()
                         else ""
                     }
+
                 for (i in chatItem.indices) {
                     chatItem.setBackgroundResource(
                         if (item.topicId % 2 == 0) {
