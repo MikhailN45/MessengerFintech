@@ -4,9 +4,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiSelector
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import com.study.messengerfintech.App
 import com.study.messengerfintech.R
@@ -73,7 +70,6 @@ class ChatFragmentTest : TestCase() {
 
     @Test
     fun setReactionToMessage() = run {
-        val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         ActivityScenario.launch(MainActivity::class.java)
         scenario(OpenTopicChat())
         ChatScreen {
@@ -82,11 +78,6 @@ class ChatFragmentTest : TestCase() {
                     content.longClick()
                 }
             }
-
-            val flexBoxBottomSheetSelector = uiDevice.findObject(
-                UiSelector()
-                    .resourceId("com.study.messengerfintech:id/smile_choice_bottomsheet_panel")
-            )
 
             step("Set reaction") {
                 SmileBottomSheetScreen.firstEmoji.click()
