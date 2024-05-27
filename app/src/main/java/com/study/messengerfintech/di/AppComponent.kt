@@ -17,12 +17,15 @@ import javax.inject.Singleton
     modules = [
         AppModule::class,
         RetrofitModule::class,
+        DomainModule::class,
         RoomModule::class,
         ViewModelBuilderModule::class,
         SubcomponentsModule::class,
     ]
 )
 interface AppComponent {
+
+    fun getApiUrlProvider(): UrlProvider
 
     @Component.Factory
     interface Factory {

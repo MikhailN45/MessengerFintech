@@ -1,13 +1,13 @@
 package com.study.messengerfintech.data.network
 
-import com.study.messengerfintech.data.model.AllStreamRootResponse
-import com.study.messengerfintech.data.model.MessageSendResponse
-import com.study.messengerfintech.data.model.MessagesReceiveResponse
-import com.study.messengerfintech.data.model.PresenceResponse
-import com.study.messengerfintech.data.model.SubscribedStreamsRootResponse
-import com.study.messengerfintech.data.model.TopicsRootResponse
-import com.study.messengerfintech.data.model.UserResponse
-import com.study.messengerfintech.data.model.UsersRootResponse
+import com.study.messengerfintech.data.model.api.AllStreamRootResponse
+import com.study.messengerfintech.data.model.api.MessageSendResponse
+import com.study.messengerfintech.data.model.api.MessagesReceiveResponse
+import com.study.messengerfintech.data.model.api.PresenceResponse
+import com.study.messengerfintech.data.model.api.SubscribedStreamsRootResponse
+import com.study.messengerfintech.data.model.api.TopicsRootResponse
+import com.study.messengerfintech.data.model.api.UserResponse
+import com.study.messengerfintech.data.model.api.UsersRootResponse
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.http.DELETE
@@ -18,7 +18,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface ZulipRetrofitApi {
+interface ZulipApiService {
     @GET("streams")
     fun getStreams(): Single<AllStreamRootResponse>
 

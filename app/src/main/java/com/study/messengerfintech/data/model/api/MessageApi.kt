@@ -1,4 +1,4 @@
-package com.study.messengerfintech.data.model
+package com.study.messengerfintech.data.model.api
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,7 +13,7 @@ data class MessageResponse(
     @SerialName("sender_full_name") val senderName: String = "",
     @SerialName("timestamp") val timestamp: Int = (Date().time / 1000).toInt(),
     @SerialName("avatar_url") val avatarUrl: String = "",
-    @SerialName("reactions") val reactions: List<ReactionResponse> = listOf()
+    @SerialName("reactions") val reactions: List<ReactionApi> = listOf()
 )
 
 @Serializable

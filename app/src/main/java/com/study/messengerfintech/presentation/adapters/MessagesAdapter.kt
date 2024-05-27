@@ -8,10 +8,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.study.messengerfintech.databinding.ItemMessageBinding
 import com.study.messengerfintech.domain.model.Message
-import com.study.messengerfintech.utils.EmojiAdd
-import com.study.messengerfintech.utils.EmojiDelete
-import com.study.messengerfintech.utils.Utils.getDate
-import com.study.messengerfintech.utils.Utils.getDayCount
+import com.study.messengerfintech.utils.OnEmojiClickEvent
+import com.study.messengerfintech.utils.Utils.getDayMonthFromTimestamp
+import com.study.messengerfintech.utils.Utils.countDaysInTimestamp
 
 class MessagesAdapter(
     val onEmojiAddClick: (messageId: Int, emojiName: String) -> Unit,
@@ -32,27 +31,31 @@ class MessagesAdapter(
         )
     }
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) = with(viewHolder.binding) {
         onBind(position)
-        getItem(position).apply {
-            viewHolder.binding.message.setMessage(this)
-            viewHolder.binding.message.setOnEmojiClickListener { event ->
-                when (event) {
-                    is EmojiAdd -> onEmojiAddClick(event.messageId, event.emojiName)
-                    is EmojiDelete -> onEmojiDeleteClick(event.messageId, event.emojiName)
-                }
+        val message = getItem(position)
+        messageView.setMessageData(message)
+        messageView.setOnEmojiClickListener { event ->
+            when (event) {
+                is OnEmojiClickEvent.EmojiAdd -> onEmojiAddClick(event.messageId, event.emojiName)
+                is OnEmojiClickEvent.EmojiDelete -> onEmojiDeleteClick(event.messageId, event.emojiName)
             }
-            viewHolder.binding.message.setMessageOnLongClick { onMessageLongClick(position) }
-            viewHolder.binding.date.text = getDate(getItem(position).timestamp)
-            viewHolder.binding.date.isVisible = isDateNeeded(position)
         }
+
+        messageView.setMessageOnLongClick {
+            val messagePosition = currentList.indexOf(message)
+            onMessageLongClick(messagePosition)
+        }
+
+        dateView.text = getDayMonthFromTimestamp(message.timestamp)
+        dateView.isVisible = isDateNeeded(position)
     }
 
     private fun isDateNeeded(position: Int): Boolean {
         if (position + 1 == itemCount) return true
         val yesterday = getItem(position + 1).timestamp
         val today = getItem(position).timestamp
-        return getDayCount(yesterday) < getDayCount(today)
+        return countDaysInTimestamp(yesterday) < countDaysInTimestamp(today)
     }
 }
 

@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.messengerfintech.R
@@ -25,10 +25,10 @@ import com.study.messengerfintech.presentation.state.ChatState
 import com.study.messengerfintech.presentation.viewmodel.ChatViewModel
 import javax.inject.Inject
 
-class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
+class ChatFragment : FragmentMvi<ChatState>(R.layout.chat_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val chatViewModel: ChatViewModel by activityViewModels { viewModelFactory }
+    private val chatViewModel: ChatViewModel by viewModels { viewModelFactory }
     private var _binding: ChatFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -45,12 +45,14 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
             onEmojiDeleteClick = { messageId, emojiName ->
                 chatViewModel.processEvent(ChatEvent.Emoji.Remove(messageId, emojiName))
             },
-            onMessageLongClick = { position -> showBottomSheet(position) },
+            onMessageLongClick = { position ->
+                showBottomSheet(position)
+            },
             onBind = { position ->
                 if (
                     position == ((chatViewModel.state.value?.messages?.size ?: 0) - 5)
                     &&
-                    chatViewModel.state.value?.loaded == false
+                    chatViewModel.state.value?.isAllChatMessageAreLoaded == false
                 )
                     loadMessages()
             }
@@ -72,9 +74,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = ChatFragmentBinding.inflate(layoutInflater)
         return binding.root
@@ -96,21 +96,19 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     }
 
 
-    override fun render(state: ChatState) = with(binding) {
-        progressBar.isVisible = state.isLoading
+    override fun render(state: ChatState) {
+        binding.progressBar.isVisible = state.isLoading
         adapter.submitList(state.messages)
     }
 
     private fun showBottomSheet(position: Int) {
-        SmileBottomSheet()
-            .apply { arguments = bundleOf(SmileBottomSheet.MESSAGE_KEY to position) }
+        SmileBottomSheet().apply { arguments = bundleOf(SmileBottomSheet.MESSAGE_KEY to position) }
             .show(childFragmentManager, SmileBottomSheet.TAG)
     }
 
     private fun initScreen() {
         with(binding) {
             chatTitle.text = "#%s".format(topicName ?: userName)
-
             backButtonChat.setOnClickListener { parentFragmentManager.popBackStack() }
 
             chatRecycler.apply {
@@ -133,8 +131,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
         }
 
         childFragmentManager.setFragmentResultListener(
-            SmileBottomSheet.SMILE_RESULT,
-            this
+            SmileBottomSheet.SMILE_RESULT, this
         ) { _, bundle ->
             val messagePosition = bundle.getInt(SmileBottomSheet.MESSAGE_KEY)
             val smileKey = bundle.getString(SmileBottomSheet.SMILE_KEY)!!
@@ -145,7 +142,9 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
                     emoji.getUnicode()
                 )
             if (emojisOnMessage == null || !emojisOnMessage.usersId.contains(User.ME.id)) {
-                chatViewModel.setReactionToMessage(emoji, messagePosition)
+                chatViewModel.processEvent(
+                    ChatEvent.ReactionClick(emoji, messagePosition)
+                )
             }
             adapter.notifyItemChanged(messagePosition)
         }
@@ -154,7 +153,7 @@ class ChatFragment : FragmentMVI<ChatState>(R.layout.chat_fragment) {
     private fun loadMessages() {
         val anchor =
             if (!chatViewModel.state.value?.messages.isNullOrEmpty()) {
-                "${chatViewModel.state.value?.messages?.last()?.id}"
+                "${chatViewModel.state.value?.messages?.lastOrNull()?.id}"
             } else {
                 "newest"
             }

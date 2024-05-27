@@ -1,5 +1,7 @@
 package com.study.messengerfintech.presentation.events
 
+import com.study.messengerfintech.domain.model.Reaction
+
 
 sealed interface ChatEvent {
     sealed interface LoadMessages : ChatEvent {
@@ -10,7 +12,7 @@ sealed interface ChatEvent {
 
         data class Topic(
             val streamId: Int,
-            val topicName: String,
+            val topicTitle: String,
             val anchor: String
         ) : LoadMessages
     }
@@ -23,7 +25,7 @@ sealed interface ChatEvent {
 
         data class Topic(
             val streamId: Int,
-            val topicName: String,
+            val topicTitle: String,
             val content: String
         ) : SendMessage
     }
@@ -39,4 +41,9 @@ sealed interface ChatEvent {
             val emojiName: String
         ) : Emoji
     }
+
+    data class ReactionClick(
+        val reaction: Reaction,
+        val messagePosition: Int
+    ) : ChatEvent
 }

@@ -3,6 +3,7 @@ package com.study.messengerfintech.presentation.fragments
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,13 +24,13 @@ import com.study.messengerfintech.presentation.state.State
 import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 import javax.inject.Inject
 
-class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_and_chats_fragment) {
+class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_and_chats_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: StreamsViewModel by activityViewModels { viewModelFactory }
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
-    private var items: MutableList<StreamTopicItem> = mutableListOf()
+    private val items: MutableList<StreamTopicItem> = mutableListOf()
 
     private val adapter = StreamsTopicsAdapter { onClickedItem ->
         when (onClickedItem) {
@@ -48,8 +49,12 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
-                    viewModel.processEvent(StreamsEvent.ExpandStream(onClickedItem))
-                    addItemsToAdapter(onClickedItem)
+                    try {
+                        addItemsToAdapter(onClickedItem)
+                    } catch (error: Throwable) {
+                        Log.e("streamItemClicked", "${error.message}")
+                    }
+
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
             }
@@ -57,7 +62,7 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
     }
 
     override fun render(state: State.Streams) {
-        items = state.items.toMutableList()
+        items.addAll(state.items.toMutableList())
         adapter.submitList(items) {
             binding.streamsAndChatsRecycler.scrollToPosition(0)
         }
@@ -90,15 +95,11 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
         } else {
             arguments?.getParcelable(STREAM_TYPE)
         } ?: StreamType.AllStreams
-        if (streamType == StreamType.SubscribedStreams) {
-            viewModel.streamsSubscribed.observe(viewLifecycleOwner) { state ->
-                render(state)
-            }
-        } else {
-            viewModel.streamsAll.observe(viewLifecycleOwner) { state ->
-                render(state)
-            }
 
+        if (streamType == StreamType.SubscribedStreams) {
+            viewModel.streamsSubscribed.observe(viewLifecycleOwner, ::render)
+        } else {
+            viewModel.streamsAll.observe(viewLifecycleOwner, ::render)
         }
 
         binding.streamsAndChatsRecycler.apply {
@@ -114,8 +115,6 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
 
     override fun onDestroyView() {
         super.onDestroyView()
-        items = items.filterIsInstance<StreamItem>().toMutableList()
-        items.clear()
         _binding = null
     }
 
@@ -125,7 +124,9 @@ class StreamsTopicsListFragment : FragmentMVI<State.Streams>(R.layout.streams_an
                 item.isExpanded = false
             }
         }
-        items = items.filterIsInstance<StreamItem>().toMutableList()
+        val streamItems = items.filterIsInstance<StreamItem>().toMutableList()
+        items.clear()
+        items.addAll(streamItems)
     }
 
     private fun addItemsToAdapter(item: StreamItem) {

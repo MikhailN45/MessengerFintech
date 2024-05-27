@@ -42,7 +42,7 @@ class UsersViewModel @Inject constructor(
         searchUsersSubject
             .subscribeOn(Schedulers.io())
             .distinctUntilChanged()
-            .doOnNext { _state.postValue(UsersState(users = emptyList(), isLoading = true)) } // = _state.value?.copy(isLoading = true) }
+            .doOnNext { _state.postValue(UsersState(users = emptyList(), isLoading = true)) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { searchQuery -> searchUserUseCase(searchQuery) }
             .subscribeOn(Schedulers.io())

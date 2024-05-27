@@ -2,32 +2,27 @@ package com.study.messengerfintech.utils
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Color
 import android.util.TypedValue
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object Utils {
-    fun Float.sp(context: Context) = TypedValue.applyDimension(
+    fun Float.toSp(context: Context) = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_SP, this, context.resources.displayMetrics
     )
 
     fun Float.toPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-    fun getDate(timestamp: Int): String {
+    fun getDayMonthFromTimestamp(timestamp: Int): String {
         val date = Date(timestamp.toLong() * 1000)
         return SimpleDateFormat("d MMM", Locale("ru", "RU")).format(date)
     }
 
-    fun getDayCount(timestamp: Int): Int {
+    fun countDaysInTimestamp(timestamp: Int): Int {
         val secondsInDay = 86400
         return timestamp / secondsInDay
     }
-
-    val colors = arrayOf(
-        Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA, Color.WHITE
-    )
 
     val emojiNameUnicodeHashMap: HashMap<String, String> = hashMapOf(
         "smile" to "\uD83D\uDE42",

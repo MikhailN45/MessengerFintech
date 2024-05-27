@@ -21,7 +21,7 @@ import com.study.messengerfintech.presentation.viewmodel.StreamsViewModel
 import com.study.messengerfintech.presentation.viewmodel.UsersViewModel
 import javax.inject.Inject
 
-class UsersFragment : FragmentMVI<UsersState>(R.layout.streams_and_chats_fragment) {
+class UsersFragment : FragmentMvi<UsersState>(R.layout.streams_and_chats_fragment) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val streamsViewModel: StreamsViewModel by activityViewModels { viewModelFactory }
@@ -39,8 +39,8 @@ class UsersFragment : FragmentMVI<UsersState>(R.layout.streams_and_chats_fragmen
         adapter.submitList(state.users) {
             usersRecycler.scrollToPosition(0)
         }
-            usersShimmer.isVisible = state.isLoading
-            usersRecycler.isVisible = !state.isLoading
+        usersShimmer.isVisible = state.isLoading
+        usersRecycler.isVisible = !state.isLoading
     }
 
     override fun onAttach(context: Context) {
@@ -66,7 +66,7 @@ class UsersFragment : FragmentMVI<UsersState>(R.layout.streams_and_chats_fragmen
             usersViewModel.processEvent(UsersEvent.SearchForUsers())
         }
 
-        binding.searchUsersEditText.doAfterTextChanged {
+        binding.topbarSearchEditText.doAfterTextChanged {
             usersViewModel.processEvent(UsersEvent.SearchForUsers(query = it.toString()))
         }
 

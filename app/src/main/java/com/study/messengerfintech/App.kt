@@ -14,11 +14,12 @@ class App : Application() {
         super.onCreate()
         appContext = applicationContext
         appComponent = DaggerAppComponent.factory().create(this)
+        INSTANCE = this
     }
-
 
     companion object {
         lateinit var appContext: Context
+        lateinit var INSTANCE: App
     }
 }
 

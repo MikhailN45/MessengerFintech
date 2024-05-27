@@ -55,7 +55,7 @@
         android:background="@color/status_bar_gray">
 
         <EditText
-            android:id="@+id/search_users_edit_text"
+            android:id="@+id/topbar_search_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -13,8 +13,6 @@ import com.study.messengerfintech.R
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.UnitedReaction
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.utils.EmojiAdd
-import com.study.messengerfintech.utils.EmojiDelete
 import com.study.messengerfintech.utils.OnEmojiClickEvent
 import com.study.messengerfintech.utils.Utils.toPx
 
@@ -40,7 +38,7 @@ class MessageBodyViewGroup @JvmOverloads constructor(
 
     private lateinit var message: Message
 
-    fun setMessage(message: Message) {
+    fun setMessageData(message: Message) {
         this.message = message
         this.messageText.text =
             HtmlCompat.fromHtml(message.content, HtmlCompat.FROM_HTML_MODE_LEGACY).trim()
@@ -83,8 +81,11 @@ class MessageBodyViewGroup @JvmOverloads constructor(
                 if (message.emojiCodeReactionMap.size == 0) plus.visibility = GONE
 
                 val emojiClick =
-                    if (reaction.usersId.contains(User.ME.id)) EmojiAdd(message.id, reaction.name)
-                    else EmojiDelete(message.id, reaction.name)
+                    if (reaction.usersId.contains(User.ME.id)) {
+                        OnEmojiClickEvent.EmojiAdd(message.id, reaction.name)
+                    } else {
+                        OnEmojiClickEvent.EmojiDelete(message.id, reaction.name)
+                    }
 
                 emojiClickListener(emojiClick)
             }

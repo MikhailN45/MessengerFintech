@@ -7,7 +7,7 @@ import android.view.View
 import com.study.messengerfintech.R
 import com.study.messengerfintech.domain.model.UnitedReaction
 import com.study.messengerfintech.domain.model.User
-import com.study.messengerfintech.utils.Utils.sp
+import com.study.messengerfintech.utils.Utils.toSp
 
 class Emoji @JvmOverloads constructor(
     context: Context,
@@ -45,7 +45,7 @@ class Emoji @JvmOverloads constructor(
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        textSize = 14f.sp(context)
+        textSize = 14f.toSp(context)
         textAlign = Paint.Align.CENTER
     }
 
