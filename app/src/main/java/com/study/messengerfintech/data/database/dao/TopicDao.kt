@@ -4,8 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
-import com.study.messengerfintech.data.database.model.TopicDb
+import com.study.messengerfintech.data.model.db.TopicDb
 import io.reactivex.Completable
 import io.reactivex.Single
 

@@ -1,4 +1,4 @@
-package com.study.messengerfintech.data.database.model
+package com.study.messengerfintech.data.model.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

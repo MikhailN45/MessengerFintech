@@ -53,23 +53,20 @@ android {
 }
 
 dependencies {
-    //by default
+    //android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
-    //firebase analytics
+    //firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
-
-
-    //navigation
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
 
     //rx
     implementation(libs.rxjava)
@@ -82,7 +79,6 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
-    androidTestImplementation(libs.mockwebserver)
 
     //UI
     implementation(libs.shimmer)
@@ -105,24 +101,14 @@ dependencies {
     androidTestImplementation(libs.androidx.fragment.testing)
     debugImplementation(libs.androidx.fragment.testing)
     androidTestUtil(libs.androidx.orchestrator)
-
-    //kotest
-    testImplementation(libs.kotest.runner.junit5)
-    testImplementation(libs.kotest.assertions.core)
-    testImplementation(libs.kotest.property)
-
-    //mockk
-    testImplementation(libs.mockk)
-    testImplementation(libs.mockk.android)
-    testImplementation(libs.mockk.agent)
+    testImplementation(libs.testing.ktx)
+    testImplementation(libs.core.testing)
+    //mock
     testImplementation(libs.mockito.core)
-
+    testImplementation(libs.mockito.kotlin)
+    androidTestImplementation(libs.mockwebserver)
     //kaspresso
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.kaspresso)
     androidTestImplementation(libs.hamcrest)
-
-    testImplementation(libs.testing.ktx)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.core.testing)
 }

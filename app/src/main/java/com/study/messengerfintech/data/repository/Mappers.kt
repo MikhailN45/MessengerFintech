@@ -1,14 +1,14 @@
 package com.study.messengerfintech.data.repository
 
-import com.study.messengerfintech.data.database.model.MessageDb
-import com.study.messengerfintech.data.database.model.StreamDb
-import com.study.messengerfintech.data.database.model.TopicDb
-import com.study.messengerfintech.data.database.model.UserDb
-import com.study.messengerfintech.data.network.model.MessageResponse
-import com.study.messengerfintech.data.network.model.ReactionApi
-import com.study.messengerfintech.data.network.model.StreamResponse
-import com.study.messengerfintech.data.network.model.TopicResponse
-import com.study.messengerfintech.data.network.model.UserResponse
+import com.study.messengerfintech.data.model.db.MessageDb
+import com.study.messengerfintech.data.model.db.StreamDb
+import com.study.messengerfintech.data.model.db.TopicDb
+import com.study.messengerfintech.data.model.db.UserDb
+import com.study.messengerfintech.data.model.api.MessageResponse
+import com.study.messengerfintech.data.model.api.ReactionApi
+import com.study.messengerfintech.data.model.api.StreamResponse
+import com.study.messengerfintech.data.model.api.TopicResponse
+import com.study.messengerfintech.data.model.api.UserResponse
 import com.study.messengerfintech.domain.model.Message
 import com.study.messengerfintech.domain.model.Reaction
 import com.study.messengerfintech.domain.model.Stream

@@ -12,6 +12,7 @@ import com.study.messengerfintech.App
 import com.study.messengerfintech.R
 import com.study.messengerfintech.presentation.MainActivity
 import com.study.messengerfintech.screens.ChatScreen
+import com.study.messengerfintech.screens.SmileBottomSheetScreen
 import com.study.messengerfintech.screens.StreamAndTopicListScreen
 import com.study.messengerfintech.utils.MockServerDispatcher
 import com.study.messengerfintech.utils.OpenTopicChat
@@ -88,7 +89,7 @@ class ChatFragmentTest : TestCase() {
             )
 
             step("Set reaction") {
-                flexBoxBottomSheetSelector.click()
+                SmileBottomSheetScreen.firstEmoji.click()
             }
 
             step("Check for reaction is added") {

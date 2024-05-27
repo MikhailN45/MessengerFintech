@@ -3,6 +3,7 @@ package com.study.messengerfintech.presentation.fragments
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,7 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
     private val viewModel: StreamsViewModel by activityViewModels { viewModelFactory }
     private var _binding: StreamsAndChatsFragmentBinding? = null
     private val binding get() = _binding!!
-    private var items: MutableList<StreamTopicItem> = mutableListOf()
+    private val items: MutableList<StreamTopicItem> = mutableListOf()
 
     private val adapter = StreamsTopicsAdapter { onClickedItem ->
         when (onClickedItem) {
@@ -48,7 +49,12 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
                 if (onClickedItem.isExpanded) {
                     deleteItemsFromAdapter(onClickedItem)
                 } else {
-                    addItemsToAdapter(onClickedItem)
+                    try {
+                        addItemsToAdapter(onClickedItem)
+                    } catch (error: Throwable) {
+                        Log.e("streamItemClicked", "${error.message}")
+                    }
+
                 }
                 onClickedItem.isExpanded = !onClickedItem.isExpanded
             }
@@ -56,7 +62,7 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
     }
 
     override fun render(state: State.Streams) {
-        items = state.items.toMutableList()
+        items.addAll(state.items.toMutableList())
         adapter.submitList(items) {
             binding.streamsAndChatsRecycler.scrollToPosition(0)
         }
@@ -118,7 +124,9 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
                 item.isExpanded = false
             }
         }
-        items = items.filterIsInstance<StreamItem>().toMutableList()
+        val streamItems = items.filterIsInstance<StreamItem>().toMutableList()
+        items.clear()
+        items.addAll(streamItems)
     }
 
     private fun addItemsToAdapter(item: StreamItem) {

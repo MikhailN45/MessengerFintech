@@ -1,6 +1,5 @@
 package com.study.messengerfintech.presentation.viewmodel
 
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.study.messengerfintech.domain.repository.ChatRepository
 import com.study.messengerfintech.utils.SchedulerRule

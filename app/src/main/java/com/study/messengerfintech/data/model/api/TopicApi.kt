@@ -1,4 +1,4 @@
-package com.study.messengerfintech.data.network.model
+package com.study.messengerfintech.data.model.api
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

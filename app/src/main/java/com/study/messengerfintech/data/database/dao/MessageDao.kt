@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.study.messengerfintech.data.database.model.MessageDb
+import com.study.messengerfintech.data.model.db.MessageDb
 import io.reactivex.Completable
 import io.reactivex.Single
 

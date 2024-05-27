@@ -6,10 +6,10 @@ import com.study.messengerfintech.data.database.dao.MessageDao
 import com.study.messengerfintech.data.database.dao.StreamDao
 import com.study.messengerfintech.data.database.dao.TopicDao
 import com.study.messengerfintech.data.database.dao.UserDao
-import com.study.messengerfintech.data.database.model.MessageDb
-import com.study.messengerfintech.data.database.model.StreamDb
-import com.study.messengerfintech.data.database.model.TopicDb
-import com.study.messengerfintech.data.database.model.UserDb
+import com.study.messengerfintech.data.model.db.MessageDb
+import com.study.messengerfintech.data.model.db.StreamDb
+import com.study.messengerfintech.data.model.db.TopicDb
+import com.study.messengerfintech.data.model.db.UserDb
 
 @Database(
     entities = [
