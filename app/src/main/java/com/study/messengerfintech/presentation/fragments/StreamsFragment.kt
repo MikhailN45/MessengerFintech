@@ -74,6 +74,11 @@ class StreamsFragment : Fragment() {
 
     }
 
+    override fun onStop() {
+        super.onStop()
+        viewModel.processEvent(StreamsEvent.SearchForStreams())
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

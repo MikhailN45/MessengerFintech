@@ -46,22 +46,22 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
             }
 
             is StreamItem -> {
-                if (onClickedItem.isExpanded) {
-                    deleteItemsFromAdapter(onClickedItem)
-                } else {
-                    try {
+                try {
+                    if (onClickedItem.isExpanded) {
+                        deleteItemsFromAdapter(onClickedItem)
+                    } else {
                         addItemsToAdapter(onClickedItem)
-                    } catch (error: Throwable) {
-                        Log.e("streamItemClicked", "${error.message}")
                     }
-
+                    onClickedItem.isExpanded = !onClickedItem.isExpanded
+                } catch (error: Throwable) {
+                    Log.e("streamItemAdapterInteraction", "${error.message}")
                 }
-                onClickedItem.isExpanded = !onClickedItem.isExpanded
             }
         }
     }
 
     override fun render(state: State.Streams) {
+        items.clear()
         items.addAll(state.items.toMutableList())
         adapter.submitList(items) {
             binding.streamsAndChatsRecycler.scrollToPosition(0)
@@ -124,9 +124,7 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
                 item.isExpanded = false
             }
         }
-        val streamItems = items.filterIsInstance<StreamItem>().toMutableList()
         items.clear()
-        items.addAll(streamItems)
     }
 
     private fun addItemsToAdapter(item: StreamItem) {

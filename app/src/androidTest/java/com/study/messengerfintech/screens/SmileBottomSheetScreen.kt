@@ -14,5 +14,4 @@ object SmileBottomSheetScreen : KScreen<SmileBottomSheetScreen>() {
             isFirst()
         }
     }
-
 }

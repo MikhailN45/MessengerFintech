@@ -21,7 +21,7 @@ class SearchUsersUseCaseImpl @Inject constructor(
                         user.name.contains(searchQuery, ignoreCase = true)
                     }
                 } else {
-                    users
+                    users.sortedBy { it.name }
                 }
             }
     }
