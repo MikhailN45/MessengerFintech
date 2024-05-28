@@ -21,4 +21,6 @@
     <string name="subscribed">"Subscribed"</string>
     <string name="all_streams">"All streams"</string>
     <string name="streams">Streams…</string>
+    <string name="no_connection_message">Check internet access, data updates are not available.</string>
+    <string name="restore_connection_message">Internet connection restored.</string>
 </resources>

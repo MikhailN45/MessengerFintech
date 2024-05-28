@@ -74,8 +74,8 @@ class StreamsFragment : Fragment() {
 
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         viewModel.processEvent(StreamsEvent.SearchForStreams())
     }
 

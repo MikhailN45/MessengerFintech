@@ -108,8 +108,8 @@ class StreamsTopicsListFragment : FragmentMvi<State.Streams>(R.layout.streams_an
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         collapseStreams()
     }
 
