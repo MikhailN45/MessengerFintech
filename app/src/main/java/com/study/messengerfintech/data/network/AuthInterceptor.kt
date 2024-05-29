@@ -1,9 +1,13 @@
 package com.study.messengerfintech.data.network
 
+import android.util.Log
 import okhttp3.Credentials
 import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 
 class AuthInterceptor : Interceptor {
     private val auth =
@@ -19,6 +23,18 @@ class AuthInterceptor : Interceptor {
                 .newBuilder()
                 .header("Authorization", auth)
                 .build()
-        return chain.proceed(authenticatedRequest)
+        try {
+            return chain.proceed(authenticatedRequest)
+        } catch (e: Exception) {
+            Log.d("AuthInterceptor", "${e.message}")
+            e.printStackTrace()
+            return Response.Builder()
+                .code(504)
+                .message("Network Timeout Error")
+                .protocol(Protocol.HTTP_1_1)
+                .request(chain.request())
+                .body("".toResponseBody("text/plain".toMediaTypeOrNull()))
+                .build()
+        }
     }
 }

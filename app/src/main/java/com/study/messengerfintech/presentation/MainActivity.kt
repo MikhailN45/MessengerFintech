@@ -59,14 +59,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun watchInternetConnection() {
-        val connectivityManager =
+        connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
-        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onLost(network: Network) {
                 super.onLost(network)
                 isConnectionLost = true
