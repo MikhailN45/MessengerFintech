@@ -4,7 +4,11 @@
 - Room, Retrofit, Dagger, RxJava, CustomView, Firebase, Kaspresso, Mockito, Glide, MVI.
   
 <details> 
-  <summary>Screenshots</summary> 
+  <summary> 
+    <mark style="background-color: lightblue">
+      Screenshots 
+    </mark> 
+  </summary> 
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/92f5896d-03a4-4bc7-8c7f-1586b9f2526a" width="250">
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/6a59756b-74da-40f2-8907-2b5da9e27492" width="250">
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/1da762c7-55e6-4db9-959b-929bb3681db5" width="250">
@@ -15,8 +19,12 @@
 </details>
 
 <details> 
-  <summary>Demo Video</summary> 
-<a href="https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69">Demo video</a>
+  <summary>
+     <mark style="background-color: lightblue">
+     Demo Video
+    </mark>    
+  </summary> 
+[Demo video](https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69)
 </details>
 
 #### Особенности:
