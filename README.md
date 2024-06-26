@@ -24,7 +24,7 @@
      Demo Video
     </mark>    
   </summary> 
-[Demo video](https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69)
+<a href="https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69">Demo video</a>
 </details>
 
 #### Особенности:
