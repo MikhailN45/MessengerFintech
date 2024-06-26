@@ -2,14 +2,14 @@
 
 #### Общий стек:
 - Room, Retrofit, Dagger, RxJava, CustomView, Firebase, Kaspresso, Mockito, Glide, MVI.
-  
-![Screenshot_20240626_184944](https://github.com/MikhailN45/MessengerFintech/assets/53788038/92f5896d-03a4-4bc7-8c7f-1586b9f2526a)
-![Screenshot_20240626_184927](https://github.com/MikhailN45/MessengerFintech/assets/53788038/6a59756b-74da-40f2-8907-2b5da9e27492)
-![Screenshot_20240626_184844](https://github.com/MikhailN45/MessengerFintech/assets/53788038/1da762c7-55e6-4db9-959b-929bb3681db5)
-![Screenshot_20240626_184825](https://github.com/MikhailN45/MessengerFintech/assets/53788038/25459aba-3d15-4a0a-a3bd-5fad4dcfb532)
-![Screenshot_20240626_184753](https://github.com/MikhailN45/MessengerFintech/assets/53788038/82cfa478-1dbe-4bca-a16f-66a747c5b31f)
-![Screenshot_20240626_184738](https://github.com/MikhailN45/MessengerFintech/assets/53788038/76e079ab-ed2a-407a-8894-8be8e1e380a1)
-![Screenshot_20240626_184719](https://github.com/MikhailN45/MessengerFintech/assets/53788038/dafb4aa9-f1c1-488b-b62a-890c94e8f51c)
+
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/92f5896d-03a4-4bc7-8c7f-1586b9f2526a" width="250">
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/6a59756b-74da-40f2-8907-2b5da9e27492" width="250">
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/1da762c7-55e6-4db9-959b-929bb3681db5" width="250">
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/25459aba-3d15-4a0a-a3bd-5fad4dcfb532" width="250">
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/82cfa478-1dbe-4bca-a16f-66a747c5b31f" width="250">
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/76e079ab-ed2a-407a-8894-8be8e1e380a1" width="250">
+<img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/dafb4aa9-f1c1-488b-b62a-890c94e8f51c" width="250">
 
 [Screen_recording_20240626_185839.webm](https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69)
 
