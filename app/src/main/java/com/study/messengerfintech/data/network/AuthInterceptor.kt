@@ -12,8 +12,8 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 class AuthInterceptor : Interceptor {
     private val auth =
         Credentials.basic(
-            "shelove6391@gmail.com",
-            "Ah3uZ10CjoZOFvzd9HfOvaW3deZZEOt9"
+            "example@email.com",
+            "apikey"
         )
 
     override fun intercept(chain: Interceptor.Chain): Response {
