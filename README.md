@@ -2,7 +2,9 @@
 
 #### Общий стек:
 - Room, Retrofit, Dagger, RxJava, CustomView, Firebase, Kaspresso, Mockito, Glide, MVI.
-
+  
+<details> 
+  <summary>Screenshots</summary> 
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/92f5896d-03a4-4bc7-8c7f-1586b9f2526a" width="250">
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/6a59756b-74da-40f2-8907-2b5da9e27492" width="250">
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/1da762c7-55e6-4db9-959b-929bb3681db5" width="250">
@@ -10,8 +12,12 @@
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/82cfa478-1dbe-4bca-a16f-66a747c5b31f" width="250">
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/76e079ab-ed2a-407a-8894-8be8e1e380a1" width="250">
 <img src="https://github.com/MikhailN45/MessengerFintech/assets/53788038/dafb4aa9-f1c1-488b-b62a-890c94e8f51c" width="250">
+</details>
 
-[Screen_recording_20240626_185839.webm](https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69)
+<details> 
+  <summary>Demo Video</summary> 
+<a href="https://github.com/MikhailN45/MessengerFintech/assets/53788038/5ac18eb9-48cd-433a-8c44-9c3efd739b69">Demo video</a>
+</details>
 
 #### Особенности:
 - Приложение представляет собой мессенджер на открытом Zulip API и реализовано в ходе стажировки в T-Банке (ex. Тинькофф Банк).
